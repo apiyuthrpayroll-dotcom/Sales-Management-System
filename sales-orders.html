@@ -177,12 +177,24 @@
   </div>
 
   <!-- SO Print View Modal -->
+  <!-- SO Print View Modal with Multi-Template Support -->
   <div class="modal fade" id="soPrintModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content border-0 shadow">
         <div class="modal-header bg-dark text-white p-3 no-print">
-          <h5 class="modal-title fw-bold"><i class="fas fa-eye me-2 text-warning"></i> หน้าตัวอย่างพิมพ์ใบสั่งจ้างงาน / Sales Order</h5>
+          <h5 class="modal-title fw-bold"><i class="fas fa-eye me-2 text-warning"></i> เลือกรูปแบบเอกสารสั่งพิมพ์ (Select Template)</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="bg-secondary bg-opacity-10 p-3 border-bottom d-flex gap-2 no-print">
+          <button id="btn-print-delivery" class="btn btn-sm btn-primary" onclick="setPrintTemplate('delivery')">
+            <i class="fa fa-truck me-1"></i> Sales Order / Delivery Order (ไม่แสดงราคา)
+          </button>
+          <button id="btn-print-so" class="btn btn-sm btn-outline-secondary" onclick="setPrintTemplate('sales_order')">
+            <i class="fa fa-file-invoice me-1"></i> Sales Order (แสดงราคา)
+          </button>
+          <button id="btn-print-cost" class="btn btn-sm btn-outline-secondary" onclick="setPrintTemplate('cost_summary')">
+            <i class="fa fa-calculator me-1"></i> Cost Summary (แสดงราคา)
+          </button>
         </div>
         <div class="modal-body bg-light h-100 overflow-y-auto" style="max-height: 80vh;">
           <div id="print-area" class="official-document">
@@ -190,7 +202,7 @@
               <div class="col-8">
                 <h4 class="fw-bold m-0 text-primary">IKM Testing Thailand</h4>
                 <p class="small text-muted mb-4">สำนักงานใหญ่นิคมอุตสาหกรรม มาบตาพุด ระยอง ประเทศไทย</p>
-                <div class="h5 fw-bold text-dark text-uppercase">ใบสั่งจ้างงานอ้างอิง / SALES ORDER DIRECTIVE</div>
+                <div class="h5 fw-bold text-dark text-uppercase" id="print-so-title">ใบสั่งจ้างงานอ้างอิง / SALES ORDER DIRECTIVE</div>
               </div>
               <div class="col-4 text-end">
                 <div class="badge bg-secondary mb-1">SO MASTER</div>
@@ -211,41 +223,20 @@
                 <div class="text-uppercase fw-bold text-secondary">รายละเอียดงานขาย / Reference</div>
                 <div>ใบเสนอราคา: <strong id="print-so-ref-qt">-</strong></div>
                 <div>ตัวแทนขายหลัก: <strong id="print-so-sales">-</strong></div>
+                <div>Job Number: <strong id="print-so-job-no">-</strong></div>
+                <div>PO Reference: <strong id="print-so-po-no">-</strong></div>
               </div>
             </div>
 
-            <!-- Table of Items -->
-            <table class="table table-bordered border-dark table-striped align-middle small my-3" style="table-layout: fixed; width: 100%;">
-              <thead class="table-dark">
-                <tr>
-                  <th>รายละเอียดงาน / บริการ</th>
-                  <th style="width: 80px;" class="text-center">จำนวน</th>
-                  <th style="width: 120px;" class="text-end">ราคาต่อหน่วย</th>
-                  <th style="width:120px;" class="text-end">ราคารวม (฿)</th>
-                </tr>
-              </thead>
-              <tbody id="print-so-items-body">
-                <!-- Injected via code -->
-              </tbody>
-            </table>
+            <!-- Dynamic Table of Items -->
+            <div id="print-so-table-container"></div>
 
             <div class="row pt-2 align-items-center">
               <div class="col-7 text-muted small">
                 <strong>เงื่อนไขหลัก:</strong> การส่งมอบและให้บริการจะต้องอยู่ภายใต้กฎความปลอดภัยสากล
               </div>
-              <div class="col-5">
-                <div class="d-flex justify-content-between font-monospace small">
-                  <span>มูลค่าก่อนภาษี:</span>
-                  <span id="print-so-sub">฿0.00</span>
-                </div>
-                <div class="d-flex justify-content-between font-monospace small">
-                  <span>VAT 7%:</span>
-                  <span id="print-so-vat">฿0.00</span>
-                </div>
-                <div class="d-flex justify-content-between font-monospace fw-bold h5 border-top pt-2">
-                  <span>ยอดสุทธิรวม:</span>
-                  <span class="text-primary" id="print-so-grand">฿0.00</span>
-                </div>
+              <div class="col-5" id="print-so-totals-container">
+                <!-- Injected dynamically based on template selection -->
               </div>
             </div>
 
@@ -265,9 +256,99 @@
         <div class="modal-footer bg-light border-top no-print py-2">
           <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
           <button type="button" class="btn btn-primary btn-sm px-4" onclick="window.print()">
-            <i class="fa fa-print me-1"></i>สั่งพิมพ์ใบสั่งของ (Print / Save PDF)
+            <i class="fa fa-print me-1"></i>สั่งพิมพ์ (Print / Save PDF)
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Editing Sales Order -->
+  <div class="modal fade" id="soEditModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-warning text-dark p-3">
+          <h5 class="modal-title fw-bold"><i class="fas fa-edit me-2"></i> แก้ไขรายละเอียดข้อมูลใบสั่งขาย (Edit Sales Order Detail)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="soEditForm" onsubmit="saveSalesOrderEdit(event)">
+          <div class="modal-body bg-light">
+            <input type="hidden" id="edit-so-id">
+            
+            <div class="card card-body shadow-sm border-0 mb-3">
+              <div class="row g-3">
+                <div class="col-12 col-md-4">
+                  <label class="form-label small fw-bold">ชื่อโครงการ / Campaign Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="edit-project-name" required placeholder="พิมพ์ระบุชื่อโครงการหรือแคมเปญสั่งงาน">
+                </div>
+                <div class="col-12 col-md-4">
+                  <label class="form-label small fw-bold">Job Number <span class="text-secondary">(Manual Key / ซ้ำกันได้)</span></label>
+                  <input type="text" class="form-control" id="edit-job-no" placeholder="เช่น JOB-2026-001">
+                </div>
+                <div class="col-12 col-md-4">
+                  <label class="form-label small fw-bold">เลขที่ PO ของลูกค้า / Customer PO Reference</label>
+                  <input type="text" class="form-control" id="edit-po-no" placeholder="เช่น PO-PTT-450122">
+                </div>
+              </div>
+            </div>
+
+            <!-- Items Grid -->
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h6 class="m-0 fw-bold text-dark"><i class="fa fa-list me-1 text-primary"></i> รายการสั่งงานในใบจ้าง (Sales Order Line Items)</h6>
+                <button type="button" class="btn btn-xs btn-outline-success px-3" onclick="addEditItemRow()">
+                  <i class="fa fa-plus-circle me-1"></i>เพิ่มแถวรายการ
+                </button>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="google-sheet-table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small font-bold">
+                      <tr>
+                        <th style="width: 50px;" class="text-center">#</th>
+                        <th>รายละเอียดสินค้า / รายการจ้างงานบริการ (Description) <span class="text-danger">*</span></th>
+                        <th style="width: 100px;" class="text-center">จำนวน (Qty)</th>
+                        <th style="width: 100px;" class="text-center">หน่วย (Unit)</th>
+                        <th style="width: 110px;" class="text-center">ระยะเวลา (วัน)</th>
+                        <th style="width: 140px;" class="text-end">ราคาต่อหน่วย (฿)</th>
+                        <th style="width: 150px;" class="text-end">ราคารวมก่อนภาษี (฿)</th>
+                        <th style="width: 60px;" class="text-center">ลบ</th>
+                      </tr>
+                    </thead>
+                    <tbody id="edit-items-table-body">
+                      <!-- Injected via code -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-footer bg-white border-top py-3">
+                <div class="row justify-content-end">
+                  <div class="col-12 col-md-4">
+                    <div class="d-flex justify-content-between small mb-1">
+                      <span class="text-muted">มูลค่ารวมก่อนภาษี (Subtotal):</span>
+                      <span class="fw-bold font-monospace" id="edit-calc-subtotal">0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between small mb-1">
+                      <span class="text-muted">ภาษีมูลค่าเพิ่ม (VAT 7%):</span>
+                      <span class="fw-bold font-monospace" id="edit-calc-tax">0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-top pt-2 h5 font-bold mb-0">
+                      <span class="text-dark">ยอดรวมสุทธิ (Grand Total):</span>
+                      <span class="text-success font-monospace" id="edit-calc-grandtotal">0.00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer bg-light border-top py-2">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="submit" class="btn btn-warning btn-sm fw-bold px-4">
+              <i class="fa fa-save me-1"></i>บันทึกการแก้ไขใบสั่งขาย
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -284,6 +365,9 @@
   <script>
     let quotationsCached = [];
     let soFulfillmentStatus = {};
+    let activePrintSOId = null;
+    let activePrintTemplate = 'delivery'; // Default is delivery (no price)
+    let editItemIndexCounter = 0;
 
     document.addEventListener('DOMContentLoaded', async () => {
       // Load fulfillment cache
@@ -315,6 +399,16 @@
       }
     }
 
+    function showAdminRequiredAlert(action) {
+      Swal.fire({
+        title: 'จำกัดสิทธิ์เฉพาะ Admin',
+        text: `เอกสารอยู่ในสถานะออกใบแจ้งหนี้ (Invoiced) แล้ว ไมามารถทำการ${action}ได้ หากไม่ใช่ผู้ดูแลระบบ`,
+        icon: 'warning',
+        confirmButtonColor: '#ffc107',
+        confirmButtonText: 'ตกลง'
+      });
+    }
+
     function renderSalesOrders() {
       const searchVal = document.getElementById('so-search-input').value.toLowerCase().trim();
       const statusVal = document.getElementById('so-filter-status').value;
@@ -330,10 +424,14 @@
         const matchesStatus = statusVal === 'ALL' || localStatus === statusVal;
         
         const custName = q.customer ? q.customer.customer_name : '-';
-        const projName = q.project_name || '';
+        const projName = q.project_name || q.title || '';
+        const jobNo = q.job_no || '';
+        const poNo = q.po_no || '';
         const matchesSearch = q.quotation_no.toLowerCase().includes(searchVal) ||
                               custName.toLowerCase().includes(searchVal) ||
-                              projName.toLowerCase().includes(searchVal);
+                              projName.toLowerCase().includes(searchVal) ||
+                              jobNo.toLowerCase().includes(searchVal) ||
+                              poNo.toLowerCase().includes(searchVal);
 
         return matchesStatus && matchesSearch;
       });
@@ -366,12 +464,16 @@
         return;
       }
 
+      const isAdmin = SupabaseDB.isAdmin();
+
       filtered.forEach(q => {
         const custName = q.customer ? q.customer.customer_name : '-';
         const val = q.grand_total || (parseFloat(q.total_value || 0) * 1.07);
         const soNo = q.quotation_no.replace('QT-', 'SO-'); // derive SO number from QT
 
         const currentStatus = soFulfillmentStatus[q.id] || (q.status === 'Invoiced' ? 'Invoiced' : 'Pending');
+        const isInvoiced = currentStatus === 'Invoiced';
+        const cannotModify = isInvoiced && !isAdmin;
         
         let badgeClass = 'badge-status badge-status-draft';
         if (currentStatus === 'Pending') badgeClass = 'badge-status badge-status-unpaid';
@@ -379,12 +481,73 @@
         else if (currentStatus === 'Delivered') badgeClass = 'badge-status badge-status-approved';
         else if (currentStatus === 'Invoiced') badgeClass = 'badge-status badge-status-ready';
 
+        let actionButtonsHtml = `
+          <button class="btn btn-xs btn-outline-info" onclick="viewPrintSO('${q.id}')" title="ดูเอกสารพิมพ์งาน (Print Templates)">
+            <i class="fa fa-print"></i> พิมพ์
+          </button>
+          <button class="btn btn-xs btn-outline-success" onclick="duplicateSalesOrder('${q.id}')" title="ทำสำเนาใบสั่งขายใหม่ (Duplicate)">
+            <i class="fa fa-copy"></i> สำเนา
+          </button>
+        `;
+
+        if (cannotModify) {
+          actionButtonsHtml += `
+            <button class="btn btn-xs btn-outline-secondary opacity-50" onclick="showAdminRequiredAlert('ปรับสถานะ')" title="ล็อกเฉพาะ Admin">
+              <i class="fa fa-sync"></i> ปรับสถานะ
+            </button>
+            <button class="btn btn-xs btn-outline-secondary opacity-50" onclick="showAdminRequiredAlert('แก้ไข')" title="ล็อกเฉพาะ Admin">
+              <i class="fa fa-edit"></i> แก้ไข
+            </button>
+          `;
+        } else {
+          actionButtonsHtml += `
+            <button class="btn btn-xs btn-outline-primary" onclick="changeSOStatus('${q.id}', '${currentStatus}')" title="ปรับเปลี่ยนสถานะโครงการ">
+              <i class="fa fa-sync"></i> ปรับสถานะ
+            </button>
+            <button class="btn btn-xs btn-outline-warning text-dark" onclick="openEditSOModal('${q.id}')" title="แก้ไขรายการและ Job/PO Reference">
+              <i class="fa fa-edit"></i> แก้ไข
+            </button>
+          `;
+        }
+
+        if (!isInvoiced) {
+          actionButtonsHtml += `
+            <button class="btn btn-xs btn-success" onclick="billSOToInvoice('${q.id}')" title="ออกใบตรวจรับงานและออก Invoice">
+              <i class="fa fa-file-invoice-dollar"></i> บันทึกใบหนี้
+            </button>
+          `;
+        } else {
+          actionButtonsHtml += `
+            <button class="btn btn-xs btn-outline-secondary disabled" disabled title="ออกเอกสารบัญชีเรียบร้อย">
+              <i class="fa fa-check"></i> ออกบิลแล้ว
+            </button>
+          `;
+        }
+
+        if (cannotModify) {
+          actionButtonsHtml += `
+            <button class="btn btn-xs btn-outline-secondary opacity-50" onclick="showAdminRequiredAlert('ลบ')" title="ล็อกเฉพาะ Admin">
+              <i class="fa fa-lock"></i>
+            </button>
+          `;
+        } else {
+          actionButtonsHtml += `
+            <button class="btn btn-xs btn-outline-danger" onclick="deleteSalesOrder('${q.id}')" title="ลบใบสั่งขายจ้างงาน">
+              <i class="fa fa-trash"></i>
+            </button>
+          `;
+        }
+
         tbody.insertAdjacentHTML('beforeend', `
           <tr>
             <td><strong class="font-monospace text-primary">${soNo}</strong></td>
             <td><span class="font-monospace text-muted">${q.quotation_no}</span></td>
             <td>
-              <div class="fw-bold text-dark">${q.project_name || '-'}</div>
+              <div class="fw-bold text-dark">${q.project_name || q.title || '-'}</div>
+              <div class="text-xs text-muted py-0.5">
+                <span class="me-2"><i class="fa fa-briefcase"></i> Job: <strong>${q.job_no || '-'}</strong></span>
+                <span><i class="fa fa-file-contract"></i> PO: <strong>${q.po_no || '-'}</strong></span>
+              </div>
               <small class="text-muted"><i class="fa fa-user-tie"></i> แฮนด์เลอร์: ${q.sales_person || '-'}</small>
             </td>
             <td>${custName}</td>
@@ -394,21 +557,7 @@
             </td>
             <td class="text-center">
               <div class="d-flex gap-1 justify-content-center">
-                <button class="btn btn-sm btn-outline-info" onclick="viewPrintSO('${q.id}')">
-                  <i class="fa fa-eye"></i> ใบนำส่ง
-                </button>
-                <button class="btn btn-sm btn-outline-primary" onclick="changeSOStatus('${q.id}', '${currentStatus}')">
-                  <i class="fa fa-sync"></i> ปรับสถานะ
-                </button>
-                ${currentStatus !== 'Invoiced' ? `
-                  <button class="btn btn-sm btn-success" onclick="billSOToInvoice('${q.id}')" title="ออกใบตรวจรับงานจ้าง">
-                    <i class="fa fa-file-invoice-dollar"></i> บันทึกใบหนี้
-                  </button>
-                ` : `
-                  <button class="btn btn-sm btn-outline-secondary disabled" disabled>
-                    <i class="fa fa-check"></i> ดำเนินคลังแล้ว
-                  </button>
-                `}
+                ${actionButtonsHtml}
               </div>
             </td>
           </tr>
@@ -418,6 +567,37 @@
 
     // Modal view printer
     function viewPrintSO(id) {
+      activePrintSOId = id;
+      setPrintTemplate('delivery'); // Default is DO (No prices shown)
+      const modal = new bootstrap.Modal(document.getElementById('soPrintModal'));
+      modal.show();
+    }
+
+    function setPrintTemplate(type) {
+      activePrintTemplate = type;
+      
+      // Update UI buttons active state
+      const btnDelivery = document.getElementById('btn-print-delivery');
+      const btnSo = document.getElementById('btn-print-so');
+      const btnCost = document.getElementById('btn-print-cost');
+
+      // Reset
+      btnDelivery.className = "btn btn-sm btn-outline-secondary";
+      btnSo.className = "btn btn-sm btn-outline-secondary";
+      btnCost.className = "btn btn-sm btn-outline-secondary";
+
+      if (type === 'delivery') {
+        btnDelivery.className = "btn btn-sm btn-primary";
+      } else if (type === 'sales_order') {
+        btnSo.className = "btn btn-sm btn-primary";
+      } else if (type === 'cost_summary') {
+        btnCost.className = "btn btn-sm btn-primary";
+      }
+
+      renderSOPrintContent(activePrintSOId, type);
+    }
+
+    function renderSOPrintContent(id, type) {
       const q = quotationsCached.find(item => item.id === id);
       if (!q) return;
 
@@ -428,43 +608,126 @@
       document.getElementById('print-so-address').innerText = q.customer ? (q.customer.address || '-') : '-';
       document.getElementById('print-so-ref-qt').innerText = q.quotation_no;
       document.getElementById('print-so-sales').innerText = q.sales_person || '-';
+      document.getElementById('print-so-job-no').innerText = q.job_no || 'ไม่มี (None)';
+      document.getElementById('print-so-po-no').innerText = q.po_no || 'ไม่มี (None)';
 
-      // Items render
-      const itemsBody = document.getElementById('print-so-items-body');
-      itemsBody.innerHTML = '';
-      
+      // Title config
+      const titleEl = document.getElementById('print-so-title');
+      if (type === 'delivery') {
+        titleEl.innerText = "SALES ORDER / DELIVERY ORDER (ใบสั่งงานและใบนำส่งสินค้า)";
+      } else if (type === 'sales_order') {
+        titleEl.innerText = "SALES ORDER (ใบสั่งขาย / ใบสำคัญรับงานจ้าง)";
+      } else if (type === 'cost_summary') {
+        titleEl.innerText = "COST SUMMARY (ใบสรุปค่าใช้จ่ายและประมาณการโครงการ)";
+      }
+
+      // Draw table container depending on pricing toggle
+      const tableContainer = document.getElementById('print-so-table-container');
+      const totalsContainer = document.getElementById('print-so-totals-container');
       const items = q.items || [];
-      items.forEach(it => {
-        const qty = parseFloat(it.qty || 1);
-        const price = parseFloat(it.unit_rate || 0);
-        const duration = parseInt(it.duration || 1, 10);
-        const total = parseFloat(it.total_price || (qty * price * duration));
 
-        let descText = `<strong>${it.description}</strong>`;
-        if (duration > 1) {
-          descText += ` <span class="text-muted text-xs">(${duration} Days Rental)</span>`;
+      if (type === 'delivery') {
+        // Delivery template: No price information
+        let tableHtml = `
+          <table class="table table-bordered border-dark table-striped align-middle small my-3" style="table-layout: fixed; width: 100%;">
+            <thead class="table-dark">
+              <tr>
+                <th style="width: 50px;" class="text-center">No</th>
+                <th>รายละเอียดงาน / รายการบริการเครื่องมือ (Description)</th>
+                <th style="width: 100px;" class="text-center">จำนวน (Qty)</th>
+                <th style="width: 100px;" class="text-center">ระยะเวลา (วัน)</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        items.forEach((it, idx) => {
+          tableHtml += `
+            <tr>
+              <td class="text-center font-monospace">${idx + 1}</td>
+              <td style="word-break: break-word; white-space: pre-wrap;"><strong>${it.description}</strong><br><span class="text-xs text-muted">Unit: ${it.unit || 'Set'}</span></td>
+              <td class="text-center font-monospace fw-bold">${it.qty || 1}</td>
+              <td class="text-center font-monospace">${it.duration || 1}</td>
+            </tr>
+          `;
+        });
+
+        if (items.length === 0) {
+          tableHtml += `<tr><td colspan="4" class="text-center text-muted">ไม่มีรายการจ้างงาน</td></tr>`;
         }
 
-        itemsBody.insertAdjacentHTML('beforeend', `
-          <tr>
-            <td style="word-break: break-word; white-space: pre-wrap;">${descText}</td>
-            <td class="text-center font-monospace">${qty}</td>
-            <td class="text-end font-monospace">${price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-            <td class="text-end font-monospace">${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-          </tr>
-        `);
-      });
+        tableHtml += `</tbody></table>`;
+        tableContainer.innerHTML = tableHtml;
 
-      const subTotal = q.total_value || 0;
-      const vat = subTotal * 0.07;
-      const grandTotal = q.grand_total || (subTotal + vat);
+        // No pricing totals shown
+        totalsContainer.innerHTML = `
+          <div class="border p-2.5 rounded bg-light text-center small text-secondary">
+            <i class="fa fa-info-circle text-primary me-1"></i> เอกสารใบสั่งงาน/ใบส่งของนี้ ไม่แสดงตัวเลขราคาทางการเงิน
+          </div>
+        `;
 
-      document.getElementById('print-so-sub').innerText = '฿' + subTotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
-      document.getElementById('print-so-vat').innerText = '฿' + vat.toLocaleString(undefined, { minimumFractionDigits: 2 });
-      document.getElementById('print-so-grand').innerText = '฿' + grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
+      } else {
+        // Show prices (Sales Order or Cost Summary templates)
+        let tableHtml = `
+          <table class="table table-bordered border-dark table-striped align-middle small my-3" style="table-layout: fixed; width: 100%;">
+            <thead class="table-dark">
+              <tr>
+                <th style="width: 50px;" class="text-center">No</th>
+                <th>รายละเอียดงาน / รายการบริการเครื่องมือ (Description)</th>
+                <th style="width: 80px;" class="text-center">จำนวน (Qty)</th>
+                <th style="width: 80px;" class="text-center">วัน (Days)</th>
+                <th style="width: 110px;" class="text-end">ราคาต่อวัน/ชุด (Rate)</th>
+                <th style="width: 120px;" class="text-end">ราคารวม (฿) (Total)</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
 
-      const modal = new bootstrap.Modal(document.getElementById('soPrintModal'));
-      modal.show();
+        items.forEach((it, idx) => {
+          const qty = parseFloat(it.qty || 1);
+          const rate = parseFloat(it.unit_rate || 0);
+          const dur = parseFloat(it.duration || 1);
+          const total = parseFloat(it.total_price || (qty * rate * dur));
+
+          tableHtml += `
+            <tr>
+              <td class="text-center font-monospace">${idx + 1}</td>
+              <td style="word-break: break-word; white-space: pre-wrap;"><strong>${it.description}</strong><br><span class="text-xs text-muted">Unit: ${it.unit || 'Set'}</span></td>
+              <td class="text-center font-monospace fw-bold">${qty}</td>
+              <td class="text-center font-monospace">${dur}</td>
+              <td class="text-end font-monospace">${rate.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+              <td class="text-end font-monospace fw-bold">${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+            </tr>
+          `;
+        });
+
+        if (items.length === 0) {
+          tableHtml += `<tr><td colspan="6" class="text-center text-muted">ไม่มีรายการจ้างงาน</td></tr>`;
+        }
+
+        tableHtml += `</tbody></table>`;
+        tableContainer.innerHTML = tableHtml;
+
+        // Calculate and render pricing totals
+        const subTotal = q.total_value || 0;
+        const vat = subTotal * 0.07;
+        const grandTotal = q.grand_total || (subTotal + vat);
+
+        totalsContainer.innerHTML = `
+          <div class="d-flex justify-content-between font-monospace small mb-1">
+            <span>มูลค่าก่อนภาษี (Subtotal):</span>
+            <span>฿${subTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div class="d-flex justify-content-between font-monospace small mb-1">
+            <span>ภาษีมูลค่าเพิ่ม VAT 7%:</span>
+            <span>฿${vat.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div class="d-flex justify-content-between font-monospace fw-bold h6 border-top pt-2">
+            <span>ยอดสุทธิรวมทั้งสิ้น:</span>
+            <span class="text-primary">฿${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+          </div>
+        `;
+      }
     }
 
     // Changing state locally
@@ -475,13 +738,14 @@
         inputOptions: {
           'Pending': 'Pending (รอส่งของ/เริ่มงาน)',
           'In Progress': 'In Progress (กำลังดำเนินการโครงการ)',
-          'Delivered': 'Delivered (ส่งมอบเสร็จสิ้น พร้อมส่งหนี้)',
-          'Invoiced': 'Invoiced (ออกใบสำคัญ/แจ้งหนี้เสร็จ)'
+          'Delivered': 'Delivered (ส่งมอบเสร็จสิ้น พร้อมส่งหนี้)'
+          // 'Invoiced' is removed as requested by Requirement 6
         },
         inputValue: current,
         showCancelButton: true,
         confirmButtonText: 'บันทึก',
-        cancelButtonText: 'ยกเลิก'
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#0d6efd'
       }).then((res) => {
         if (res.isConfirmed && res.value) {
           soFulfillmentStatus[id] = res.value;
@@ -493,6 +757,140 @@
       });
     }
 
+    // Duplicate Sales Order (Requirement 5)
+    async function duplicateSalesOrder(id) {
+      const q = quotationsCached.find(item => item.id === id);
+      if (!q) return;
+
+      const result = await Swal.fire({
+        title: 'ยืนยันทำสำเนาใบสั่งขาย?',
+        text: `ต้องการสร้างสำเนาใบสั่งขายใหม่โดยคัดลอกข้อมูลจากต้นฉบับเลขที่ ${q.quotation_no.replace('QT-', 'SO-')} หรือไม่?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ใช่, คัดลอกสร้างใหม่',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#198754'
+      });
+
+      if (result.isConfirmed) {
+        toggleGlobalLoader(true);
+        try {
+          // Create new quotation payload (as a SO since status is Approved)
+          const payload = {
+            title: q.project_name || q.title || 'Sales Order Copy',
+            project_name: q.project_name || q.title || '',
+            customer_id: q.customer_id,
+            quotation_date: new Date().toISOString().split('T')[0],
+            validity_days: q.validity_days || 30,
+            payment_term: q.payment_term || '30 Days',
+            sales_person: q.sales_person || 'System Copier',
+            status: 'Approved', // Keeps it active as a Sales Order
+            items: q.items ? q.items.map(it => ({ ...it })) : [],
+            total_value: q.total_value,
+            tax_rate: q.tax_rate || 7,
+            grand_total: q.grand_total,
+            terms_conditions: q.terms_conditions || '',
+            remarks: q.remarks || 'คัดลอกสร้างจากใบสั่งขาย ' + q.quotation_no.replace('QT-', 'SO-'),
+            job_no: q.job_no || '',
+            po_no: q.po_no || ''
+          };
+
+          const newQuote = await SupabaseDB.addQuotation(payload);
+          
+          // Default status to Pending in fulfillment cache
+          soFulfillmentStatus[newQuote.id] = 'Pending';
+          localStorage.setItem('crm_so_fulfillment', JSON.stringify(soFulfillmentStatus));
+
+          await Swal.fire({
+            title: 'ทำสำเนาสำเร็จ!',
+            text: `สร้างใบสั่งขายใบใหม่รหัส: ${newQuote.quotation_no.replace('QT-', 'SO-')} เรียบร้อยแล้ว`,
+            icon: 'success'
+          });
+
+          await loadSalesOrders();
+        } catch (err) {
+          console.error(err);
+          showToastAlert('การทำสำเนาล้มเหลว', 'danger');
+        } finally {
+          toggleGlobalLoader(false);
+        }
+      }
+    }
+
+    // Delete Sales Order (Requirement 7 restriction handled during render)
+    async function deleteSalesOrder(id) {
+      const q = quotationsCached.find(item => item.id === id);
+      if (!q) return;
+
+      const result = await Swal.fire({
+        title: 'ยืนยันลบใบสั่งขายนี้?',
+        text: `ต้องการยกเลิกและลบประวัติเอกสารใบสั่งจ้างงาน ${q.quotation_no.replace('QT-', 'SO-')} ออกจากฐานข้อมูลถาวรหรือไม่?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'ใช่, ลบออก',
+        cancelButtonText: 'ยกเลิก'
+      });
+
+      if (result.isConfirmed) {
+        toggleGlobalLoader(true);
+        try {
+          await SupabaseDB.deleteQuotation(id);
+          showToastAlert('ลบประวัติใบสั่งขายเรียบร้อยแล้ว', 'success');
+          await loadSalesOrders();
+        } catch (err) {
+          console.error(err);
+          showToastAlert('การลบประวัติล้มเหลว', 'danger');
+        } finally {
+          toggleGlobalLoader(false);
+        }
+      }
+    }
+
+    // Collect item rows
+      const items = [];
+      document.querySelectorAll('.edit-item-row').forEach((row, idx) => {
+        items.push({
+          item_no: idx + 1,
+          description: row.querySelector('.edit-item-desc').value,
+          qty: parseFloat(row.querySelector('.edit-item-qty').value) || 1,
+          unit: row.querySelector('.edit-item-unit').value || 'Set',
+          duration: parseFloat(row.querySelector('.edit-item-dur').value) || 1,
+          unit_rate: parseFloat(row.querySelector('.edit-item-rate').value) || 0,
+          total_price: parseFloat(row.querySelector('.edit-item-total').value) || 0
+        });
+      });
+
+      const total_value = items.reduce((sum, item) => sum + item.total_price, 0);
+      const grand_total = total_value * 1.07;
+
+      const payload = {
+        project_name: projectName,
+        title: projectName, // keep title synced with project name for general display
+        job_no: jobNo,
+        po_no: poNo,
+        items: items,
+        total_value: total_value,
+        grand_total: grand_total
+      };
+
+      try {
+        const updated = await SupabaseDB.updateQuotation(id, payload);
+        showToastAlert(`บันทึกปรับปรุงข้อมูลใบสั่งขายสำเร็จ: ${updated.quotation_no.replace('QT-', 'SO-')}`, 'success');
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('soEditModal'));
+        modal.hide();
+
+        await loadSalesOrders();
+      } catch (err) {
+        console.error(err);
+        showToastAlert('บันทึกปรับปรุงล้มเหลว', 'danger');
+      } finally {
+        toggleGlobalLoader(false);
+      }
+    }
+
     // Direct invoice billing
     async function billSOToInvoice(id) {
       const q = quotationsCached.find(item => item.id === id);
@@ -500,7 +898,7 @@
 
       Swal.fire({
         title: 'ต้องการคัดคุมข้อมูลเพื่อเปิดใบแจ้งหนี้?',
-        text: `ระบบจะทำการออกประวัติ Invoice สำหรับโครงการ: ${q.project_name || ''} ทันที!`,
+        text: `ระบบจะทำการออกประวัติ Invoice สำหรับโครงการ: ${q.project_name || q.title || ''} ทันที!`,
         icon: 'info',
         showCancelButton: true,
         confirmButtonColor: '#198754',
@@ -531,17 +929,17 @@
               invoice_no: invoiceNo,
               quotation_no: q.quotation_no,
               customer_id: q.customer_id,
-              project_name: q.project_name,
+              project_name: q.project_name || q.title,
               invoice_date: new Date().toISOString().split('T')[0],
               due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days due
-              po_reference: 'No PO Link',
+              po_reference: q.po_no || 'No PO Link',
               sales_person: q.sales_person || 'System Broker',
               items: q.items,
               total_value: q.total_value,
               tax_rate: 7,
               grand_total: q.grand_total || (parseFloat(q.total_value || 0) * 1.07),
               status: 'Unpaid',
-              remarks: 'คีย์ด่วนผ่านระบบรับงานตรง Sales Order Directive'
+              remarks: `คีย์ด่วนผ่านระบบรับงานตรง Sales Order Directive (Job: ${q.job_no || '-'})`
             };
 
             await SupabaseDB.addInvoice(payload);
