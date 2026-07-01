@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sales Master CRM - ระบบการค้นหาสากล (Global Search Center)</title>
+
+  <!-- Google Font: Source Sans Pro & Kanit (Thailand UI support) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link class="bts-link" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- AdminLTE 4 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/css/adminlte.min.css">
+  
+  <!-- Custom Application Override CSS -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+
+  <div class="app-wrapper wrapper">
+    <!-- Navbar & Sidebar Injected via app.js -->
+
+    <!-- Main Content Stage Area -->
+    <main class="app-main p-3" style="min-height: 100vh; margin-left: 250px;">
+      <!-- Content Header -->
+      <div class="container-fluid mb-3 pt-2">
+        <div class="row align-items-center">
+          <div class="col-sm-8 col-12">
+            <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase">
+              <i class="fas fa-search text-info"></i> ศูนย์ค้นหาข้อมูลรวมสากล (Global Search Center)
+            </h1>
+            <p class="text-muted small m-0">พิมพ์คำค้นหากลางเพื่อดึงรายชื่อลูกค้า โครงการ ดีลงาน หรือสลิปใบเสร็จ/ใบแจ้งหนี้แบบข้ามฟังก์ชันระบบ</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Stages Content Area -->
+      <div class="container-fluid">
+        <!-- Giant Search Input Box -->
+        <div class="card border-0 shadow-lg mb-4 bg-primary text-white overflow-hidden p-4 rounded-4" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+          <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center py-4">
+              <h3 class="fw-bold text-white mb-2"><i class="fas fa-cubes me-2"></i> ค้นหาทุกข้อมูลในที่เดียว</h3>
+              <p class="text-white-50 mb-4 small">ป้อนชื่อลูกค้า, หมายเลขใบตั้งหนี้, โครงการเช่าปั๊ม, อุตสาหกรรม หรือ รหัสเอกสาร เพื่อค้นหาข้อมูลเชิงลึกข้ามโมดูลทันที</p>
+              
+              <div class="input-group input-group-lg shadow-sm">
+                <span class="input-group-text bg-white border-0 text-muted"><i class="fas fa-search fs-4"></i></span>
+                <input type="text" class="form-control border-0 ps-1" id="global-search-box" placeholder="พิมพ์ชื่อบริษัท, หรือเลขที่ QT/INV/SO หรือดีลขายที่ต้องการ..." autofocus>
+                <button class="btn btn-warning fw-bold px-4" id="clear-search-btn"><i class="fas fa-refresh"></i> รีเซ็ต</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Tab Panel Headers -->
+        <ul class="nav nav-pills nav-fill mb-3 bg-white p-1 rounded shadow-sm border" id="searchTabs" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link active fw-bold text-uppercase py-2" id="scust-tab" data-bs-toggle="tab" data-bs-target="#scust-pane" type="button" role="tab">
+               <i class="fas fa-building me-1 text-primary"></i> ข้อมูลลูกค้า (<span id="cnt-scust">0</span>)
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link fw-bold text-uppercase py-2" id="sopp-tab" data-bs-toggle="tab" data-bs-target="#sopp-pane" type="button" role="tab">
+               <i class="fas fa-chart-line me-1 text-info"></i> โอกาสขาย/ดีล (<span id="cnt-sopp">0</span>)
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link fw-bold text-uppercase py-2" id="squot-tab" data-bs-toggle="tab" data-bs-target="#squot-pane" type="button" role="tab">
+               <i class="fas fa-file-contract me-1 text-warning"></i> ใบเสนอราคา (<span id="cnt-squot">0</span>)
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link fw-bold text-uppercase py-2" id="sinv-tab" data-bs-toggle="tab" data-bs-target="#sinv-pane" type="button" role="tab">
+               <i class="fas fa-file-invoice-dollar me-1 text-success"></i> ใบหนี้ & ใบรับ (<span id="cnt-sinv">0</span>)
+            </button>
+          </li>
+        </ul>
+
+        <!-- Search Tab Content Panes -->
+        <div class="tab-content bg-white p-3 rounded shadow-sm border" id="searchTabsContent">
+          <!-- Customers Pane -->
+          <div class="tab-pane fade show active" id="scust-pane" role="tabpanel">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr class="small text-uppercase">
+                    <th>รหัสลูกค้า</th>
+                    <th>ชื่อบริษัท / นิติบุคคล</th>
+                    <th>ความนิยมอุตสาหกรรม</th>
+                    <th>ช่องทางติดต่อ</th>
+                    <th>เครดิต (วัน)</th>
+                    <th>สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody id="s-cust-results">
+                  <tr><td colspan="6" class="text-center py-4 text-muted">พิมพ์ข้อความเพื่อค้นหาประวัติข้อมูลลูกค้า</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Opportunities Pane -->
+          <div class="tab-pane fade" id="sopp-pane" role="tabpanel">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr class="small text-uppercase">
+                    <th>รหัสโอกาส</th>
+                    <th>ชื่อโครงการ</th>
+                    <th>ประเภทบริการ</th>
+                    <th>มูลค่าคาดการณ์ (฿)</th>
+                    <th>ความน่าจะเป็น</th>
+                    <th>สถานะขาย</th>
+                  </tr>
+                </thead>
+                <tbody id="s-opp-results">
+                  <tr><td colspan="6" class="text-center py-4 text-muted">พิมพ์ข้อความเพื่อค้นหาประวัติข้อมูลโอกาสขายและดีล</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Quotations Pane -->
+          <div class="tab-pane fade" id="squot-pane" role="tabpanel">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr class="small text-uppercase">
+                    <th>เลขที่เอกสาร</th>
+                    <th>ชื่องานโครงการตามใบเสนอ</th>
+                    <th>วันที่ยื่น</th>
+                    <th>มูลค่ารวม (฿)</th>
+                    <th>เจ้าหน้าที่ขาย</th>
+                    <th>สถานะอนุมัติ</th>
+                  </tr>
+                </thead>
+                <tbody id="s-quote-results">
+                  <tr><td colspan="6" class="text-center py-4 text-muted">พิมพ์ข้อความเพื่อค้นหาประวัติใบเสนอราคา</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Invoices Pane -->
+          <div class="tab-pane fade" id="sinv-pane" role="tabpanel">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr class="small text-uppercase">
+                    <th>เลขที่เอกสาร</th>
+                    <th>โครงการ / การจ้างงาน</th>
+                    <th>วันออกบิล / ครบกำหนด</th>
+                    <th>ยอดภาษี VAT</th>
+                    <th>ยอดจัดเก็บสุทธิ (฿)</th>
+                    <th>สถานะรับชำระ</th>
+                  </tr>
+                </thead>
+                <tbody id="s-inv-results">
+                  <tr><td colspan="6" class="text-center py-4 text-muted">พิมพ์ข้อความเพื่อค้นหาเอกสารใบแจ้งหนี้หรือใบเสร็จรับเงิน</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Core Scripts JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/js/adminlte.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <script src="/supabase.js"></script>
+  <script src="/app.js"></script>
+
+  <script>
+    let customersData = [];
+    let opportunitiesData = [];
+    let quotationsData = [];
+    let invoicesData = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Lazy load all databases
+      toggleGlobalLoader(true);
+      try {
+        const [c, o, q, i] = await Promise.all([
+          SupabaseDB.getCustomers(),
+          SupabaseDB.getOpportunities(),
+          SupabaseDB.getQuotations(),
+          SupabaseDB.getInvoices()
+        ]);
+
+        customersData = c || [];
+        opportunitiesData = o || [];
+        quotationsData = q || [];
+        invoicesData = i || [];
+
+        // Bind Search Trigger and Cleaner Button
+        document.getElementById('global-search-box').addEventListener('input', runGlobalSearch);
+        document.getElementById('clear-search-btn').addEventListener('click', () => {
+          document.getElementById('global-search-box').value = '';
+          runGlobalSearch();
+        });
+
+      } catch (err) {
+        console.error("Global init cache failed", err);
+        showToastAlert('โหลดแคชค้นหาข้อมูลส่วนกลางล้มเหลว', 'danger');
+      } finally {
+        toggleGlobalLoader(false);
+      }
+    });
+
+    function runGlobalSearch() {
+      const qVal = document.getElementById('global-search-box').value.toLowerCase().trim();
+
+      if (!qVal) {
+        // Reset count values to 0
+        document.getElementById('cnt-scust').innerText = '0';
+        document.getElementById('cnt-sopp').innerText = '0';
+        document.getElementById('cnt-squot').innerText = '0';
+        document.getElementById('cnt-sinv').innerText = '0';
+
+        document.getElementById('s-cust-results').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">พิมพ์ข้อความเพื่อค้นหาประวัติข้อมูลลูกค้า</td></tr>';
+        document.getElementById('s-opp-results').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">พิมพ์ข้อความเพื่อค้นหาประวัติข้อมูลโอกาสขายและดีล</td></tr>';
+        document.getElementById('s-quote-results').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">พิมพ์ข้อความเพื่อค้นหาประวัติใบเสนอราคา</td></tr>';
+        document.getElementById('s-inv-results').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">พิมพ์ข้อความเพื่อค้นหาเอกสารใบแจ้งหนี้หรือใบเสร็จรับเงิน</td></tr>';
+        return;
+      }
+
+      // 1. Search Customers
+      const filteredCust = customersData.filter(c => 
+        (c.customer_name || '').toLowerCase().includes(qVal) || 
+        (c.customer_code || '').toLowerCase().includes(qVal) ||
+        (c.phone || '').toLowerCase().includes(qVal) ||
+        (c.industry_type || '').toLowerCase().includes(qVal)
+      );
+
+      // 2. Search Opportunities
+      const filteredOpp = opportunitiesData.filter(opp => {
+        const cName = opp.customer ? opp.customer.customer_name : '';
+        return (opp.project_name || '').toLowerCase().includes(qVal) ||
+               (opp.opportunity_no || '').toLowerCase().includes(qVal) ||
+               (opp.service_type || '').toLowerCase().includes(qVal) ||
+               (opp.sales_person_id || '').toLowerCase().includes(qVal) ||
+               cName.toLowerCase().includes(qVal);
+      });
+
+      // 3. Search Quotations
+      const filteredQuote = quotationsData.filter(quote => {
+        const cName = quote.customer ? quote.customer.customer_name : '';
+        return (quote.project_name || quote.title || '').toLowerCase().includes(qVal) ||
+               (quote.quotation_no || '').toLowerCase().includes(qVal) ||
+               (quote.sales_person || '').toLowerCase().includes(qVal) ||
+               cName.toLowerCase().includes(qVal);
+      });
+
+      // 4. Search Invoices/Receipts
+      const filteredInv = invoicesData.filter(inv => {
+        const cName = inv.customer ? inv.customer.customer_name : '';
+        return (inv.project_name || '').toLowerCase().includes(qVal) ||
+               (inv.invoice_no || '').toLowerCase().includes(qVal) ||
+               (inv.quotation_no || '').toLowerCase().includes(qVal) ||
+               cName.toLowerCase().includes(qVal);
+      });
+
+      // Update counters
+      document.getElementById('cnt-scust').innerText = filteredCust.length;
+      document.getElementById('cnt-sopp').innerText = filteredOpp.length;
+      document.getElementById('cnt-squot').innerText = filteredQuote.length;
+      document.getElementById('cnt-sinv').innerText = filteredInv.length;
+
+      // Render Customers results
+      const custBody = document.getElementById('s-cust-results');
+      if (filteredCust.length === 0) {
+        custBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">ไม่พบรายงานข้อมูลลูกค้าที่ตรงกับเงื่อนไขการค้นหา</td></tr>';
+      } else {
+        custBody.innerHTML = filteredCust.map(c => `
+          <tr>
+            <td><strong class="font-monospace text-primary">${c.customer_code}</strong></td>
+            <td><strong>${c.customer_name}</strong></td>
+            <td><span class="badge bg-light text-dark border">${c.industry_type || '-'}</span></td>
+            <td><div>${c.phone || '-'}</div><small class="text-muted">${c.email || '-'}</small></td>
+            <td>${c.payment_term || '-'} วัน</td>
+            <td><span class="badge ${c.status === 'Active' ? 'bg-success' : 'bg-secondary'}">${c.status || 'Active'}</span></td>
+          </tr>
+        `).join('');
+      }
+
+      // Render Opportunities results
+      const oppBody = document.getElementById('s-opp-results');
+      if (filteredOpp.length === 0) {
+        oppBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">ไม่พบข้อมูลโอกาสทางธุรกิจ/ดีล ที่ตรงกัน</td></tr>';
+      } else {
+        oppBody.innerHTML = filteredOpp.map(opp => `
+          <tr>
+            <td><span class="font-monospace small text-muted">${opp.opportunity_no}</span></td>
+            <td>
+              <div class="fw-bold text-dark">${opp.project_name}</div>
+              <small class="text-muted"><i class="fas fa-building"></i> ${opp.customer ? opp.customer.customer_name : '-'}</small>
+            </td>
+            <td><span class="badge bg-secondary">${opp.service_type || 'General'}</span></td>
+            <td class="font-monospace fw-bold">${parseFloat(opp.estimated_value || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+            <td class="small">
+              <div class="progress" style="height: 6px; width: 100px;">
+                <div class="progress-bar bg-success" style="width: ${opp.success_probability}%"></div>
+              </div>
+              <small class="text-success fw-bold font-monospace">${opp.success_probability}%</small>
+            </td>
+            <td><span class="badge bg-info">${opp.status || 'Lead'}</span></td>
+          </tr>
+        `).join('');
+      }
+
+      // Render Quotations results
+      const quoteBody = document.getElementById('s-quote-results');
+      if (filteredQuote.length === 0) {
+        quoteBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">ไม่พบข้อมูลใบเสนอราคา (Quotations) ที่ตรงกัน</td></tr>';
+      } else {
+        quoteBody.innerHTML = filteredQuote.map(q => `
+          <tr>
+            <td><strong class="font-monospace text-primary">${q.quotation_no}</strong></td>
+            <td>
+              <div class="fw-bold">${q.project_name || 'ชื่อโครงการจ้างงาน'}</div>
+              <small class="text-muted"><i class="fa fa-user-circle"></i> ${q.customer ? q.customer.customer_name : '-'}</small>
+            </td>
+            <td class="font-monospace small text-muted">${q.quotation_date || '-'}</td>
+            <td class="font-monospace fw-bold text-dark">${parseFloat(q.grand_total || q.total_value || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+            <td class="small">${q.sales_person || '-'}</td>
+            <td><span class="badge bg-secondary">${q.status || 'Draft'}</span></td>
+          </tr>
+        `).join('');
+      }
+
+      // Render Invoices results
+      const invBody = document.getElementById('s-inv-results');
+      if (filteredInv.length === 0) {
+        invBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">ไม่พบประวัติเอกสารบิลเรียกเก็บเงินหรือใบเสร็จรับเงินที่ตรงเงื่อนไข</td></tr>';
+      } else {
+        invBody.innerHTML = filteredInv.map(inv => {
+          const vat = parseFloat(inv.total_value || 0) * 0.07;
+          const totalVal = parseFloat(inv.grand_total || inv.total_value || 0);
+          
+          let statusBadge = '';
+          if (inv.status === 'Unpaid') statusBadge = '<span class="badge bg-warning text-dark"><i class="fa fa-clock"></i> Unpaid</span>';
+          else if (inv.status === 'Paid') statusBadge = '<span class="badge bg-success"><i class="fa fa-check-double"></i> Paid</span>';
+          else if (inv.status === 'Overdue') statusBadge = '<span class="badge bg-danger">Overdue</span>';
+          else statusBadge = `<span class="badge bg-secondary">${inv.status}</span>`;
+
+          return `
+            <tr>
+              <td><strong class="font-monospace text-dark">${inv.invoice_no}</strong><br><small class="text-muted font-monospace">${inv.quotation_no || 'ไม่เชื่อมโยง'}</small></td>
+              <td>
+                <div class="fw-bold text-dark-emphasis">${inv.project_name || 'สัญญาทั่วไป'}</div>
+                <small class="text-muted"><i class="fa fa-user-circle"></i> ${inv.customer ? inv.customer.customer_name : '-'}</small>
+              </td>
+              <td class="small text-muted font-monospace">${inv.invoice_date || '-'} / <span class="text-danger">${inv.due_date || '-'}</span></td>
+              <td class="font-monospace small text-muted">${vat.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+              <td class="font-monospace fw-bold text-primary">${totalVal.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+              <td>${statusBadge}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+  </script>
+</body>
+</html>

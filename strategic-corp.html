@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sales Master CRM - Strategic Planning & SWOT</title>
+
+  <!-- Google Font: Source Sans Pro & Kanit (Thailand UI support) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- AdminLTE 4 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/css/adminlte.min.css">
+  
+  <!-- Custom Application Override CSS -->
+  <link rel="stylesheet" href="/style.css">
+  
+  <style>
+    .swot-box {
+      border-radius: 8px;
+      padding: 20px;
+      height: 100%;
+      min-height: 180px;
+      transition: all 0.2s ease-in-out;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .swot-box:hover {
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+    .swot-s { background-color: #e8f5e9; border-top: 5px solid #2e7d32; }
+    .swot-w { background-color: #ffebee; border-top: 5px solid #c62828; }
+    .swot-o { background-color: #e3f2fd; border-top: 5px solid #1565c0; }
+    .swot-t { background-color: #fff8e1; border-top: 5px solid #f9a825; }
+  </style>
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+
+  <div class="app-wrapper wrapper">
+    <!-- Navbar & Sidebar Injected via app.js -->
+
+    <!-- Main Content Stage Area -->
+    <main class="app-main p-3" style="min-height: 100vh; margin-left: 250px;">
+      <!-- Content Header -->
+      <div class="container-fluid mb-3 pt-2">
+        <div class="row align-items-center">
+          <div class="col-sm-6">
+            <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase">
+              <i class="fas fa-chess-queen text-purple" style="color: #6f42c1;"></i> ทิศทางวิสัยทัศน์ & แคมเปญ (Corporate Strategy)
+            </h1>
+            <p class="text-muted small m-0">วางแผนวิเคราะห์ SWOT Matrix บันทึกและวิจัยส่วนแบ่งการตลาด พร้อมควบคุมแคมเปญกระตุ้นยอดขายไตรมาสปีงบประมาณ</p>
+          </div>
+          <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
+            <button class="btn btn-indigo btn-sm" style="background-color: #6f42c1; color: white;" onclick="resetSWOTToDefaults()">
+              <i class="fa fa-sync me-1"></i>คืนค่าแผนวิเคราะห์มาตรฐาน
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Stages Content Area -->
+      <div class="container-fluid">
+        <!-- SWOT Matrix Row -->
+        <h5 class="fw-bold text-dark mb-3"><i class="fa fa-th-large text-indigo"></i> แผนภาพผ่าแกว่งสารสนเทศ (SWOT Matrix Co-working Dashboard)</h5>
+        <div class="row g-3 mb-4">
+          <!-- Strengths -->
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="swot-box swot-s shadow-xs">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h6 class="fw-bold text-success mb-0"><i class="fa fa-dumbbell me-1"></i> STRENGTHS (จุดแข็ง)</h6>
+                <button class="btn btn-xs btn-link text-success p-0" onclick="editSWOT('S')"><i class="fa fa-edit"></i></button>
+              </div>
+              <ul class="small ps-3 text-secondary" id="ul-swot-s">
+                <li>มีเครื่องปั๊มหวนแรงดัน HP Manifold เกรดเฉพาะทางมาตรฐาน ISO 4 หนึ่งเดียวในย่านบ่อวิน</li>
+                <li>ทีมช่างและวิศวกรฝึกทักษะตอบโต้หน้างานฉุกเฉินได้แบบตลอดยี่สิบสี่ชั่วโมง</li>
+              </ul>
+            </div>
+          </div>
+          <!-- Weaknesses -->
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="swot-box swot-w shadow-xs">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h6 class="fw-bold text-danger mb-0"><i class="fa fa-skull-crossbones me-1"></i> WEAKNESSES (จุดอ่อน)</h6>
+                <button class="btn btn-xs btn-link text-danger p-0" onclick="editSWOT('W')"><i class="fa fa-edit"></i></button>
+              </div>
+              <ul class="small ps-3 text-secondary" id="ul-swot-w">
+                <li>อัตราพึ่งพาและขนส่งรอบทดสอบเครื่องเจียระไนจากต่างประเทศใช้เวลายืนยันนาน</li>
+                <li>กระบอกคาลิเบรตแล็บยังขาดแคลนกำลังเสริมในช่วงมรสุมฤดูหนาว</li>
+              </ul>
+            </div>
+          </div>
+          <!-- Opportunities -->
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="swot-box swot-o shadow-xs">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h6 class="fw-bold text-primary mb-0"><i class="fa fa-lightbulb me-1"></i> OPPORTUNITIES (โอกาส)</h6>
+                <button class="btn btn-xs btn-link text-primary p-0" onclick="editSWOT('O')"><i class="fa fa-edit"></i></button>
+              </div>
+              <ul class="small ps-3 text-secondary" id="ul-swot-o">
+                <li>การขยายฐานวางท่อเชื่อมตรงนิคมอุตสาหกรรมชลบุรีเฟส 3 เพิ่มโอกาสเช่าอุปกรณ์ระบบส่ง</li>
+                <li>บริษัทคู่ค้าหลักยื่นความประสงค์ทำเหมารุ่นการสอบเทียบรายปีเพื่อลดหย่อนภาษีแวต</li>
+              </ul>
+            </div>
+          </div>
+          <!-- Threats -->
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="swot-box swot-t shadow-xs">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h6 class="fw-bold text-warning mb-0"><i class="fa fa-biohazard me-1"></i> THREATS (อุปสรรค)</h6>
+                <button class="btn btn-xs btn-link text-warning p-0" onclick="editSWOT('T')"><i class="fa fa-edit"></i></button>
+              </div>
+              <ul class="small ps-3 text-secondary" id="ul-swot-t">
+                <li>คู่แข่งจากฝั่งยุโรปเข้ามาทำศูนย์หล่อเลี้ยงปอร์ตน่านน้ำภาคตะวันออกด้วยราคาต่ำลง</li>
+                <li>ความผันผวนของมาตรการปรับราคาพลังงานก๊าซเหลวประจำไตรมาสส่งผลชะลองบบริการ</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <!-- Active Growth Campaigns Builder -->
+          <div class="col-12 col-lg-7">
+            <div class="card shadow-sm border-0 bg-white">
+              <div class="card-header bg-white border-bottom py-3">
+                <h5 class="m-0 fw-bold"><i class="fa fa-rocket text-indigo"></i> จัดการแคมเปญการตลาดยุคดิจิทัล (Corporate Growth Campaigns)</h5>
+              </div>
+              <div class="card-body p-4">
+                <form id="campaignForm" onsubmit="addCampaign(event)">
+                  <div class="row g-2 align-items-end mb-3">
+                    <div class="col-md-5">
+                      <label class="form-label small fw-bold">ชื่องานแคมเปญ</label>
+                      <input type="text" class="form-control form-control-sm" id="camp-name" placeholder="เช่น Q2 Nitrogen Rental Combo" required>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label small fw-bold">ช่องทางประชาสัมพันธ์ / Channel</label>
+                      <select class="form-select form-select-sm" id="camp-channel">
+                        <option value="LinkedIn Focus">LinkedIn Targeting Ads</option>
+                        <option value="Industrial Webinar">Industrial Tech Webinar</option>
+                        <option value="Direct Mail Out">Direct Postal Catalogue</option>
+                        <option value="Client Appreciation">Client VIP Workshop Seminar</option>
+                      </select>
+                    </div>
+                    <div class="col-md-3">
+                      <label class="form-label small fw-bold">งบแคมเปญ (฿)</label>
+                      <input type="number" class="form-control form-control-sm" id="camp-budget" value="25000">
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-indigo btn-sm w-100" style="background-color: #6f42c1; color: white;">
+                    <i class="fa fa-check-circle me-1"></i> อนุมัติยิงแคมเปญและสร้างระบบเฝ้าติดตาม
+                  </button>
+                </form>
+
+                <hr class="my-4">
+
+                <h6 class="fw-bold mb-3"><i class="fa fa-list-ul"></i> แฟ้มประวัติแคมเปญขับเคลื่อนพอร์ตกำลังดำเนินงาน (Active Campaigns Tracker)</h6>
+                <div class="table-responsive">
+                  <table class="table table-sm table-striped">
+                    <thead class="table-light">
+                      <tr>
+                        <th>แคมเปญ</th>
+                        <th>ช่องทางหลัก</th>
+                        <th class="text-end">งบอนุมัติ (฿)</th>
+                        <th class="text-center">ยอดได้ลีดตอบสนอง (Conversion)</th>
+                        <th class="text-center">สิทธิ์ดัชนีผลตอบแทน / ROI</th>
+                      </tr>
+                    </thead>
+                    <tbody id="campaign-tbody">
+                      <!-- Generated dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Market Share analysis dynamic box -->
+          <div class="col-12 col-lg-5">
+            <div class="card shadow-sm border-0 bg-white">
+              <div class="card-header bg-dark text-white">
+                <h6 class="m-0 fw-bold"><i class="fa fa-globe"></i> ส่วนแบ่งตลาดและการประเมินสากล (Global Market Share Analysis)</h6>
+              </div>
+              <div class="card-body">
+                <p class="text-muted small">สถิติประมาณการส่วนแบ่งบริการ Hydrostatic Testing & Manifold Rental ภายในนิคมบ่อวิน ระยอง และชลบุรี โดยสถาบันประเมินไอเคเอ็ม:</p>
+                
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between small fw-bold">
+                    <span>IKM Testing (Thailand)</span>
+                    <span class="text-success">54% (Market Leader)</span>
+                  </div>
+                  <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 54%" aria-valuenow="54" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between small fw-bold">
+                    <span>Eastern Seaboard Competitors</span>
+                    <span class="text-primary">28%</span>
+                  </div>
+                  <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: 28%" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between small fw-bold">
+                    <span>Imported Project Contractors</span>
+                    <span class="text-warning">18%</span>
+                  </div>
+                  <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: 18%" aria-valuenow="18" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+
+                <div class="border p-3 rounded mt-4" style="background-color: #f7f9fc;">
+                  <strong class="d-block mb-1 small text-dark"><i class="fa fa-bullseye text-indigo"></i> คำเสนอแนะกลยุทธ์ถัดไป (AI Strategic Recommendation)</strong>
+                  <p class="small text-secondary m-0" style="font-size:11.5px;">"เพื่อรักษาตำแหน่งผู้นำตลาดที่ร้อยละ 54 ควรขยายแคมเปญ <strong>LinkedIn VIP Combo</strong> เข้าเจาะพื้นที่โรงพ่นทรายเฟสระยองโดยตรง ควบคู่ไปกับการรักษาความภักดีผ่านการจัดสัมมนา ISO Calibration ปีละ 2 ครั้งเพื่อคัดลอกกลุ่มเป้าหมายปิ้งกันหลุดมือ"</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer text-center bg-white border-top py-3 text-muted small mt-auto" style="margin-left: 250px;">
+      <strong>Copyright &copy; 2026.</strong> สทส. บ่อวิน แผนกกลยุทธ์ ERP IKM
+    </footer>
+  </div>
+
+  <!-- MODAL: SWOT EDIT INDIVIDUAL -->
+  <div class="modal fade" id="swotModal" tabindex="-1" aria-labelledby="swotModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form onsubmit="saveSWOT(event)">
+          <div class="modal-header bg-indigo text-white" style="background-color: #6f42c1;">
+            <h5 class="modal-title font-bold" id="swotModalLabel">ปรับปรุงกลยุทธ์ / Edit SWOT Core</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="swot-type-flag">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">ระบุวรรคกลยุทธ์ทีละแถว (บรรทัดละหนึ่งหัวข้อ)</label>
+              <textarea class="form-control" id="swot-input-area" rows="6" required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="submit" class="btn btn-indigo btn-sm" style="background-color: #6f42c1; color: white;">บันทึกอัปเดตแกน SWOT</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/js/adminlte.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- DB & Core Frame -->
+  <script src="/supabase.js"></script>
+  <script src="/app.js"></script>
+
+  <!-- Script logic inline -->
+  <script>
+    const SWOT_STORAGE_KEY = 'crm_swot_matrix';
+    const TEAM_CAMPAIGN_KEY = 'crm_strategic_campaigns';
+
+    let currentSWOT = {
+      S: [
+        "มีเครื่องปั๊มหวนแรงดัน HP Manifold เกรดเฉพาะทางมาตรฐาน ISO 4 หนึ่งเดียวในย่านบ่อวิน",
+        "ทีมช่างและวิศวกรฝึกทักษะตอบโต้หน้างานฉุกเฉินได้แบบตลอดยี่สิบสี่ชั่วโมง"
+      ],
+      W: [
+        "อัตราพึ่งพาและขนส่งรอบทดสอบเครื่องเจียระไนจากต่างประเทศใช้เวลายืนยันนาน",
+        "กระบอกคาลิเบรตแล็บยังขาดแคลนกำลังเสริมในช่วงมรสุมฤดูหนาว"
+      ],
+      O: [
+        "การขยายฐานวางท่อเชื่อมตรงนิคมอุตสาหกรรมชลบุรีเฟส 3 เพิ่มโอกาสเช่าอุปกรณ์ระบบส่ง",
+        "บริษัทคู่ค้าหลักยื่นความประสงค์ทำเหมารุ่นการสอบเทียบรายปีเพื่อลดหย่อนภาษีแวต"
+      ],
+      T: [
+        "คู่แข่งจากฝั่งยุโรปเข้ามาทำศูนย์หล่อเลี้ยงปอร์ตน่านน้ำภาคตะวันออกด้วยราคาต่ำลง",
+        "ความผันผวนของมาตรการปรับราคาพลังงานก๊าซเหลวประจำไตรมาสส่งผลชะลองบบริการ"
+      ]
+    };
+
+    let activeCampaigns = [
+      { id: 'c-1', name: 'Q2 Nitrogen Pump Campaign', channel: 'LinkedIn Focus', budget: 35000, leads: 14, roi: '250%' },
+      { id: 'c-2', name: 'Annual ISO Certification Workshop', channel: 'Client VIP Workshop', budget: 50000, leads: 31, roi: '410%' }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSWOT();
+      loadCampaigns();
+    });
+
+    function loadSWOT() {
+      const stored = localStorage.getItem(SWOT_STORAGE_KEY);
+      if (stored) {
+        currentSWOT = JSON.parse(stored);
+      }
+      renderSWOTUI();
+    }
+
+    function renderSWOTUI() {
+      const types = ['S', 'W', 'O', 'T'];
+      types.forEach(t => {
+        const ul = document.getElementById(`ul-swot-${t.toLowerCase()}`);
+        ul.innerHTML = '';
+        currentSWOT[t].forEach(item => {
+          ul.insertAdjacentHTML('beforeend', `<li>${item}</li>`);
+        });
+      });
+    }
+
+    function editSWOT(type) {
+      document.getElementById('swot-type-flag').value = type;
+      
+      let title = '';
+      if (type === 'S') title = 'แก้ไขจุดแข็ง / Strengths';
+      else if (type === 'W') title = 'แก้ไขจุดอ่อน / Weaknesses';
+      else if (type === 'O') title = 'แก้ไขโอกาส / Opportunities';
+      else title = 'แก้ไขอุปสรรค / Threats';
+
+      document.getElementById('swotModalLabel').innerText = title;
+      document.getElementById('swot-input-area').value = currentSWOT[type].join('\n');
+
+      const modal = new bootstrap.Modal(document.getElementById('swotModal'));
+      modal.show();
+    }
+
+    function saveSWOT(event) {
+      event.preventDefault();
+      const type = document.getElementById('swot-type-flag').value;
+      const textVal = document.getElementById('swot-input-area').value;
+
+      currentSWOT[type] = textVal.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      localStorage.setItem(SWOT_STORAGE_KEY, JSON.stringify(currentSWOT));
+      
+      const modal = bootstrap.Modal.getInstance(document.getElementById('swotModal'));
+      modal.hide();
+
+      renderSWOTUI();
+      showToastAlert('อัปเดตกลยุทธ์หลักมิติวิกฤตความสำเร็จเรียบร้อย', 'success');
+    }
+
+    function resetSWOTToDefaults() {
+      localStorage.removeItem(SWOT_STORAGE_KEY);
+      window.location.reload();
+    }
+
+    // Campaigns Controller
+    function loadCampaigns() {
+      const stored = localStorage.getItem(TEAM_CAMPAIGN_KEY);
+      if (stored) {
+        activeCampaigns = JSON.parse(stored);
+      } else {
+        localStorage.setItem(TEAM_CAMPAIGN_KEY, JSON.stringify(activeCampaigns));
+      }
+      renderCampaignsTable();
+    }
+
+    function renderCampaignsTable() {
+      const tbody = document.getElementById('campaign-tbody');
+      tbody.innerHTML = '';
+
+      activeCampaigns.forEach(c => {
+        const row = `
+          <tr>
+            <td><strong>${c.name}</strong></td>
+            <td><span class="badge bg-light text-dark border">${c.channel}</span></td>
+            <td class="text-end font-monospace fw-semibold">${(c.budget || 0).toLocaleString()} ฿</td>
+            <td class="text-center font-monospace fw-bold text-success">${c.leads} ราย</td>
+            <td class="text-center font-monospace font-bold text-indigo" style="font-size:0.95rem;">${c.roi}</td>
+          </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    function addCampaign(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('camp-name').value;
+      const channel = document.getElementById('camp-channel').value;
+      const budget = parseFloat(document.getElementById('camp-budget').value) || 0;
+
+      // Simulate output leads
+      const estLeads = Math.floor(Math.random() * 15) + 5;
+      const rVal = Math.floor(150 + Math.random() * 300);
+      const estRoi = rVal + '%';
+
+      const payload = {
+        id: 'c-' + Date.now(),
+        name: name,
+        channel: channel,
+        budget: budget,
+        leads: estLeads,
+        roi: estRoi
+      };
+
+      activeCampaigns.push(payload);
+      localStorage.setItem(TEAM_CAMPAIGN_KEY, JSON.stringify(activeCampaigns));
+      renderCampaignsTable();
+
+      document.getElementById('campaignForm').reset();
+      showToastAlert('สร้างคำสั่งยิงแคมเปญเรียบร้อย และประเมินอัตราตอบสนองเบื้องต้นสำเร็จ', 'success');
+    }
+  </script>
+</body>
+</html>

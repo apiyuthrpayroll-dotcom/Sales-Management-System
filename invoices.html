@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sales Master CRM - ระบบใบแจ้งหนี้และใบกำกับภาษี (Invoices & Billing)</title>
+
+  <!-- Google Font: Source Sans Pro & Kanit (Thailand UI support) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- AdminLTE 4 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/css/adminlte.min.css">
+  
+  <!-- Custom Application Override CSS -->
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-area, #print-area * {
+        visibility: visible;
+      }
+      #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 20px;
+        background: #fff !important;
+        color: #000 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+    
+    .official-document {
+      font-family: 'Kanit', 'Source Sans 3', sans-serif;
+      border: 2px solid #333;
+      padding: 30px;
+      border-radius: 4px;
+      background-color: #fff;
+      color: #333;
+    }
+    
+    .official-header {
+      border-bottom: 2px solid #222;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+
+    .doc-logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #198754;
+    }
+  </style>
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+
+  <div class="app-wrapper wrapper">
+    <!-- Navbar & Sidebar Injected via app.js -->
+
+    <!-- Main Content Stage Area -->
+    <main class="app-main p-3" style="min-height: 100vh; margin-left: 250px;">
+      <!-- Content Header -->
+      <div class="container-fluid mb-3 pt-2">
+        <div class="row align-items-center">
+          <div class="col-sm-6">
+            <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase">
+              <i class="fas fa-file-invoice-dollar text-success"></i> ระบบใบแจ้งหนี้ / ใบกำกับภาษี (Invoices)
+            </h1>
+            <p class="text-muted small m-0">ออกใบสำคัญรับเงิน ติดตามเครดิตค้างจ่าย บันทึกการรับชำระ และแสดงผลรายงานใบแจ้งหนี้ตามข้อกำหนดทางกฎหมาย</p>
+          </div>
+          <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
+            <div class="btn-group shadow-sm">
+              <button class="btn btn-outline-secondary btn-sm" onclick="exportTableToExcel('invoice-table', 'Invoices_Billing_Report')">
+                <i class="fa fa-file-excel text-success me-1"></i>ส่งออก Excel
+              </button>
+              <button class="btn btn-outline-secondary btn-sm" onclick="exportTableToPDF('invoice-table', 'INVOICES BILLING REPORT')">
+                <i class="fa fa-file-pdf text-danger me-1"></i>ส่งออก PDF
+              </button>
+              <button class="btn btn-success btn-sm" onclick="openCreateInvoiceModal()">
+                <i class="fa fa-plus-circle me-1"></i>สร้างใบแจ้งหนี้ตั้งใหม่ด่วน
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="container-fluid">
+        <!-- Quick Status Filter Row -->
+        <div class="row g-2 mb-3">
+          <div class="col-12">
+            <div class="bg-white p-2 rounded shadow-sm border border-light-subtle d-flex flex-wrap gap-1.5 align-items-center justify-content-between">
+              <div class="d-flex flex-wrap gap-1 align-items-center" id="invoice-status-filters">
+                <span class="small fw-bold text-muted me-2 ms-1"><i class="fa fa-filter"></i> ตัวกรองประเภทยอดดัก:</span>
+                <button class="btn btn-sm btn-success active i-status-pill px-2.5 py-1" data-status="ALL">ทั้งหมด</button>
+                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Unpaid">Unpaid (ค้างจ่าย)</button>
+                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Paid">Paid (ชำระเสร็จสิ้น)</button>
+                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Overdue">Overdue (เกินกำหนด)</button>
+                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Cancelled">Cancelled (ยกเลิกหนี้)</button>
+              </div>
+              <span class="badge bg-success-subtle text-success border font-monospace small px-2 py-1">Rule: YY Suffix Active</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search and filters -->
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-body p-3">
+            <div class="row g-2">
+              <div class="col-12 col-md-4">
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted"><i class="fa fa-search"></i></span>
+                  <input type="text" class="form-control" id="inv-search-input" placeholder="ค้นหาประวัติใบกำกับ, เลขใบตั้งหนี้, ลายโปรเจกต์...">
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <select class="form-select" id="inv-filter-customer">
+                  <option value="">-- กรองลูกค้าทั้งหมด / All Customers --</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-5 d-flex align-items-center text-muted small px-3">
+                <i class="fa fa-info-circle text-success me-2"></i> 
+                <span>เลขที่ใบกำกับ/ใบแจ้งหนี้จะออกรหัสเป็น <strong>INV-XXXX-YY</strong> รันเกณฑ์ต่อปี ป้องกันลำดับสับสนทางบัญชีสากล</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoices List Card -->
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white border-bottom py-3">
+            <h5 class="m-0 fw-bold text-success"><i class="fas fa-receipt"></i> บัญชีคุมยอดเรียกเก็บเงิน (Invoice Master Control)</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="google-sheet-table table-hover align-middle mb-0" id="invoice-table">
+                <thead class="table-light text-uppercase small font-bold">
+                  <tr>
+                    <th>เลขที่เอกสาร</th>
+                    <th>ใบเสนอราคาอ้างอิง</th>
+                    <th>โครงการ / โครงสร้างงานเรียกเก็บ</th>
+                    <th>หน่วยงานลูกค้า</th>
+                    <th>วันที่ออก</th>
+                    <th>ครบชำระ</th>
+                    <th class="text-end">ภาษี VAT 7%</th>
+                    <th class="text-end">จำนวนเงินรวม (฿)</th>
+                    <th class="text-center">สถานะ</th>
+                    <th class="text-center" style="width: 250px;">การจัดการงานเงิน</th>
+                  </tr>
+                </thead>
+                <tbody id="invoice-table-body">
+                  <tr>
+                    <td colspan="10" class="text-center py-5">
+                      <div class="spinner-border text-success" role="status"></div>
+                      <p class="mt-2 text-muted">กำลังดึงรายการเรียกเก็บเงินประจำงวด...</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer text-center bg-white border-top py-3 text-muted small no-print mt-auto" style="margin-left: 250px;">
+      <div class="float-end d-none d-sm-inline ms-3">IKM Testing ERP Module</div>
+      <strong>Copyright &copy; 2026 <a href="https://ai.studio/build" class="text-decoration-none">AI Studio CRM</a>.</strong> สงวนลิขสิทธิ์
+    </footer>
+  </div>
+
+  <!-- MODAL: ADD / EDIT INVOICE (MANUAL CREATE) -->
+  <div class="modal fade" id="invoiceFormModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="invoiceFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="invoiceForm" onsubmit="saveInvoiceManual(event)">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title" id="invoiceFormModalLabel"><i class="fa fa-file-invoice"></i> บันทึกใบตั้งเรียกเก็บเงินฉบับด่วน</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <input type="hidden" id="inv-form-id">
+            
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">ระดับลูกค้านิติบุคคล (Customer) <span class="text-danger">*</span></label>
+                <select class="form-select" id="form-customer-id" required>
+                  <option value="">-- ดึงรายชื่อนิติบุคคล --</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">อ้างอิงใบเสนอราคา (ถ้ามี)</label>
+                <input type="text" class="form-control" id="form-quote-ref" placeholder="เช่น QT-0002-26">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">ชื่อโครงการบนใบแจ้งหนี้ / Project Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="form-project-name" placeholder="ระบุงานบริการ เช่น Provision of Rental Tools..." required>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">เลขที่ใบสั่งซื้อลูกค้าอ้างรับเงิน / PO Reference</label>
+                <input type="text" class="form-control" id="form-po-reference" placeholder="เช่น PO007441/2026">
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold">วันที่ออกเอกสาร (Issue Date) <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="form-date" required>
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold">วันครบกำหนดจัดจ่าย (Due Date) <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="form-due" required>
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold">พนักงานผู้ออกใบหนี้ (Handler)</label>
+                <input type="text" class="form-control" id="form-handler" value="ดลภัทร (Admin)">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">สถานะตั๋วชำระเงิน</label>
+                <select class="form-select" id="form-status">
+                  <option value="Unpaid">Unpaid (ค้างรับชำระ)</option>
+                  <option value="Paid">Paid (ชำระสมบูรณ์แล้ว)</option>
+                  <option value="Overdue">Overdue (เกินกำหนดเครดิต)</option>
+                  <option value="Cancelled">Cancelled (โมฆะกรรม/ยกเลิก)</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">หมายเหตุรับเงินพิเศษ (เช่น เลขรับเช็ค หรือหลักโอน)</label>
+                <input type="text" class="form-control" id="form-remarks" placeholder="พิมพ์ประวัติติดตามทวงเพื่อแสดงที่มุมใบเสร็จ">
+              </div>
+
+              <!-- Lines grid -->
+              <div class="col-12 mt-4">
+                <div class="border p-3 rounded bg-white">
+                  <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                    <h6 class="m-0 fw-bold"><i class="fa fa-list"></i> รายละเอียดเพื่อการตั้งหนี้ (Bill Line Items)</h6>
+                    <button type="button" class="btn btn-xs btn-outline-success" onclick="addNewItemRow()">
+                      <i class="fa fa-plus-circle me-1"></i>เพิ่มแถวเรียกเก็บบิล
+                    </button>
+                  </div>
+                  
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-sm align-middle" id="items-table" style="min-width: 900px;">
+                      <thead class="table-light text-center small fw-bold">
+                        <tr>
+                          <th style="width: 50px;">ITEM</th>
+                          <th>รายการบริการที่ทวงถามชำระ / DESCRIPTION OF SERVICES</th>
+                          <th style="width: 100px;">QTY</th>
+                          <th style="width: 100px;">UNIT</th>
+                          <th style="width: 120px;">DURATION DAYS</th>
+                          <th style="width: 150px;">UNIT RATE (฿)</th>
+                          <th style="width: 150px;">TOTAL (฿)</th>
+                          <th style="width: 50px;" class="text-center">#</th>
+                        </tr>
+                      </thead>
+                      <tbody id="items-table-body">
+                        <!-- Loaded via JS -->
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Calculations -->
+                  <div class="row mt-3 justify-content-end">
+                    <div class="col-12 col-md-5">
+                      <table class="table table-sm table-borderless text-end font-monospace">
+                        <tr>
+                          <td>มูลค่าบิลเรียกเก็บ (Subtotal):</td>
+                          <td style="width: 150px;"><span id="calc-subtotal">0.00</span> ฿</td>
+                        </tr>
+                        <tr>
+                          <td>ภาษีมูลค่าเพิ่ม (VAT 7%):</td>
+                          <td><span id="calc-tax">0.00</span> ฿</td>
+                        </tr>
+                        <tr class="fw-bold border-top" style="font-size: 1.1rem; color: #198754;">
+                          <td>ยอดเรียกสุทธิ (Grand Total):</td>
+                          <td><span id="calc-grandtotal">0.00</span> ฿</td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="submit" class="btn btn-success"><i class="fa fa-save me-1"></i> ยืนยันบันทึกใบแจ้งหนี้</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PRINT OUT / VIEW INVOICE & RECEIPT TEMPLATE (Image 1 Layout) -->
+  <div class="modal fade" id="printViewModal" tabindex="-1" aria-labelledby="printViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header d-print-none">
+          <h5 class="modal-title fw-bold" id="printViewModalLabel"><i class="fa fa-print"></i> พิมพ์เอกสารใบแจ้งหนี้ / ใบกำกับภาษีราชการ (official template)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body bg-light text-center p-4">
+          <div class="d-print-none mb-3">
+            <button class="btn btn-success px-4 font-bold" onclick="window.print()">
+              <i class="fa fa-print me-1"></i>สั่งพิมพ์ใบแจ้งหนี้ชำระเงินสากล (กระดาษ A4)
+            </button>
+            <button class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+          </div>
+
+          <!-- Printable standard sheet base -->
+          <div class="text-start mx-auto shadow bg-white" id="print-area">
+            <style>
+              /* Reset styles specifically within print-area */
+              #print-area {
+                font-family: 'Arial', 'Helvetica', sans-serif !important;
+                color: #000000 !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                padding: 10mm 10mm 10mm 10mm !important;
+                box-sizing: border-box !important;
+                background-color: #ffffff !important;
+                position: relative !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+              }
+              #print-area h5, #print-area strong, #print-area span, #print-area td, #print-area th {
+                font-family: 'Arial', 'Helvetica', sans-serif !important;
+              }
+              .print-header-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 2px;
+              }
+              .print-header-table td {
+                vertical-align: top;
+                border: none !important;
+                padding: 0 !important;
+              }
+              .company-title {
+                font-size: 10.5pt;
+                font-weight: bold;
+                color: #000000;
+                margin: 0;
+                letter-spacing: 0.3px;
+              }
+              .company-details {
+                font-size: 8pt;
+                line-height: 1.3;
+                color: #000000;
+                margin-top: 3px;
+              }
+              .doc-title-red {
+                color: #FF0000;
+                font-size: 14pt;
+                font-weight: bold;
+                margin-top: 5px;
+                letter-spacing: 0.5px;
+              }
+              .original-red {
+                color: #FF0000;
+                font-size: 11pt;
+                font-weight: bold;
+                letter-spacing: 2px;
+                margin-bottom: 1px;
+              }
+              /* Horizontal rule */
+              .print-divider-thick {
+                border-top: 1.5px solid #000000;
+                margin-top: 4px;
+                margin-bottom: 10px;
+              }
+              .print-info-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 10px;
+              }
+              .print-info-table td {
+                border: none !important;
+                vertical-align: top;
+                padding: 0 !important;
+              }
+              .invoice-to-box {
+                border: 1px solid #000000;
+                border-radius: 3px;
+                padding: 6px 10px;
+                width: 58%;
+                box-sizing: border-box;
+              }
+              .invoice-to-label {
+                font-size: 8.5pt;
+                font-weight: bold;
+                margin-bottom: 2px;
+              }
+              .invoice-to-text {
+                font-size: 8pt;
+                line-height: 1.35;
+              }
+              .invoice-meta-col {
+                width: 38%;
+                box-sizing: border-box;
+              }
+              .invoice-meta-row {
+                display: flex;
+                justify-content: flex-start;
+                margin-bottom: 3.5px;
+                font-size: 8.5pt;
+              }
+              .invoice-meta-label {
+                font-weight: bold;
+                width: 110px;
+              }
+              .invoice-meta-value {
+                font-weight: normal;
+              }
+              /* Main Table styling */
+              .print-main-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 2px;
+                table-layout: fixed;
+              }
+              .print-main-table th {
+                border-top: 1px solid #000000 !important;
+                border-bottom: 1px solid #000000 !important;
+                font-size: 9pt;
+                font-weight: bold;
+                padding: 5px 4px;
+                color: #000000;
+                word-wrap: break-word;
+                word-break: break-all;
+                overflow-wrap: anywhere;
+              }
+              .print-main-table td {
+                font-size: 8pt;
+                padding: 5px 4px;
+                vertical-align: top;
+                color: #000000;
+                border: none !important;
+                word-wrap: break-word;
+                word-break: break-all;
+                overflow-wrap: anywhere;
+                white-space: pre-wrap;
+              }
+              .print-table-wrapper {
+                min-height: 94mm;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                border-bottom: 1px solid #000000;
+              }
+              /* Total summary section */
+              .summary-container {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 6px;
+              }
+              .terms-text-block {
+                width: 58%;
+                font-size: 7.5pt;
+                line-height: 1.3;
+                color: #000000;
+              }
+              .terms-text-block p {
+                margin: 0 0 2px 0;
+              }
+              .totals-box {
+                width: 38%;
+              }
+              .total-row-item {
+                display: flex;
+                justify-content: space-between;
+                font-size: 8pt;
+                padding: 2.5px 0;
+              }
+              .total-row-item.bold-row {
+                font-weight: bold;
+              }
+              .total-row-divider {
+                border-top: 1px solid #000000;
+                margin: 2px 0;
+              }
+              .amount-due-row {
+                display: flex;
+                justify-content: space-between;
+                font-size: 8.5pt;
+                font-weight: bold;
+                border-top: 1px solid #000000;
+                border-bottom: 3px double #000000;
+                padding: 3px 0;
+                margin-top: 2px;
+              }
+              /* Bottom stamp & bank details section */
+              .footer-stamp-bank-section {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-top: 10px;
+                margin-bottom: 5px;
+              }
+              .stamp-container {
+                width: 45%;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+              }
+              .bank-details-box {
+                width: 53%;
+                font-size: 7.5pt;
+                line-height: 1.35;
+                color: #000000;
+              }
+              /* Sign lines */
+              .signature-area-row {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 10px;
+              }
+              .sig-col {
+                width: 32%;
+                text-align: center;
+                font-size: 8pt;
+              }
+              .sign-line {
+                border-bottom: 1px dotted #000000;
+                width: 150px;
+                margin: 15px auto 3px auto;
+              }
+              /* Print media styles */
+              @media print {
+                body {
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  background: #fff !important;
+                }
+                .d-print-none, .modal-header, .modal-footer {
+                  display: none !important;
+                }
+                #printViewModal {
+                  position: absolute !important;
+                  left: 0 !important;
+                  top: 0 !important;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  width: 100% !important;
+                  height: auto !important;
+                  border: none !important;
+                  background: #fff !important;
+                }
+                #print-area {
+                  width: 210mm !important;
+                  height: 297mm !important;
+                  padding: 10mm 10mm 10mm 10mm !important;
+                  box-sizing: border-box !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                  background-color: #ffffff !important;
+                  position: relative !important;
+                }
+              }
+            </style>
+
+            <div style="flex-grow: 1; display: flex; flex-direction: column;">
+              <!-- HEADER -->
+              <table class="print-header-table">
+                <tr>
+                  <td>
+                    <div class="company-title">IKM TESTING (THAILAND) CO., LTD.</div>
+                    <div class="company-details">
+                      155/167 Moo 5, Samnakthon Sub-district,<br>
+                      Banchang District, Rayong Province 21130<br>
+                      Thailand<br>
+                      Tel : +66(0) 38 601 996~7<br><br>
+                      Tax ID Number : 0215552000909<br>
+                      Head Office
+                    </div>
+                  </td>
+                  <td style="text-align: right;">
+                    <div style="display: inline-block; text-align: right;">
+                      <div class="original-red">ORIGINAL</div>
+                      <svg width="110" height="38" viewBox="0 0 100 42" style="display: block; margin-left: auto;">
+                        <!-- Waves -->
+                        <path d="M5,2 C25,2 25,-1 45,-1 C65,-1 65,2 85,2 L95,2" stroke="#FF3333" stroke-width="4.5" fill="none" />
+                        <path d="M5,8 C25,8 25,5 45,5 C65,5 65,8 85,8 L95,8" stroke="#FF3333" stroke-width="4.5" fill="none" />
+                        <path d="M5,14 C25,14 25,11 45,11 C65,11 65,14 85,14 L95,14" stroke="#FF3333" stroke-width="4.5" fill="none" />
+                        <!-- Black bar with I.K.M -->
+                        <rect x="5" y="21" width="90" height="18" fill="#000" />
+                        <text x="50" y="34" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="11" text-anchor="middle" letter-spacing="4.5">I • K • M</text>
+                      </svg>
+                      <div class="doc-title-red" id="print-doc-type">INVOICE / TAX INVOICE</div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <div class="print-divider-thick"></div>
+
+              <!-- DOCUMENT INFORMATION SECTION -->
+              <table class="print-info-table">
+                <tr>
+                  <td style="width: 58%;">
+                    <div class="invoice-to-box" style="width: 100%;">
+                      <div class="invoice-to-label">Invoice to :</div>
+                      <div class="invoice-to-text">
+                        <strong id="print-customer-name">Best Performance Engineering Co.,Ltd. (Head Office)</strong><br>
+                        <span id="print-customer-details">
+                          58, SOI NARADHIWAT RAJANAGARINDRA 10, THUNG WAT DON,<br>
+                          SATHORN BANGKOK 10120<br>
+                          THAILAND<br>
+                          Tax ID Number 0105543028503
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="width: 42%; padding-left: 20px;">
+                    <div class="invoice-meta-row">
+                      <span class="invoice-meta-label">Invoice Date:</span>
+                      <span class="invoice-meta-value" id="print-date">04 Jun 2026</span>
+                    </div>
+                    <div class="invoice-meta-row">
+                      <span class="invoice-meta-label">Due Date:</span>
+                      <span class="invoice-meta-value" id="print-due" style="font-weight: bold;">03 Jul 2026</span>
+                    </div>
+                    <div style="height: 4px;"></div>
+                    <div class="invoice-meta-row">
+                      <span class="invoice-meta-label">Invoice Number:</span>
+                      <span class="invoice-meta-value" id="print-doc-no" style="font-weight: bold;">IKMTTH-26/256</span>
+                    </div>
+                    <div style="height: 4px;"></div>
+                    <div class="invoice-meta-row" style="flex-direction: column; margin-bottom: 0;">
+                      <span class="invoice-meta-label">Reference</span>
+                      <span class="invoice-meta-value" id="print-po-no" style="font-family: inherit; font-size: 8pt;">PO007441/2026</span>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- MAIN TABLE -->
+              <div class="print-table-wrapper">
+                <table class="print-main-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 56%; text-align: left;">Description</th>
+                      <th style="width: 10%; text-align: center;">Quantity</th>
+                      <th style="width: 12%; text-align: right;">Unit Price</th>
+                      <th style="width: 10%; text-align: center;">Tax</th>
+                      <th style="width: 12%; text-align: right;">Amount THB</th>
+                    </tr>
+                  </thead>
+                  <tbody id="print-items-body">
+                    <!-- Rendered dynamically -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- TOTAL & TERMS SECTION -->
+              <div class="summary-container">
+                <div class="terms-text-block">
+                  <p style="text-decoration: underline; font-weight: bold;">(Please Deduct Withholding Tax for Service 3% and or Rental 5% )</p>
+                  <p style="margin-top: 5px;">General Term & Condition of Sales & Hire apply Note</p>
+                  <p><strong>: Late payments, the company charges a penalty of 1.25%</strong></p>
+                  <p><strong>per month</strong> หมายเหตุ : การชำระเงินเกินกำหนด บริษัทฯ คิดเบี้ยปรับ <strong>1.25%</strong> ต่อเดือน</p>
+                  <p style="margin-top: 5px;">In the event of discrepancy, Kindly contact</p>
+                  <p>our Accounts department within 7 days In writing from the Invoice</p>
+                </div>
+                <div class="totals-box">
+                  <div class="total-row-item">
+                    <span>Subtotal</span>
+                    <span id="print-subtotal">10,000.00</span>
+                  </div>
+                  <div class="total-row-item">
+                    <span>Total VAT on Sales 7%</span>
+                    <span id="print-vat">700.00</span>
+                  </div>
+                  <div class="total-row-divider"></div>
+                  <div class="total-row-item bold-row">
+                    <span>Invoice Total THB</span>
+                    <span id="print-invoice-total">10,700.00</span>
+                  </div>
+                  <div class="total-row-divider"></div>
+                  <div class="total-row-item">
+                    <span>Total Net Payments THB</span>
+                    <span id="print-net-payments">0.00</span>
+                  </div>
+                  <div class="amount-due-row">
+                    <span>Amount Due THB</span>
+                    <span id="print-grandtotal">10,700.00</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STAMP & BANK INFO -->
+              <div class="footer-stamp-bank-section">
+                <!-- Stamp on Left -->
+                <div class="stamp-container">
+                  <svg width="100" height="100" viewBox="0 0 120 120" style="opacity: 0.85; transform: rotate(-4deg); margin-left: 20px;">
+                    <!-- Outer circles wrapper -->
+                    <circle cx="60" cy="60" r="48" stroke="#1D4ED8" stroke-width="2.2" fill="none" />
+                    <circle cx="60" cy="60" r="41" stroke="#1D4ED8" stroke-width="0.8" stroke-dasharray="2,2" fill="none" />
+                    <!-- Paths for Text curve mapping -->
+                    <path id="curve-top-stamp" d="M 21,60 A 39,39 0 0,1 99,60" fill="none" />
+                    <path id="curve-bottom-stamp" d="M 99,60 A 39,39 0 0,1 21,60" fill="none" />
+                    
+                    <text font-family="Arial" font-size="4.5" fill="#1D4ED8" font-weight="bold">
+                      <textPath href="#curve-top-stamp" startOffset="50%" text-anchor="middle">
+                        ★ บริษัท ไอเคเอ็ม เทสติ้ง (ประเทศไทย) จำกัด ★
+                      </textPath>
+                    </text>
+                    
+                    <text font-family="Arial" font-size="4.5" fill="#1D4ED8" font-weight="bold">
+                      <textPath href="#curve-bottom-stamp" startOffset="50%" text-anchor="middle">
+                        IKM TESTING (THAILAND) COMPANY LIMITED
+                      </textPath>
+                    </text>
+                    
+                    <!-- Inner waves -->
+                    <path d="M40,53 C48,49 52,57 60,53 C68,49 72,57 80,53" stroke="#1D4ED8" stroke-width="1.2" fill="none" />
+                    <path d="M40,59 C48,55 52,63 60,59 C68,55 72,63 80,59" stroke="#1D4ED8" stroke-width="1.2" fill="none" />
+                    <path d="M40,65 C48,61 52,69 60,65 C68,61 72,69 80,65" stroke="#1D4ED8" stroke-width="1.2" fill="none" />
+                  </svg>
+                </div>
+
+                <!-- Bank info on Right -->
+                <div class="bank-details-box">
+                  <p>Please make Cheque payable to<br>
+                  <strong>IKM TESTING (THAILAND) CO., LTD.</strong></p>
+                  <p style="margin-top: 4px;">Or remit to our bank as follows<br>
+                  <strong>BANK Account No. 783-3250-60-8</strong><br>
+                  Swift code : <strong>UOVBTHBK</strong><br>
+                  BANK : <strong>United Overseas Bank (Thai) public company Limited.</strong><br>
+                  51/12 Moo 5 Sukhumvit road, Amphoe Ban chang,<br>
+                  Rayong 21130. THAILAND</p>
+                  <p style="margin-top: 3px; font-size: 7pt; font-style: italic;">All local & Oversea bank charges to be borne by Remitter's a/cs</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- SIGNATURES (AT THE VERY BOTTOM) -->
+            <div class="signature-area-row">
+              <div class="sig-col">
+                <div class="sign-line" style="margin-top: 10px;"></div>
+                <strong>Authorised Signature</strong>
+              </div>
+              <div class="sig-col">
+                <p style="margin: 0; font-size: 7.5pt; font-weight: bold; color: #555;">CONFIRMED AND ACCEPTED BY</p>
+                <div class="sign-line" style="margin-top: 10px; width: 140px;"></div>
+              </div>
+              <div class="sig-col">
+                <p style="margin: 0; font-size: 7.5pt; font-weight: bold; color: #555;">SIGNATURE & COMPANY STAMP</p>
+                <div class="sign-line" style="margin-top: 10px; width: 140px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/js/adminlte.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- DB & Common Setup -->
+  <script src="/supabase.js"></script>
+  <script src="/app.js"></script>
+
+  <!-- Interactive script inline -->
+  <script>
+    let rawCustomers = [];
+    let currentInvoices = [];
+    let itemIndexCounter = 0;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      toggleGlobalLoader(true);
+      try {
+        await loadInvoiceMasterData();
+        await renderInvoicesList();
+      } catch (err) {
+        console.error("Load invoices view error", err);
+      } finally {
+        toggleGlobalLoader(false);
+      }
+
+      // Bind Search & Filters
+      document.getElementById('inv-search-input').addEventListener('input', filterAndDrawTable);
+      document.getElementById('inv-filter-customer').addEventListener('change', filterAndDrawTable);
+
+      // Auto-populate search from URL parameter if provided
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchParam = urlParams.get('search');
+      if (searchParam) {
+        document.getElementById('inv-search-input').value = searchParam;
+        filterAndDrawTable();
+      }
+
+      // Status filters
+      document.querySelectorAll('.i-status-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          document.querySelectorAll('.i-status-pill').forEach(p => p.classList.remove('active', 'btn-success'));
+          document.querySelectorAll('.i-status-pill').forEach(p => p.classList.add('btn-outline-secondary'));
+          
+          pill.classList.add('active', 'btn-success');
+          pill.classList.remove('btn-outline-secondary');
+          filterAndDrawTable();
+        });
+      });
+    });
+
+    async function loadInvoiceMasterData() {
+      rawCustomers = await SupabaseDB.getCustomers() || [];
+      const filterSelect = document.getElementById('inv-filter-customer');
+      const formCustSelect = document.getElementById('form-customer-id');
+      
+      filterSelect.innerHTML = '<option value="">-- กรองลูกค้าทั้งหมด / All Customers --</option>';
+      formCustSelect.innerHTML = '<option value="">-- ดึงรายชื่อนิติบุคคล --</option>';
+
+      rawCustomers.forEach(c => {
+        const o = `<option value="${c.id}">${c.customer_name} (${c.customer_code})</option>`;
+        filterSelect.insertAdjacentHTML('beforeend', o);
+        formCustSelect.insertAdjacentHTML('beforeend', o);
+      });
+    }
+
+    async function renderInvoicesList() {
+      currentInvoices = await SupabaseDB.getInvoices() || [];
+      filterAndDrawTable();
+    }
+
+    function filterAndDrawTable() {
+      const search = document.getElementById('inv-search-input').value.toLowerCase().trim();
+      const customerVal = document.getElementById('inv-filter-customer').value;
+
+      const activePill = document.querySelector('.i-status-pill.active');
+      const statusVal = activePill ? activePill.getAttribute('data-status') : 'ALL';
+
+      const tbody = document.getElementById('invoice-table-body');
+      tbody.innerHTML = '';
+
+      const filtered = currentInvoices.filter(i => {
+        const matchesSearch = !search || 
+          i.invoice_no.toLowerCase().includes(search) || 
+          (i.quotation_no && i.quotation_no.toLowerCase().includes(search)) ||
+          i.project_name.toLowerCase().includes(search) ||
+          (i.customer && i.customer.customer_name.toLowerCase().includes(search));
+
+        const matchesCustomer = !customerVal || i.customer_id === customerVal;
+        const matchesStatus = statusVal === 'ALL' || i.status === statusVal;
+
+        return matchesSearch && matchesCustomer && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="text-center py-4 text-muted">
+              <i class="fa fa-folder-open fs-2 d-block mb-2 text-secondary"></i>
+              ไม่พบประวัติใบแจ้งเรียกเก็บเงินตามสิทธิและตัวกรองดังกล่าว
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach(i => {
+        const sub = (i.total_value * 0.07).toLocaleString(undefined, { minimumFractionDigits: 2 });
+        const grand = (i.grand_total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+        let statusBadge = '';
+        if (i.status === 'Unpaid') statusBadge = '<span class="badge-status badge-status-unpaid"><i class="fa fa-clock"></i> Unpaid</span>';
+        else if (i.status === 'Paid') statusBadge = '<span class="badge-status badge-status-approved"><i class="fa fa-check-double"></i> Paid</span>';
+        else if (i.status === 'Overdue') statusBadge = '<span class="badge-status badge-status-rejected"><i class="fa fa-exclamation-triangle"></i> Overdue</span>';
+        else statusBadge = `<span class="badge-status badge-status-draft">${i.status}</span>`;
+
+        const row = `
+          <tr>
+            <td class="font-bold text-success font-monospace" style="font-size:0.95rem;">${i.invoice_no}</td>
+            <td class="small font-monospace">${i.quotation_no || 'ออกตรง / Direct'}</td>
+            <td>
+              <div class="fw-bold">${i.project_name}</div>
+              <div class="text-xs text-muted font-monospace">PO Ref: ${i.po_reference || '-'}</div>
+              <div class="text-muted font-monospace mt-0.5" style="font-size: 10px; line-height: 1.2;">
+                <span class="d-inline-block me-2" title="สร้างโดย"><i class="fa fa-plus-circle text-secondary" style="font-size: 9px;"></i> ${i.created_by ? window.SupabaseDB.getUsernameOrDisplayName(i.created_by) : '@apiyut'}</span>
+                <span class="d-inline-block me-2" title="แก้ไขโดย"><i class="fa fa-pen text-secondary" style="font-size: 9px;"></i> ${i.updated_by ? window.SupabaseDB.getUsernameOrDisplayName(i.updated_by) : '@apiyut'}</span>
+              </div>
+            </td>
+            <td>
+              <div class="small fw-semibold text-dark">${i.customer ? i.customer.customer_name : 'ไม่พบชื่อนิติบุคคล'}</div>
+              <div class="text-xs text-muted font-monospace">${i.customer ? i.customer.customer_code : '-'}</div>
+            </td>
+            <td class="small">${i.invoice_date}</td>
+            <td class="small fw-bold text-secondary">${i.due_date}</td>
+            <td class="text-end font-monospace small text-muted">${sub}</td>
+            <td class="text-end font-monospace font-bold text-success" style="font-size: 1rem;">${grand}</td>
+            <td class="text-center">${statusBadge}</td>
+            <td class="text-center">
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-info" title="ดูเอกสารใบอินวอยส์ฉบับพิมพ์" onclick="openPrintModal('${i.id}', 'invoice')">
+                  <i class="fa fa-print"></i> บิล
+                </button>
+                <button class="btn btn-outline-success" title="พิมพ์ใบกำกับภาษี/ใบเสร็จรับเงิน (Receipt)" onclick="openPrintModal('${i.id}', 'receipt')">
+                  <i class="fa fa-file-invoice"></i> ใบเสร็จ
+                </button>
+                <button class="btn btn-outline-primary" title="พิจารณาแก้ไขบิล" onclick="openEditInvoiceModal('${i.id}')">
+                  <i class="fa fa-edit"></i>
+                </button>
+                ${SupabaseDB.isAdmin() ? `
+                  <button class="btn btn-outline-danger" title="ลบบิลเรียกเก็บ" onclick="deleteInvoice('${i.id}')">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                ` : `
+                  <button class="btn btn-outline-secondary opacity-50" disabled title="จำกัดสิทธิ์เฉพาะ Admin เท่านั้น">
+                    <i class="fa fa-lock"></i>
+                  </button>
+                `}
+              </div>
+            </td>
+          </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    // Manual Creation
+    function openCreateInvoiceModal() {
+      document.getElementById('invoiceForm').reset();
+      document.getElementById('inv-form-id').value = '';
+      document.getElementById('invoiceFormModalLabel').innerHTML = '<i class="fa fa-plus-circle text-success"></i> ออกใบแจ้งหนี้เพื่อตั้งยอดยามตรง (Manual Create Invoice)';
+      
+      document.getElementById('form-date').value = new Date().toISOString().slice(0, 10);
+      const due = new Date();
+      due.setDate(due.getDate() + 30);
+      document.getElementById('form-due').value = due.toISOString().slice(0, 10);
+
+      document.getElementById('items-table-body').innerHTML = '';
+      itemIndexCounter = 0;
+      
+      addNewItemRow();
+
+      const modal = new bootstrap.Modal(document.getElementById('invoiceFormModal'));
+      modal.show();
+    }
+
+    // Edit Invoice Modal
+    async function openEditInvoiceModal(id) {
+      toggleGlobalLoader(true);
+      try {
+        const i = await SupabaseDB.getInvoiceById(id);
+        if (!i) return;
+
+        document.getElementById('inv-form-id').value = i.id;
+        document.getElementById('invoiceFormModalLabel').innerHTML = `<i class="fa fa-edit text-success"></i> ปรับปรุงรายละเอียดบิล & การเงิน <span class="badge bg-dark font-monospace">${i.invoice_no}</span>`;
+
+        document.getElementById('form-customer-id').value = i.customer_id;
+        document.getElementById('form-quote-ref').value = i.quotation_no || '';
+        document.getElementById('form-project-name').value = i.project_name;
+        document.getElementById('form-po-reference').value = i.po_reference || '';
+        document.getElementById('form-date').value = i.invoice_date;
+        document.getElementById('form-due').value = i.due_date;
+        document.getElementById('form-handler').value = i.sales_person;
+        document.getElementById('form-status').value = i.status;
+        document.getElementById('form-remarks').value = i.remarks || '';
+
+        // Draw rows
+        const tbody = document.getElementById('items-table-body');
+        tbody.innerHTML = '';
+        itemIndexCounter = 0;
+
+        const items = i.items || [];
+        items.forEach(item => {
+          addNewItemRow(item);
+        });
+
+        if (items.length === 0) addNewItemRow();
+
+        recalculateTotals();
+
+        const modal = new bootstrap.Modal(document.getElementById('invoiceFormModal'));
+        modal.show();
+
+      } catch (err) {
+        console.error("Open edit invoice modal failed", err);
+      } finally {
+        toggleGlobalLoader(false);
+      }
+    }
+
+    function addNewItemRow(item = null) {
+      itemIndexCounter++;
+      const tbody = document.getElementById('items-table-body');
+
+      const qty = item ? item.qty : 1;
+      const unit = item ? item.unit : 'Set';
+      const desc = item ? item.description : '';
+      const dur = item ? item.duration : 1;
+      const rate = item ? item.unit_rate : 0;
+      const total = item ? item.total_price : 0;
+
+      const rowHtml = `
+        <tr class="item-calc-row" id="item-calc-tr-${itemIndexCounter}">
+          <td class="text-center fw-bold text-muted index-lbl">${itemIndexCounter}</td>
+          <td>
+            <input type="text" class="form-control form-control-sm item-desc" value="${desc}" placeholder="พิมพ์คำอธิบายรายละเอียดงานเรียกเก็บค่าใช้จ่าย" required>
+          </td>
+          <td>
+            <input type="number" class="form-control form-control-sm text-center item-qty" value="${qty}" oninput="triggerLineCalculation(${itemIndexCounter})" required min="1">
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm text-center item-unit" value="${unit}" placeholder="เช่น Set, Job">
+          </td>
+          <td>
+            <input type="number" class="form-control form-control-sm text-center item-dur" value="${dur}" oninput="triggerLineCalculation(${itemIndexCounter})" required min="1">
+          </td>
+          <td>
+            <input type="number" class="form-control form-control-sm text-end item-rate" value="${rate}" step="0.01" oninput="triggerLineCalculation(${itemIndexCounter})" required>
+          </td>
+          <td>
+            <input type="number" class="form-control form-control-sm text-end item-total-price bg-light font-monospace" value="${total}" readonly>
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeItemRow(${itemIndexCounter})">
+              <i class="fa fa-minus-circle fs-5"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+      tbody.insertAdjacentHTML('beforeend', rowHtml);
+      triggerLineCalculation(itemIndexCounter);
+    }
+
+    function removeItemRow(id) {
+      const row = document.getElementById(`item-calc-tr-${id}`);
+      if (row) {
+        row.remove();
+        reindexItemRows();
+        recalculateTotals();
+      }
+    }
+
+    function reindexItemRows() {
+      let counter = 1;
+      document.querySelectorAll('.item-calc-row').forEach(row => {
+        row.querySelector('.index-lbl').innerHTML = counter;
+        counter++;
+      });
+    }
+
+    function triggerLineCalculation(id) {
+      const row = document.getElementById(`item-calc-tr-${id}`);
+      if (!row) return;
+
+      const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+      const dur = parseFloat(row.querySelector('.item-dur').value) || 1;
+      const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+
+      const total = qty * dur * rate;
+      row.querySelector('.item-total-price').value = total.toFixed(2);
+
+      recalculateTotals();
+    }
+
+    function recalculateTotals() {
+      let subtotal = 0;
+      document.querySelectorAll('.item-calc-row').forEach(row => {
+        const total = parseFloat(row.querySelector('.item-total-price').value) || 0;
+        subtotal += total;
+      });
+
+      const vat = subtotal * 0.07;
+      const grand = subtotal + vat;
+
+      document.getElementById('calc-subtotal').innerHTML = subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
+      document.getElementById('calc-tax').innerHTML = vat.toLocaleString(undefined, { minimumFractionDigits: 2 });
+      document.getElementById('calc-grandtotal').innerHTML = grand.toLocaleString(undefined, { minimumFractionDigits: 2 });
+    }
+
+    // Save Manual/Edited Invoices
+    async function saveInvoiceManual(event) {
+      event.preventDefault();
+      toggleGlobalLoader(true);
+
+      const id = document.getElementById('inv-form-id').value;
+      const customerId = document.getElementById('form-customer-id').value;
+      const quoteRef = document.getElementById('form-quote-ref').value;
+      const project = document.getElementById('form-project-name').value;
+      const poRef = document.getElementById('form-po-reference').value;
+      const date = document.getElementById('form-date').value;
+      const due = document.getElementById('form-due').value;
+      const sales = document.getElementById('form-handler').value;
+      const status = document.getElementById('form-status').value;
+      const remarks = document.getElementById('form-remarks').value;
+
+      // Extract lines
+      const items = [];
+      document.querySelectorAll('.item-calc-row').forEach((row, idx) => {
+        items.push({
+          item_no: idx + 1,
+          description: row.querySelector('.item-desc').value,
+          qty: parseFloat(row.querySelector('.item-qty').value) || 1,
+          unit: row.querySelector('.item-unit').value || 'Set',
+          duration: parseFloat(row.querySelector('.item-dur').value) || 1,
+          unit_rate: parseFloat(row.querySelector('.item-rate').value) || 0,
+          total_price: parseFloat(row.querySelector('.item-total-price').value) || 0
+        });
+      });
+
+      const total_value = items.reduce((sum, item) => sum + item.total_price, 0);
+      const tax_rate = 7;
+      const grand_total = total_value * 1.07;
+
+      const payload = {
+        customer_id: customerId,
+        quotation_no: quoteRef || null,
+        project_name: project,
+        po_reference: poRef,
+        invoice_date: date,
+        due_date: due,
+        sales_person: sales,
+        status: status,
+        remarks: remarks,
+        items: items,
+        total_value: total_value,
+        tax_rate: tax_rate,
+        grand_total: grand_total
+      };
+
+      try {
+        if (id) {
+          const res = await SupabaseDB.updateInvoice(id, payload);
+          showToastAlert(`บันทึกปรับปรุงเรียบร้อย ใบแจ้งหนี้: ${res.invoice_no}`, 'success');
+          await SupabaseDB.addActivity('Update', 'Invoice', id, `Updated invoice information of ${res.invoice_no}`);
+        } else {
+          const res = await SupabaseDB.addInvoice(payload);
+          showToastAlert(`จัดตั้งใบแจ้งหนี้สำเร็จ รหัสเอกสาร: ${res.invoice_no}`, 'success');
+          await SupabaseDB.addActivity('Create', 'Invoice', res.id, `Manually created Invoice ${res.invoice_no}`);
+        }
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('invoiceFormModal'));
+        modal.hide();
+
+        await renderInvoicesList();
+      } catch (err) {
+        console.error("Save Invoice manual failed", err);
+      } finally {
+        toggleGlobalLoader(false);
+      }
+    }
+
+    // Delete Invoice
+    async function deleteInvoice(id) {
+      if (!SupabaseDB.isAdmin()) {
+        showToastAlert('เฉพาะผู้ดูแลระบบ (Admin) เท่านั้นที่สามารถลบใบกำกับภาษี/อินวอยส์ได้', 'danger');
+        return;
+      }
+      const i = await SupabaseDB.getInvoiceById(id);
+      if (!i) return;
+
+      Swal.fire({
+        title: 'ยืนยันลบใบสำคัญเรียกเก็บบิลนี้?',
+        text: `ใบแจ้งหนี้รหัสบัญชี ${i.invoice_no} จะถูกถอดออกจากระบบบัญชีด่วน!`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#dc3545',
+        confirmButtonText: 'ลบทันที',
+        cancelButtonText: 'ยกเลิก'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          toggleGlobalLoader(true);
+          try {
+            await SupabaseDB.deleteInvoice(id);
+            showToastAlert('ลบเรียบร้อย', 'success');
+            await SupabaseDB.addActivity('Delete', 'Invoice', id, `Deleted Invoice ${i.invoice_no}`);
+            await renderInvoicesList();
+          } catch (err) {
+            console.error("Error delete Invoice", err);
+          } finally {
+            toggleGlobalLoader(false);
+          }
+        }
+      });
+    }
+
+    // Date formatter helper: DD MMM YYYY
+    function formatDateDDMMMYYYY(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return dateStr;
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = months[date.getMonth()];
+      const year = date.getFullYear();
+      return `${day} ${month} ${year}`;
+    }
+
+    // Open Print Preview (Invoice OR Receipt layout)
+    async function openPrintModal(id, docType) {
+      toggleGlobalLoader(true);
+      try {
+        const i = await SupabaseDB.getInvoiceById(id);
+        if (!i) return;
+
+        if (docType === 'invoice') {
+          document.getElementById('print-doc-type').innerText = "INVOICE / TAX INVOICE";
+          document.getElementById('print-doc-no').innerText = i.invoice_no;
+        } else {
+          document.getElementById('print-doc-type').innerText = "TAX RECEIPT / ใบเสร็จรับเงินใบกำกับภาษี";
+          document.getElementById('print-doc-no').innerText = i.invoice_no.replace('INV-', 'RE-');
+        }
+
+        document.getElementById('print-customer-name').innerText = i.customer ? i.customer.customer_name : 'ไม่ระบุชื่อนิติบุคคล';
+        
+        let clientDetailsHtml = '';
+        if (i.customer) {
+          clientDetailsHtml = `
+            ${i.customer.address || '-'}<br>
+            Tax ID Number ${i.customer.tax_id || '-'}
+          `;
+        }
+        document.getElementById('print-customer-details').innerHTML = clientDetailsHtml;
+
+        document.getElementById('print-date').innerText = formatDateDDMMMYYYY(i.invoice_date);
+        document.getElementById('print-due').innerText = formatDateDDMMMYYYY(i.due_date);
+        document.getElementById('print-po-no').innerText = i.po_reference || 'ไม่มี (No PO Link)';
+
+        // Line details
+        const tbody = document.getElementById('print-items-body');
+        tbody.innerHTML = '';
+
+        const items = i.items || [];
+        items.forEach((item, index) => {
+          let descHtml = `<strong>${item.description}</strong>`;
+          if (item.duration && item.duration > 1) {
+            descHtml += `<br><span style="font-size: 7.5pt; font-weight: normal; color: #555;">(${parseFloat(item.qty).toFixed(2)} ${item.unit || 'Unit'} x ${item.duration} Days)</span>`;
+          } else if (item.unit) {
+            descHtml += `<br><span style="font-size: 7.5pt; font-weight: normal; color: #555;">(Unit: ${item.unit})</span>`;
+          }
+
+          const row = `
+            <tr>
+              <td style="text-align: left;">${descHtml}</td>
+              <td style="text-align: center; font-family: monospace;">${parseFloat(item.qty || 1).toFixed(2)}</td>
+              <td style="text-align: right; font-family: monospace;">${parseFloat(item.unit_rate || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+              <td style="text-align: center;">7%</td>
+              <td style="text-align: right; font-family: monospace;">${parseFloat(item.total_price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+            </tr>
+          `;
+          tbody.insertAdjacentHTML('beforeend', row);
+        });
+
+        const sub = i.total_value || 0;
+        const vat = sub * 0.07;
+        const grand = i.grand_total || (sub + vat);
+
+        document.getElementById('print-subtotal').innerText = sub.toLocaleString(undefined, { minimumFractionDigits: 2 });
+        document.getElementById('print-vat').innerText = vat.toLocaleString(undefined, { minimumFractionDigits: 2 });
+        document.getElementById('print-invoice-total').innerText = grand.toLocaleString(undefined, { minimumFractionDigits: 2 });
+        document.getElementById('print-net-payments').innerText = (docType === 'invoice' ? '0.00' : grand.toLocaleString(undefined, { minimumFractionDigits: 2 }));
+        document.getElementById('print-grandtotal').innerText = (docType === 'invoice' ? grand.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '0.00');
+
+        const modal = new bootstrap.Modal(document.getElementById('printViewModal'));
+        modal.show();
+
+      } catch (err) {
+        console.error("Open printing invoices unsuccessful", err);
+      } finally {
+        toggleGlobalLoader(false);
+      }
+    }
+  </script>
+</body>
+</html>

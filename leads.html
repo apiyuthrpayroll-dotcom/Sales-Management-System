@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sales Master CRM - ระบบบริหารรายชื่อผู้สนใจ (Leads & Funnel)</title>
+
+  <!-- Google Font: Source Sans Pro & Kanit (Thailand UI support) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- AdminLTE 4 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/css/adminlte.min.css">
+  
+  <!-- Custom Application Override CSS -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+
+  <div class="app-wrapper wrapper">
+    <!-- Navbar & Sidebar Injected via app.js -->
+
+    <!-- Main Content Stage Area -->
+    <main class="app-main p-3" style="min-height: 100vh; margin-left: 250px;">
+      <!-- Content Header -->
+      <div class="container-fluid mb-3 pt-2">
+        <div class="row align-items-center">
+          <div class="col-sm-6">
+            <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase">
+              <i class="fas fa-filter text-primary"></i> บริหารรายชื่อผู้สนใจ (Leads Funnel)
+            </h1>
+            <p class="text-muted small m-0">บันทึกคัดกรองข้อมูลผู้เข้าเยี่ยมชม แคมเปญโฆษณา และคํานวณคะแนน Scoring ปรับสถานะเป็นลูกค้านิติบุคคลหลัก (Convert to CRM Customer)</p>
+          </div>
+          <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
+            <div class="btn-group">
+              <button class="btn btn-outline-secondary btn-sm" onclick="seedDemoLeads()">
+                <i class="fa fa-magic text-warning me-1"></i>จำลองข้อมูล Leads ด่วน
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="openCreateLeadModal()">
+                <i class="fa fa-plus-circle me-1"></i>ลงทะเบียนลีดรายใหม่
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Stages Content Area -->
+      <div class="container-fluid">
+        <!-- Lead filters and Stats -->
+        <div class="row g-2 mb-3">
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="card p-3 border-0 shadow-sm bg-white d-flex flex-row align-items-center">
+              <div class="bg-primary text-white rounded p-2.5 me-3"><i class="fa fa-user-plus fs-4"></i></div>
+              <div>
+                <div class="text-xs text-muted text-uppercase">New & Unassigned</div>
+                <h4 class="fw-bold m-0" id="stat-new-leads">0 ราย</h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="card p-3 border-0 shadow-sm bg-white d-flex flex-row align-items-center">
+              <div class="bg-warning text-dark rounded p-2.5 me-3"><i class="fa fa-phone-volume fs-4"></i></div>
+              <div>
+                <div class="text-xs text-muted text-uppercase">Nurturing & Contacted</div>
+                <h4 class="fw-bold m-0" id="stat-active-leads">0 ราย</h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="card p-3 border-0 shadow-sm bg-white d-flex flex-row align-items-center">
+              <div class="bg-success text-white rounded p-2.5 me-3"><i class="fa fa-award fs-4"></i></div>
+              <div>
+                <div class="text-xs text-muted text-uppercase">Hot Qualified (Score > 7)</div>
+                <h4 class="fw-bold m-0 text-success" id="stat-qualified-leads">0 ราย</h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="card p-3 border-0 shadow-sm bg-white d-flex flex-row align-items-center">
+              <div class="bg-indigo text-white rounded p-2.5 me-3"><i class="fa fa-sync-alt fs-4"></i></div>
+              <div>
+                <div class="text-xs text-muted text-uppercase">Successfully Converted</div>
+                <h4 class="fw-bold m-0 text-primary" id="stat-converted-leads">0 ราย</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Bar and filters -->
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-body p-3">
+            <div class="row g-2">
+              <div class="col-12 col-md-4">
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted"><i class="fa fa-search"></i></span>
+                  <input type="text" class="form-control" id="lead-search" placeholder="ค้นหาชื่อผู้ติดต่อ, นามองค์กร, อีเมล หรือแหล่งที่มา...">
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <select class="form-select" id="lead-filter-status">
+                  <option value="">-- กรองขั้นตอนทั้งหมด / All Leads --</option>
+                  <option value="New">New (ลีดดิ้งใหม่)</option>
+                  <option value="Contacted">Contacted (ติดต่อแล้ว)</option>
+                  <option value="Qualified">Qualified (ประเมินแล้วผ่านเกณฑ์)</option>
+                  <option value="Nurturing">Nurturing (หล่อเลี้ยงความสนใจ)</option>
+                  <option value="Converted">Converted (แปลงเป็นลูกค้าสำนักหลักแล้ว)</option>
+                  <option value="Dead">Dead Lead (หมดสภาพสนใจ)</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-5 d-flex align-items-center text-muted small px-3">
+                <i class="fa fa-robot text-primary me-2"></i>
+                <span>มีระบบคำนวณ <strong>Lead Score (0-10)</strong> อัตโนมัติอ้างอิงงบประมาณร่วมกับไทม์ไลน์ ลีดที่ได้ <strong>&ge; 7 คะแนน</strong> จะแนะนำให้ทำการแปลงสิทธิ์ทันที!</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leads Master Table List -->
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+            <h5 class="m-0 fw-bold"><i class="fa fa-address-book text-primary"></i> บัญชีฐานข้อมูลลีดการตลาด (Marketing Leads Portal)</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover align-middle mb-0" id="leads-table">
+                <thead class="table-light text-uppercase small font-bold">
+                  <tr>
+                    <th>ขอบเขตองค์กร / บริษัท</th>
+                    <th>ผู้ติดต่อหลัก</th>
+                    <th>เบอร์ / อีเมล</th>
+                    <th>แหล่งที่มา (Source)</th>
+                    <th class="text-center">งบประมาณเบื้องต้น</th>
+                    <th class="text-center" style="width: 140px;">คะแนนลีด (Scoring)</th>
+                    <th>พนักงานดูแล</th>
+                    <th class="text-center">สถานะ</th>
+                    <th class="text-center" style="width: 220px;">การดำเนินการของฝ่ายขาย</th>
+                  </tr>
+                </thead>
+                <tbody id="leads-tbody">
+                  <!-- Generated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer text-center bg-white border-top py-3 text-muted small mt-auto" style="margin-left: 250px;">
+      <strong>Copyright &copy; 2026.</strong> ระบบ CRM Marketing Leads Module
+    </footer>
+  </div>
+
+  <!-- MODAL: ADD / EDIT LEAD -->
+  <div class="modal fade" id="leadModal" tabindex="-1" aria-labelledby="leadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="leadForm" onsubmit="saveLead(event)">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="leadModalLabel"><i class="fa fa-user-plus"></i> ลงรูปรายชื่อผู้สนใจ (Lead Intake Form)</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <input type="hidden" id="lead-form-id">
+            
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">ชื่อนิติบุคคลหรือทีมงานกลุ่มเป้าหมาย <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="form-company" placeholder="เช่น บริษัท บางจากกรีนฯ, รัฐวิสาหกิจการไฟฟ้า" required>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">แหล่งที่มาของลูกค้าเป้าหมาย (Lead Source)</label>
+                <select class="form-select" id="form-source">
+                  <option value="Website">Website (ลงทะเบียนหน้าเว็บหลัก)</option>
+                  <option value="Facebook Ad">Facebook / LinkedIn Ad Campaign</option>
+                  <option value="Cold Call">Cold Outreach / หาแดนไกล</option>
+                  <option value="Exhibition">Exhibition / งานแสดงสินค้าอุตสาหกรรม</option>
+                  <option value="Friend Referral">Friend Referral / แนะนำต่อ</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">ชื่อผู้ติดต่อหลัก (Contact Name) <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="form-contact-name" placeholder="คุณสมโรจน์ บริบูรณ์" required>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">ตำแหน่งงานในบริษัท (Job Title)</label>
+                <input type="text" class="form-control" id="form-title" placeholder="เช่น Procurement Manager, Project Manager">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">เบอร์โทรศัพท์ติดต่อสำหรับทีมขาย</label>
+                <input type="text" class="form-control" id="form-phone" placeholder="เช่น 081-332-9988">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">ที่อยู่อีเมลสื่อสารหลัก</label>
+                <input type="email" class="form-control" id="form-email" placeholder="procurement@sample.co.th">
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold">งบประมาณประมาณการเบื้องต้น (฿)</label>
+                <input type="number" class="form-control" id="form-budget" placeholder="เช่น 250000" value="100000">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold">กำหนดการปฏิบัติงานช่วงที่สนใจ</label>
+                <select class="form-select" id="form-timeline">
+                  <option value="Immediate">ทันทีไม่เกิน 1 เดือน (Immediate)</option>
+                  <option value="1-3 Months">ภายใน 1-3 เดือน</option>
+                  <option value="3-6 Months">ภายใน 3-6 เดือน</option>
+                  <option value="Informational">เพียงแค่หาข้อมูลสถิติ (Informational)</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold">พนักงานผู้รับผิดชอบดูแลเป้าหมาย</label>
+                <input type="text" class="form-control" id="form-handler" value="ดลภัทร (Admin)">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">สถานะของลีดการจอง</label>
+                <select class="form-select" id="form-status">
+                  <option value="New">New (ลีดเข้าใหม่ยังไม่กรองข้อมูล)</option>
+                  <option value="Contacted">Contacted (ประสานข้อมูลพูดคุยชั้นต้น)</option>
+                  <option value="Qualified">Qualified (คุณสมบัติผ่านเกณฑ์จัดตั้งลูกค้า)</option>
+                  <option value="Nurturing">Nurturing (อยู่ระหว่างส่งเงื่อนไขเพิ่มเติม)</option>
+                  <option value="Dead">Dead (โอกาสการค้าปิดเงียบ)</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">ระดับสิทธิ์ความสำคัญเบื้องต้น</label>
+                <select class="form-select" id="form-priority">
+                  <option value="High">สูงมาก / High (รีบติดตามด่วน)</option>
+                  <option value="Medium" selected>ปานกลาง / Medium</option>
+                  <option value="Low">ต่ำ / Low</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label small fw-bold">ความประสงค์ของลีดและบันทึกคุยโทรศัพท์เบื้องต้น (Notes/Requirement)</label>
+                <textarea class="form-control" id="form-notes" rows="3" placeholder="ระบุเช่น สนใจเช่าบริการชุดกระบอกล้าง Boiler ขนาด 5 ตัน เป็นเวลายังไงบ้าง"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="submit" class="btn btn-primary"><i class="fa fa-save me-1"></i> บันทึกข้อมูลลีด</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/js/adminlte.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- DB & Core Frame -->
+  <script src="/supabase.js"></script>
+  <script src="/app.js"></script>
+
+  <!-- Leads view script logic -->
+  <script>
+    let activeLeads = [];
+    const LOCAL_LEADS_KEY = 'crm_marketing_leads';
+
+    // Demo Data
+    const DEFAULT_LEADS = [
+      { id: 'lead-01', company: 'Thai Oil Refiner Group', contact_name: 'คุณประเสริฐ อภัยธรรม', title: 'Maintenance Lead', phone: '081-443-1212', email: 'prasert.a@thailoil.co.th', source: 'Exhibition', budget: 450000, timeline: 'Immediate', handler: 'ดลภัทร (Admin)', status: 'Qualified', priority: 'High', notes: 'ต้องการเช่าปั๊มแรงจี้ขนาดพิเศษ 12 ตัน' },
+      { id: 'lead-02', company: 'SCG Chemical Division', contact_name: 'คุณวราภรณ์ เรืองรุ่ง', title: 'Procurement Specialist', phone: '089-221-3444', email: 'waraporn@scgchem.com', source: 'Website', budget: 150000, timeline: '1-3 Months', handler: 'ดลภัทร (Admin)', status: 'Contacted', priority: 'Medium', notes: 'หาข้อมูลเครื่องมือ Bolt Tensioning สำหรับโรงมาบตาพุด' },
+      { id: 'lead-03', company: 'Pattaya Port Logistics', contact_name: 'Mr. David Vance', title: 'Technical Advisor', phone: '061-344-9988', email: 'david@pattayaport.com', source: 'Friend Referral', budget: 600000, timeline: '3-6 Months', handler: 'ตัวแทนพันธมิตร (Partner)', status: 'Nurturing', priority: 'Low', notes: 'ต้องการทำสัญญายืมบำรุงในอู่ต่อเรือระยะยาว' }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initLeadsData();
+      renderLeadsTable();
+
+      document.getElementById('lead-search').addEventListener('input', renderLeadsTable);
+      document.getElementById('lead-filter-status').addEventListener('change', renderLeadsTable);
+    });
+
+    function initLeadsData() {
+      const stored = localStorage.getItem(LOCAL_LEADS_KEY);
+      if (!stored) {
+        localStorage.setItem(LOCAL_LEADS_KEY, JSON.stringify(DEFAULT_LEADS));
+        activeLeads = [...DEFAULT_LEADS];
+      } else {
+        activeLeads = JSON.parse(stored);
+      }
+      updateStats();
+    }
+
+    function saveLeadsToStorage() {
+      localStorage.setItem(LOCAL_LEADS_KEY, JSON.stringify(activeLeads));
+      updateStats();
+    }
+
+    function updateStats() {
+      const news = activeLeads.filter(l => l.status === 'New').length;
+      const act = activeLeads.filter(l => l.status === 'Contacted' || l.status === 'Nurturing').length;
+      const converted = activeLeads.filter(l => l.status === 'Converted').length;
+
+      // Qualified with high score
+      const qual = activeLeads.filter(l => {
+        const score = calculateLeadScore(l);
+        return score >= 7 && l.status !== 'Converted';
+      }).length;
+
+      document.getElementById('stat-new-leads').innerText = `${news} ราย`;
+      document.getElementById('stat-active-leads').innerText = `${act} ราย`;
+      document.getElementById('stat-qualified-leads').innerText = `${qual} ราย`;
+      document.getElementById('stat-converted-leads').innerText = `${converted} ราย`;
+    }
+
+    // Lead Scoring Engine based on budget & timeline
+    function calculateLeadScore(lead) {
+      let score = 3; // basic entry
+      
+      const b = parseFloat(lead.budget) || 0;
+      if (b > 500000) score += 3;
+      else if (b > 200000) score += 2;
+      else if (b > 50000) score += 1;
+
+      if (lead.timeline === 'Immediate') score += 3;
+      else if (lead.timeline === '1-3 Months') score += 2;
+      else if (lead.timeline === '3-6 Months') score += 1;
+
+      if (lead.priority === 'High') score += 1;
+
+      return Math.min(10, score);
+    }
+
+    function renderLeadsTable() {
+      const search = document.getElementById('lead-search').value.toLowerCase().trim();
+      const statusFilter = document.getElementById('lead-filter-status').value;
+
+      const tbody = document.getElementById('leads-tbody');
+      tbody.innerHTML = '';
+
+      const filtered = activeLeads.filter(l => {
+        const matchesSearch = !search ||
+          l.company.toLowerCase().includes(search) ||
+          l.contact_name.toLowerCase().includes(search) ||
+          l.email.toLowerCase().includes(search) ||
+          l.source.toLowerCase().includes(search);
+
+        const matchesStatus = !statusFilter || l.status === statusFilter;
+
+        return matchesSearch && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">ไม่พบลีดข้อมูลผู้สนใจสถิติในเกณฑ์</td></tr>';
+        return;
+      }
+
+      filtered.forEach(l => {
+        const score = calculateLeadScore(l);
+        let scoreBadgeColor = 'bg-danger';
+        if (score >= 7) scoreBadgeColor = 'bg-success';
+        else if (score >= 5) scoreBadgeColor = 'bg-warning text-dark';
+
+        // Format Budget
+        const fmtBudget = (l.budget || 0).toLocaleString();
+
+        let statusBadge = '';
+        if (l.status === 'New') statusBadge = '<span class="badge bg-info">New</span>';
+        else if (l.status === 'Contacted') statusBadge = '<span class="badge bg-warning text-dark">Contacted</span>';
+        else if (l.status === 'Qualified') statusBadge = '<span class="badge bg-success">Qualified</span>';
+        else if (l.status === 'Nurturing') statusBadge = '<span class="badge bg-primary">Nurturing</span>';
+        else if (l.status === 'Converted') statusBadge = '<span class="badge bg-indigo">Converted</span>';
+        else statusBadge = '<span class="badge bg-secondary">Dead</span>';
+
+        const row = `
+          <tr>
+            <td>
+              <div class="fw-bold text-dark">${l.company}</div>
+              <div class="text-xs text-muted">Priority: <strong class="text-danger">${l.priority}</strong></div>
+            </td>
+            <td>
+              <div class="fw-semibold">${l.contact_name}</div>
+              <div class="text-xs text-muted">${l.title || '-'}</div>
+            </td>
+            <td class="small">
+              <div><i class="fa fa-phone"></i> ${l.phone || '-'}</div>
+              <div><i class="fa fa-envelope"></i> ${l.email || '-'}</div>
+            </td>
+            <td><span class="badge bg-light text-dark border">${l.source}</span></td>
+            <td class="text-center font-monospace">${fmtBudget} ฿</td>
+            <td class="text-center">
+              <div class="badge ${scoreBadgeColor} px-2.5 py-1.5 font-monospace" style="font-size:0.9rem;">
+                <i class="fa fa-star me-1"></i>${score} / 10
+              </div>
+            </td>
+            <td class="small text-muted">${l.handler}</td>
+            <td class="text-center">${statusBadge}</td>
+            <td class="text-center">
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary" title="แก้ไขสิทธิ์" onclick="openEditLeadModal('${l.id}')">
+                  <i class="fa fa-edit"></i>
+                </button>
+                ${SupabaseDB.isAdmin() ? `
+                  <button class="btn btn-outline-danger" title="ลบเป้าหมาย" onclick="deleteLead('${l.id}')">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                ` : `
+                  <button class="btn btn-outline-secondary opacity-50" disabled title="จำกัดสิทธิ์เฉพาะ Admin เท่านั้น">
+                    <i class="fa fa-lock"></i>
+                  </button>
+                `}
+                ${l.status !== 'Converted' ? `
+                  <button class="btn btn-success" title="สลับเป็นลูกค้านิติจริง" onclick="convertLeadToCustomer('${l.id}')">
+                    <i class="fa fa-check-circle me-1"></i> Convert
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    function openCreateLeadModal() {
+      document.getElementById('leadForm').reset();
+      document.getElementById('lead-form-id').value = '';
+      document.getElementById('leadModalLabel').innerHTML = '<i class="fa fa-user-plus text-success"></i> บันทึกลีดรายใหม่จากงานตลาด';
+      
+      const modal = new bootstrap.Modal(document.getElementById('leadModal'));
+      modal.show();
+    }
+
+    function openEditLeadModal(id) {
+      const l = activeLeads.find(item => item.id === id);
+      if (!l) return;
+
+      document.getElementById('lead-form-id').value = l.id;
+      document.getElementById('leadModalLabel').innerHTML = `<i class="fa fa-edit text-warning"></i> แก้ไขข้อมูลแคมเปญของลีด [${l.company}]`;
+
+      document.getElementById('form-company').value = l.company;
+      document.getElementById('form-source').value = l.source;
+      document.getElementById('form-contact-name').value = l.contact_name;
+      document.getElementById('form-title').value = l.title || '';
+      document.getElementById('form-phone').value = l.phone || '';
+      document.getElementById('form-email').value = l.email || '';
+      document.getElementById('form-budget').value = l.budget || '';
+      document.getElementById('form-timeline').value = l.timeline;
+      document.getElementById('form-handler').value = l.handler;
+      document.getElementById('form-status').value = l.status;
+      document.getElementById('form-priority').value = l.priority;
+      document.getElementById('form-notes').value = l.notes || '';
+
+      const modal = new bootstrap.Modal(document.getElementById('leadModal'));
+      modal.show();
+    }
+
+    function saveLead(event) {
+      event.preventDefault();
+      const id = document.getElementById('lead-form-id').value;
+
+      const payload = {
+        company: document.getElementById('form-company').value,
+        source: document.getElementById('form-source').value,
+        contact_name: document.getElementById('form-contact-name').value,
+        title: document.getElementById('form-title').value,
+        phone: document.getElementById('form-phone').value,
+        email: document.getElementById('form-email').value,
+        budget: parseFloat(document.getElementById('form-budget').value) || 0,
+        timeline: document.getElementById('form-timeline').value,
+        handler: document.getElementById('form-handler').value,
+        status: document.getElementById('form-status').value,
+        priority: document.getElementById('form-priority').value,
+        notes: document.getElementById('form-notes').value
+      };
+
+      if (id) {
+        // Edit
+        const idx = activeLeads.findIndex(item => item.id === id);
+        if (idx !== -1) {
+          activeLeads[idx] = { ...activeLeads[idx], ...payload };
+          showToastAlert('อัปเดตข้อมูลลีดสำเร็จ', 'success');
+        }
+      } else {
+        // New
+        payload.id = 'lead-' + Date.now();
+        activeLeads.push(payload);
+        showToastAlert('บันทึกลีดรายใหม่เสร็จสมบูรณ์', 'success');
+      }
+
+      saveLeadsToStorage();
+      
+      const modal = bootstrap.Modal.getInstance(document.getElementById('leadModal'));
+      modal.hide();
+      renderLeadsTable();
+    }
+
+    function deleteLead(id) {
+      if (!SupabaseDB.isAdmin()) {
+        showToastAlert('เฉพาะผู้ดูแลระบบ (Admin) เท่านั้นที่สามารถลบข้อมูลผู้สนใจได้', 'danger');
+        return;
+      }
+      const idx = activeLeads.findIndex(item => item.id === id);
+      if (idx === -1) return;
+
+      Swal.fire({
+        title: 'ยืนยันลบชุดรายชื่อผู้สนใจ?',
+        text: 'ประวัติคะแนนลีดและการติดต่อจะถูกลบท่องแทรกด่วน',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'ลบทันที',
+        cancelButtonText: 'ยกเลิก'
+      }).then(result => {
+        if (result.isConfirmed) {
+          activeLeads.splice(idx, 1);
+          saveLeadsToStorage();
+          renderLeadsTable();
+          showToastAlert('ลบรายชื่อผู้สนใจออกจากฐานข้อมูลงานตลาดเสร็จสิ้น', 'success');
+        }
+      });
+    }
+
+    // Lead to CRM Customer convert mechanism
+    async function convertLeadToCustomer(id) {
+      const l = activeLeads.find(item => item.id === id);
+      if (!l) return;
+
+      Swal.fire({
+        title: 'ยืนยันการแปลงเป็นลูกค้าหลักเชิงนิติบุคคล?',
+        text: `ระบบจะโยกย้าย ${l.company} ไปยังทะเบียน Customer Database อัตโนมัติ พร้อมสร้างผู้ติดต่อ ${l.contact_name}`,
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        confirmButtonText: 'ยืนยันแปลงลีดทันที!',
+        cancelButtonText: 'ยกเลิก'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          toggleGlobalLoader(true);
+          try {
+            // Register Customer Master in Supabase
+            const custPayload = {
+              customer_name: l.company,
+              customer_code: 'CB-' + Math.floor(1000 + Math.random() * 9000),
+              address: 'สถิติสิทธิ์ที่ส่งมอบแคมเปญ ' + l.source,
+              phone: l.phone || '-',
+              email: l.email || '-',
+              industry: 'Chemical & Industrial',
+              tax_id: 'TX' + Math.floor(Math.random() * 9999999)
+            };
+
+            const createdCustomer = await SupabaseDB.addCustomer(custPayload);
+
+            // Register Contact Person
+            const contactPayload = {
+              customer_id: createdCustomer.id,
+              first_name: l.contact_name.split(' ')[0] || l.contact_name,
+              last_name: l.contact_name.split(' ')[1] || '',
+              job_title: l.title || 'Procurement Representative',
+              phone: l.phone || '-',
+              email: l.email || '-',
+              status: true
+            };
+            await SupabaseDB.addContact(contactPayload);
+
+            // Register Opportunity linking budget
+            const oppPayload = {
+              customer_id: createdCustomer.id,
+              project_name: 'ดีลเปิดตัว: ' + l.notes,
+              service_type: 'Rental Special Services',
+              estimated_value: l.budget || 200000,
+              weighted_value: (l.budget || 200000) * 0.5,
+              due_date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10), // 60 days duration
+              sales_rep: l.handler || 'ดลภัทร (Admin)',
+              status: 'Proposal',
+              description: 'ลีดแปลงสิทธิ์สมบัติมาจากแคมเปญโฆษณา: ' + l.notes
+            };
+            await SupabaseDB.addOpportunity(oppPayload);
+
+            // Mark lead status as Converted
+            l.status = 'Converted';
+            saveLeadsToStorage();
+            renderLeadsTable();
+
+            Swal.fire({
+              title: 'แปลงวิถีการค้าสำเร็จ!',
+              text: `จัดทำพจนานุกรม บริษัท ${l.company} เชื่อมตรงดีลสัญญามูลค่า ${l.budget.toLocaleString()} ฿ เรียบร้อย`,
+              icon: 'success'
+            });
+
+          } catch (err) {
+            console.error("Lead conversion failed", err);
+          } finally {
+            toggleGlobalLoader(false);
+          }
+        }
+      });
+    }
+
+    function seedDemoLeads() {
+      localStorage.setItem(LOCAL_LEADS_KEY, JSON.stringify(DEFAULT_LEADS));
+      initLeadsData();
+      renderLeadsTable();
+      showToastAlert('ประทับลีดตลาดจำลองด่วนเข้าบอร์ดยอดขายเรียบร้อย', 'success');
+    }
+  </script>
+</body>
+</html>

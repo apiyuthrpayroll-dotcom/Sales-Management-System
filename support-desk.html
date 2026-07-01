@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sales Master CRM - Support Desk & Service Center</title>
+
+  <!-- Google Font: Source Sans Pro & Kanit (Thailand UI support) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- AdminLTE 4 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/css/adminlte.min.css">
+  
+  <!-- Custom Application Override CSS -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+
+  <div class="app-wrapper wrapper">
+    <!-- Navbar & Sidebar Injected via app.js -->
+
+    <!-- Main Content Stage Area -->
+    <main class="app-main p-3" style="min-height: 100vh; margin-left: 250px;">
+      <!-- Content Header -->
+      <div class="container-fluid mb-3 pt-2">
+        <div class="row align-items-center">
+          <div class="col-sm-6">
+            <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase">
+              <i class="fas fa-headset text-danger"></i> ระบบแจ้งเครือข่าย & บริการ (Support Desk)
+            </h1>
+            <p class="text-muted small m-0">บันทึกสถิติงานซ่อมบำรุงวิศวกรรม อุปกรณ์เช่าขัดข้อง และบริหารความพึงพอใจหลังส่งมอบงานเชิงบริการโรงแยกก๊าซ</p>
+          </div>
+          <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
+            <button class="btn btn-danger btn-sm" onclick="openCreateTicketModal()">
+              <i class="fa fa-ticket-alt me-1"></i>ลงตั๋วเปิดรับงานแจ้งซ่อมบำรุง
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Stages Content Area -->
+      <div class="container-fluid">
+        <!-- Quick Stats panel -->
+        <div class="row g-2 mb-3">
+          <div class="col-12 col-md-3">
+            <div class="card p-3 border-0 bg-white shadow-sm d-flex flex-row align-items-center">
+              <div class="text-danger bg-danger-subtle p-2.5 rounded me-3"><i class="fa fa-plus-circle fs-4"></i></div>
+              <div>
+                <div class="text-xs text-muted">ตั๋วรับเรื่องใหม่ / New Tickets</div>
+                <h4 class="fw-bold m-0" id="stat-new-tick">0 ใบ</h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="card p-3 border-0 bg-white shadow-sm d-flex flex-row align-items-center">
+              <div class="text-warning bg-warning-subtle p-2.5 rounded me-3"><i class="fa fa-spinner fs-4"></i></div>
+              <div>
+                <div class="text-xs text-muted">กำลังดำเนินการซ่อม / Progress</div>
+                <h4 class="fw-bold m-0" id="stat-progress-tick">0 ใบ</h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="card p-3 border-0 bg-white shadow-sm d-flex flex-row align-items-center">
+              <div class="text-success bg-success-subtle p-2.5 rounded me-3"><i class="fa fa-check-circle fs-4"></i></div>
+              <div>
+                <div class="text-xs text-muted">ปิดงานเรียบร้อย / Resolved</div>
+                <h4 class="fw-bold m-0 text-success" id="stat-resolved-tick">0 ใบ</h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="card p-3 border-0 bg-white shadow-sm d-flex flex-row align-items-center">
+              <div class="text-indigo bg-indigo-subtle p-2.5 rounded me-3"><i class="fa fa-smile fs-4"></i></div>
+              <div>
+                <div class="text-xs text-muted">ความพึงพอใจบริการสิบเฉลี่ย</div>
+                <h4 class="fw-bold m-0 text-indigo">9.8 / 10</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <!-- Ticket Lists Table -->
+          <div class="col-12">
+            <div class="card shadow-sm border-0 bg-white h-100">
+              <div class="card-header bg-white border-bottom py-3">
+                <h5 class="m-0 fw-bold"><i class="fa fa-list"></i> ใบติดตามตั๋วคุมฝ่ายบริการ (Support Tickets Dashboard)</h5>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="google-sheet-table table-hover align-middle mb-0 small" id="tickets-table">
+                    <thead class="table-light">
+                      <tr>
+                        <th>ตั๋ว</th>
+                        <th>นิติบุคคลแจ้งงาน</th>
+                        <th>หัวข้อแจ้งปัญหา / หัวข้อบริการ</th>
+                        <th>ประเภทตั๋ว</th>
+                        <th>ระดับเร่งด่วน</th>
+                        <th>ช่างผู้รับมอบงาน</th>
+                        <th class="text-center">ตรวจสอบสถานะ</th>
+                        <th class="text-center" style="width: 150px;">เร่งแซง</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tickets-tbody">
+                      <!-- Loaded via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer text-center bg-white border-top py-3 text-muted small mt-auto" style="margin-left: 250px;">
+      <strong>Copyright &copy; 2026.</strong> ศูนย์รับเรื่องแจ้งปัญหาสนับสนุนส่วนกลาง IKM Testing
+    </footer>
+  </div>
+
+  <!-- MODAL: ADD TICKET -->
+  <div class="modal fade" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="ticketForm" onsubmit="saveSupportTicket(event)">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="ticketModalLabel"><i class="fa fa-ticket-alt"></i> ลงประวัติตั๋วรับบริการหน้างาน</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">ระบุลูกค้านิติบุคคล (Customer Account) <span class="text-danger">*</span></label>
+              <select class="form-select" id="form-tick-customer" required>
+                <!-- Loaded via master -->
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">หัวข้อสั้นแจ้งเตือนความผิดแผก / SLA Service Issue <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="form-tick-subject" placeholder="เช่น Emergency repair high pressure pump leak" required>
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-bold">ประเภทงานบริการ</label>
+                <select class="form-select" id="form-tick-category">
+                  <option value="Mechanical Repair">Mechanical Repair (ชำรุดเครื่องกล)</option>
+                  <option value="Instrument Calibration">Instrument Calibration (สอบเทียบค่า)</option>
+                  <option value="Rental Replacement">Rental Replacement (เปลี่ยนอุปกรณ์ยืมพก)</option>
+                  <option value="SLA Inquiry">SLA Inquiry (ทวงประสานงานสัญญา)</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold">ระดับสิทธิ์เร่งด่วน</label>
+                <select class="form-select" id="form-tick-priority">
+                  <option value="Urgent 1 Hour">ด่วนเร่งไฟลุก (Urgent 1 Hour)</option>
+                  <option value="High (24 Hours)">สูงสุด (High 24h)</option>
+                  <option value="Normal">สภาพทั่วไป (Normal)</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">วิศวกรผู้ได้รับตรวจมอบหมาย (Assigned Tech)</label>
+              <input type="text" class="form-control" id="form-tick-assignee" value="ช่างยศ (Bovin Facility)">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">คำบันทึกปัญหาและการเข้าวิชาการสังเคราะห์ (Description)</label>
+              <textarea class="form-control" id="form-tick-desc" rows="3" placeholder="ระบุสัญญาณเตือน หรือรหัสชิ้นส่วนที่แจ้งเพื่อนำประกอบแบบแผน"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="submit" class="btn btn-danger"><i class="fa fa-ticket-alt"></i> ยื่นใบตั๋วเข้าระบบ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/js/adminlte.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- DB Scripts -->
+  <script src="/supabase.js"></script>
+  <script src="/app.js"></script>
+
+  <!-- Ticket scripts logic -->
+  <script>
+    let rawCustomersList = [];
+    let supportTickets = [];
+    const LOCAL_TICKETS_KEY = 'crm_support_tickets';
+
+    const INITIAL_TICKETS = [
+      { id: 't-01', customer_name: 'บริษัท ปตท. จำกัด (มหาชน)', subject: 'Nitrogen Compressor overheating error code E4', category: 'Mechanical Repair', priority: 'Urgent 1 Hour', assignee: 'วิศวกรวิทยา (Head Tech)', status: 'New', desc: 'เครื่องคอมเพรสเชอร์อุณหภูมิตั้งบานรบกวน 85c' },
+      { id: 't-02', customer_name: 'SCG Chemical Division', subject: 'Calibration certificate requirement for HP manifold #19', category: 'Instrument Calibration', priority: 'High (24 Hours)', assignee: 'ช่างเอก (Bovin Lab)', status: 'In-Progress', desc: 'ต้องการใบรับรองกระบอกก่อนนำรถเข้าลานโครงการ' },
+      { id: 't-03', customer_name: 'Thai Oil Refiner Group', subject: 'Leaking flange exchange on rental Hydrotest pump #04', category: 'Rental Replacement', priority: 'Normal', assignee: 'ช่างยศ (Bovin Facility)', status: 'Solved', desc: 'เปลี่ยนปะเก็นหนาเสร็จเรียบร้อยและทดสอบกำลังผ่าน' }
+    ];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      toggleGlobalLoader(true);
+      try {
+        await loadSupportMasterData();
+        initTicketsStore();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        toggleGlobalLoader(false);
+      }
+    });
+
+    async function loadSupportMasterData() {
+      rawCustomersList = await SupabaseDB.getCustomers() || [];
+      const tickSelect = document.getElementById('form-tick-customer');
+      tickSelect.innerHTML = '';
+      
+      rawCustomersList.forEach(c => {
+        const option = `<option value="${c.customer_name}">${c.customer_name} (${c.customer_code})</option>`;
+        tickSelect.insertAdjacentHTML('beforeend', option);
+      });
+    }
+
+    function initTicketsStore() {
+      const stored = localStorage.getItem(LOCAL_TICKETS_KEY);
+      if (!stored) {
+        localStorage.setItem(LOCAL_TICKETS_KEY, JSON.stringify(INITIAL_TICKETS));
+        supportTickets = [...INITIAL_TICKETS];
+      } else {
+        supportTickets = JSON.parse(stored);
+      }
+      renderTicketsTable();
+      updateSupportStats();
+    }
+
+    function saveTicketsToStore() {
+      localStorage.setItem(LOCAL_TICKETS_KEY, JSON.stringify(supportTickets));
+      updateSupportStats();
+    }
+
+    function updateSupportStats() {
+      const news = supportTickets.filter(t => t.status === 'New').length;
+      const progress = supportTickets.filter(t => t.status === 'In-Progress').length;
+      const solved = supportTickets.filter(t => t.status === 'Solved').length;
+
+      document.getElementById('stat-new-tick').innerText = `${news} ใบ`;
+      document.getElementById('stat-progress-tick').innerText = `${progress} ใบ`;
+      document.getElementById('stat-resolved-tick').innerText = `${solved} ใบ`;
+    }
+
+    function renderTicketsTable() {
+      const tbody = document.getElementById('tickets-tbody');
+      tbody.innerHTML = '';
+
+      if (supportTickets.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">ไม่พบคิวตั๋วใบซ่อมบำรุงหน้าโรงแยก</td></tr>';
+        return;
+      }
+
+      supportTickets.forEach(t => {
+        let statusBadge = '';
+        if (t.status === 'New' || t.status === 'Pending') {
+          statusBadge = '<span class="badge-status badge-status-unpaid"><i class="fa fa-clock"></i> Pending</span>';
+        } else if (t.status === 'Mobilizing') {
+          statusBadge = '<span class="badge-status badge-status-submitted"><i class="fa fa-truck"></i> Mobilizing</span>';
+        } else if (t.status === 'In-Progress' || t.status === 'OnGoing' || t.status === 'On Going') {
+          statusBadge = '<span class="badge-status badge-status-submitted"><i class="fa fa-spinner"></i> On Going</span>';
+        } else if (t.status === 'Solved' || t.status === 'Completed') {
+          statusBadge = '<span class="badge-status badge-status-approved"><i class="fa fa-check-circle"></i> Completed</span>';
+        } else if (t.status === 'ReadyForInvoice' || t.status === 'Ready for Invoice') {
+          statusBadge = '<span class="badge-status badge-status-ready"><i class="fa fa-file-invoice-dollar"></i> Ready for Invoice</span>';
+        } else {
+          statusBadge = `<span class="badge-status badge-status-draft">${t.status}</span>`;
+        }
+
+        // Red label for Urgency
+        const urgencyLabel = t.priority === 'Urgent 1 Hour' ? `<strong class="text-danger"><i class="fa fa-exclamation-triangle"></i> ${t.priority}</strong>` : t.priority;
+
+        const row = `
+          <tr>
+            <td class="font-bold text-danger font-monospace">${t.id}</td>
+            <td><strong>${t.customer_name}</strong></td>
+            <td>
+              <div class="fw-bold">${t.subject}</div>
+              <div class="text-xs text-muted">${t.desc || '-'}</div>
+            </td>
+            <td><span class="badge bg-light text-dark">${t.category}</span></td>
+            <td>${urgencyLabel}</td>
+            <td><i class="fa fa-user-cog text-muted small"></i> ${t.assignee}</td>
+            <td class="text-center">${statusBadge}</td>
+            <td class="text-center">
+              <div class="btn-group btn-group-sm">
+                ${t.status !== 'Solved' ? `
+                  <button class="btn btn-outline-success btn-xs" onclick="markSolved('${t.id}')">
+                    <i class="fa fa-check"></i> เสร็จสิ้น
+                  </button>
+                  <button class="btn btn-outline-warning btn-xs" onclick="markProgress('${t.id}')">
+                    <i class="fa fa-sync"></i> บรรลุต่อ
+                  </button>
+                ` : '<span class="text-success small fw-bold">Job Resolved</span>'}
+              </div>
+            </td>
+          </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    function openCreateTicketModal() {
+      document.getElementById('ticketForm').reset();
+      const modal = new bootstrap.Modal(document.getElementById('ticketModal'));
+      modal.show();
+    }
+
+    function saveSupportTicket(event) {
+      event.preventDefault();
+      
+      const payload = {
+        id: 'T-' + Math.floor(1000 + Math.random()*9000),
+        customer_name: document.getElementById('form-tick-customer').value,
+        subject: document.getElementById('form-tick-subject').value,
+        category: document.getElementById('form-tick-category').value,
+        priority: document.getElementById('form-tick-priority').value,
+        assignee: document.getElementById('form-tick-assignee').value,
+        status: 'New',
+        desc: document.getElementById('form-tick-desc').value
+      };
+
+      supportTickets.unshift(payload);
+      saveTicketsToStore();
+      renderTicketsTable();
+
+      const modal = bootstrap.Modal.getInstance(document.getElementById('ticketModal'));
+      modal.hide();
+      showToastAlert('เปิดรับตั๋วงานแจ้งซ่อมบำรุงเข้าระบบเรียบร้อย ช่างพร้อมดูแล', 'success');
+    }
+
+    function markSolved(id) {
+      const t = supportTickets.find(item => item.id === id);
+      if (t) {
+        t.status = 'Solved';
+        saveTicketsToStore();
+        renderTicketsTable();
+        showToastAlert('ตั๋วปิดงานทางความพึงพอใจสำเร็จ', 'success');
+      }
+    }
+
+    function markProgress(id) {
+      const t = supportTickets.find(item => item.id === id);
+      if (t) {
+        t.status = 'In-Progress';
+        saveTicketsToStore();
+        renderTicketsTable();
+        showToastAlert('ปรับสถานะตั๋วช่างกำลังวิ่งเข้าปะการโรงแล้ว', 'warning');
+      }
+    }
+  </script>
+</body>
+</html>

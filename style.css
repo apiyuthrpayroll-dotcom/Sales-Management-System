@@ -1,0 +1,909 @@
+/* CSS additions for AdminLTE4 Sales Management CRM */
+
+/* Main Colors and Accents */
+:root {
+  --admin-blue: #2563eb;
+  --admin-indigo: #4f46e5;
+  --admin-emerald: #10b981;
+  --admin-amber: #f59e0b;
+  --admin-rose: #ef4444;
+  --admin-dark-sidebar: #0f172a;
+  --admin-dark-bg: #0b0f19;
+  --admin-dark-card: #1e293b;
+  --admin-body-bg: #f8fafc;
+  --admin-card-border-top: 4px;
+  --tr-transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Base style resets */
+body {
+  font-family: 'Inter', 'Kanit', system-ui, -apple-system, sans-serif;
+  background-color: var(--admin-body-bg);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Spinner Overlay styles */
+#global-spinner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background-color: rgba(33, 37, 41, 0.35);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+#global-spinner.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* AdminLTE4 custom info box widgets styling with nice elevation */
+.info-box {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  display: flex;
+  margin-bottom: 1rem;
+  min-height: 90px;
+  padding: .75rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.info-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+.info-box-icon {
+  border-radius: 0.25rem;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  width: 70px;
+  font-size: 1.875rem;
+  color: #fff;
+}
+.info-box-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.35;
+  flex: 1;
+  padding: 0 10px;
+}
+.info-box-text {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6c757d;
+}
+.info-box-number {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-top: .25rem;
+  color: #212529;
+}
+
+/* Compact white cards with color topping stripes */
+.card-admin {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  transition: var(--tr-transition);
+}
+.card-admin:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+.card-admin.card-primary {
+  border-top: var(--admin-card-border-top) solid var(--admin-blue);
+}
+.card-admin.card-success {
+  border-top: var(--admin-card-border-top) solid var(--admin-emerald);
+}
+.card-admin.card-warning {
+  border-top: var(--admin-card-border-top) solid var(--admin-amber);
+}
+.card-admin.card-danger {
+  border-top: var(--admin-card-border-top) solid var(--admin-rose);
+}
+.card-admin.card-info {
+  border-top: var(--admin-card-border-top) solid var(--admin-indigo);
+}
+.card-admin-header {
+  border-bottom: 1px solid #0000001f;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .75rem 1.25rem;
+  background-color: transparent;
+}
+.card-admin-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #343a40;
+}
+.card-admin-body {
+  flex: 1 1 auto;
+  padding: 1.25rem;
+}
+
+/* Kanban Board Styling */
+.kanban-board {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  align-items: flex-start;
+  min-height: 550px;
+}
+.kanban-column {
+  width: 320px;
+  background-color: #ebecf0;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  transition: background-color 0.2s ease;
+}
+.kanban-column.drag-over {
+  background-color: #dcdfe4;
+}
+.kanban-column-header {
+  padding: 0.25rem 0.5rem 0.75rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.kanban-column-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #333;
+}
+.kanban-column-badge {
+  background-color: rgba(33,37,41,0.08);
+  color: #495057;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 50rem;
+}
+.kanban-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 400px;
+  padding: 0.1rem;
+}
+.kanban-card {
+  background-color: #ffffff;
+  border-radius: 0.25rem;
+  padding: 0.8rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+.kanban-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+.kanban-card:active {
+  cursor: grabbing;
+}
+.kanban-card-title {
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-bottom: 0.35rem;
+  color: #212529;
+}
+.kanban-card-meta {
+  font-size: 3.5rem;
+}
+
+/* Status Labels for Opportunities with specific nice coloring matching AdminLTE */
+.badge-status {
+  padding: 0.25em 0.6em;
+  font-weight: 700;
+  border-radius: 50rem;
+  font-size: 75%;
+}
+.badge-lead { background-color: #6c757d; color: #fff; }
+.badge-qualified { background-color: #0dcaf0; color: #000; }
+.badge-proposal { background-color: #ffc107; color: #000; }
+.badge-negotiation { background-color: #fd7e14; color: #fff; }
+.badge-won { background-color: #198754; color: #fff; }
+.badge-lost { background-color: #dc3545; color: #fff; }
+.badge-cancelled { background-color: #212529; color: #fff; }
+
+/* Real-time search highlighting effect */
+.search-highlight {
+  background-color: #fff2ac;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* Toast Notification Styles */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  pointer-events: none;
+}
+.toast-item {
+  pointer-events: auto;
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  background-color: #ffffff;
+  border-left: 5px solid var(--admin-blue);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 300px;
+  max-width: 450px;
+  animation: slideInRight 0.3s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+  transition: opacity 0.3s ease, margin 0.3s ease-out, transform 0.3s ease-out;
+}
+.toast-item.success {
+  border-left-color: var(--admin-emerald);
+}
+.toast-item.danger {
+  border-left-color: var(--admin-rose);
+}
+.toast-item.warning {
+  border-left-color: var(--admin-amber);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Dark Mode Overrides */
+body.dark-mode {
+  background-color: var(--admin-dark-bg);
+  color: #e3e3e3;
+}
+body.dark-mode .app-header {
+  background-color: #212529 !important;
+  border-bottom-color: #343a40 !important;
+}
+body.dark-mode .app-header .nav-link {
+  color: #c2c7d0 !important;
+}
+body.dark-mode .app-header .nav-link:hover {
+  color: #fff !important;
+}
+body.dark-mode .info-box {
+  background-color: var(--admin-dark-card);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+body.dark-mode .info-box-number {
+  color: #ffffff;
+}
+body.dark-mode .card-admin {
+  background-color: var(--admin-dark-card);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  color: #e3e3e3;
+}
+body.dark-mode .card-admin-title {
+  color: #ffffff;
+}
+body.dark-mode .card-admin-header {
+  border-bottom-color: #343a40;
+}
+body.dark-mode .table {
+  color: #e3e3e3;
+}
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) {
+  --bs-table-bg-type: rgba(255, 255, 255, 0.05);
+}
+body.dark-mode .table td, body.dark-mode .table th {
+  border-color: #343a40;
+}
+body.dark-mode .form-control, body.dark-mode .form-select {
+  background-color: #2d3035;
+  border-color: #495057;
+  color: #fff;
+}
+body.dark-mode .form-control:focus, body.dark-mode .form-select:focus {
+  background-color: #2d3035;
+  color: #fff;
+}
+body.dark-mode .modal-content {
+  background-color: var(--admin-dark-card);
+  color: #fff;
+}
+body.dark-mode .modal-header, body.dark-mode .modal-footer {
+  border-color: #343a40;
+}
+body.dark-mode .kanban-column {
+  background-color: #1e1f22;
+}
+body.dark-mode .kanban-card {
+  background-color: #2b2d31;
+  color: #fff;
+}
+body.dark-mode .kanban-card-title {
+  color: #fff;
+}
+body.dark-mode .kanban-column-title {
+  color: #c2c7d0;
+}
+body.dark-mode .list-group-item {
+  background-color: #242526;
+  border-color: #343a40;
+  color: #ffffff;
+}
+body.dark-mode .text-dark {
+  color: #e3e3e3 !important;
+}
+body.dark-mode .toast-item {
+  background-color: #2d3035;
+  color: #fff;
+}
+
+/* Dashboard Modern Custom Styling additions */
+.welcome-hero {
+  border: none;
+  background-size: 200% auto !important;
+  animation: shineBg 12s ease infinite;
+  transition: box-shadow 0.3s ease;
+}
+@keyframes shineBg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.kpi-hover-card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  z-index: 1;
+}
+.kpi-hover-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+}
+.timeline-circle {
+  transition: transform 0.2s ease;
+}
+.timeline-circle:hover {
+  transform: scale(1.15);
+}
+
+/* Dark mode overrides for new elements */
+body.dark-mode .welcome-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+body.dark-mode .card,
+body.dark-mode .kpi-hover-card {
+  background-color: var(--admin-dark-card) !important;
+  color: #e3e3e3 !important;
+  border-color: #343a40 !important;
+}
+
+/* Sidebar overriding for a cleaner premium look */
+.app-sidebar {
+  box-shadow: 1px 0 10px rgba(0,0,0,0.03);
+  border-right: 1px solid rgba(226, 232, 240, 0.8);
+}
+.sidebar-wrapper {
+  padding: 0.5rem;
+}
+.nav-sidebar .nav-item .nav-link {
+  border-radius: 0.5rem;
+  margin-bottom: 0.25rem;
+  transition: all 0.2s ease;
+  padding: 0.6rem 1rem;
+}
+.nav-sidebar .nav-item .nav-link:hover {
+  background-color: rgba(37, 99, 235, 0.08); /* faint blue */
+  color: var(--admin-blue);
+}
+.nav-sidebar .nav-item .nav-link.active {
+  background-color: var(--admin-blue);
+  color: #ffffff !important;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+body.dark-mode .app-sidebar {
+  border-right: 1px solid #1e293b;
+  box-shadow: 1px 0 10px rgba(0,0,0,0.2);
+}
+body.dark-mode .text-dark,
+body.dark-mode h5.text-slate-800,
+body.dark-mode h6.text-slate-800 {
+  color: #f1f5f9 !important;
+}
+body.dark-mode .form-control,
+body.dark-mode .form-select,
+body.dark-mode .input-group-text {
+  background-color: #2b2d31 !important;
+  color: #f1f5f9 !important;
+  border-color: #4b5563 !important;
+}
+body.dark-mode .bg-light {
+  background-color: #1e1f22 !important;
+}
+body.dark-mode .border-bottom {
+  border-bottom-color: #2d3035 !important;
+}
+body.dark-mode .border-light {
+  border-color: #2d3035 !important;
+}
+
+/* Print view optimization */
+@media print {
+  .app-sidebar, .app-header, .no-print, .btn, .card-admin-header .card-tools {
+    display: none !important;
+  }
+  .app-wrapper {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+  .card-admin {
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ==========================================================================
+   Luxury Mobile & Responsive Micro-Typography Overrides
+   ========================================================================== */
+
+/* Universal font smoothing for luxury polish */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Elegant custom scrollbar for horizontal tables on mobile and desktop */
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(102, 16, 242, 0.15);
+  border-radius: 4px;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 16, 242, 0.35);
+}
+
+/* Standard desktop main view margin fix for safe measure */
+@media (min-width: 992px) {
+  .app-main {
+    margin-left: 250px !important;
+  }
+}
+
+/* Clean mobile viewport adaptations */
+@media (max-width: 991.98px) {
+  /* Prevent margin-left from desktop sidebar affecting mobile viewports */
+  .app-main {
+    margin-left: 0 !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-bottom: 80px !important; /* Space for fixed bottom mobile menu bar */
+  }
+
+  /* Exquisite mobile headers scaling - keeps headings proportional & luxury */
+  h1, .fs-1 {
+    font-size: 1.45rem !important;
+    letter-spacing: -0.01em !important;
+    line-height: 1.25 !important;
+  }
+  h2, .fs-2 {
+    font-size: 1.3rem !important;
+    letter-spacing: -0.01em !important;
+    line-height: 1.25 !important;
+  }
+  h3, .fs-3 {
+    font-size: 1.15rem !important;
+  }
+  h4, .fs-4 {
+    font-size: 1.05rem !important;
+  }
+  h5, .fs-5 {
+    font-size: 0.95rem !important;
+  }
+  p, .text-muted {
+    font-size: 0.82rem !important;
+  }
+
+  /* Compact padding for cards on mobile so stats are tightly packed and beautifully structured */
+  .card, .card-admin, .card-body {
+    border-radius: 12px !important;
+  }
+  .card-body, .card-admin-body, .p-3, .p-4 {
+    padding: 0.75rem !important; /* Proportional compact spacing on small displays */
+  }
+  .card-header, .card-admin-header {
+    padding: 0.65rem 0.75rem !important;
+  }
+
+  /* Mobile tables optimization */
+  .table {
+    font-size: 0.8rem !important;
+  }
+  .table th {
+    padding: 8px 6px !important;
+    font-size: 0.75rem !important;
+  }
+  .table td {
+    padding: 8px 6px !important;
+    max-width: 150px;
+    word-wrap: break-word; /* Prevents overflow */
+  }
+
+  /* Badges sizes adjustment for mobile */
+  .badge {
+    font-size: 0.7rem !important;
+    padding: 0.35em 0.55em !important;
+    letter-spacing: 0.02em;
+  }
+
+  /* Grid structure stacking improvements */
+  .row {
+    --bs-gutter-x: 0.5rem !important; /* Narrower gutters on mobile screens for balance */
+  }
+
+  /* Interactive button modifications for easy touch targets */
+  .btn {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.8rem !important;
+  }
+  .btn-sm {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Toast alerts sizing on mobile views */
+  .toast-item {
+    min-width: calc(100vw - 40px) !important;
+    max-width: calc(100vw - 40px) !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  /* Custom info-box stacking for mobile widgets (e.g. key KPIs) */
+  .info-box {
+    min-height: 75px !important;
+    margin-bottom: 0.75rem !important;
+  }
+  .info-box-icon {
+    width: 50px !important;
+    font-size: 1.35rem !important;
+  }
+  .info-box-number {
+    font-size: 1.15rem !important;
+  }
+}
+
+/* Extra small mobile adjustments */
+@media (max-width: 480px) {
+  /* Table wrapping guard for ultra-compact handsets*/
+  .table-responsive {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+  }
+
+  /* Hide secondary descriptive columns on mobile view tables to boost clean elegance */
+  .d-mobile-none {
+    display: none !important;
+  }
+}
+
+/* Luxe hover states for mobile interactive items */
+.mobile-nav-item {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mobile-nav-item:active {
+  transform: scale(0.92);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.hover-bg-light:hover, .hover-bg-light:active {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  transition: background-color 0.15s ease;
+}
+
+/* ==========================================================================
+   Luxury Typography & Professional System Status Badges
+   ========================================================================== */
+
+/* Clean, modern typography with superior readability and smoothing */
+body, h1, h2, h3, h4, h5, h6, p, span, a, td, th, input, select, textarea, button {
+  font-family: 'Kanit', 'Source Sans 3', system-ui, -apple-system, sans-serif !important;
+  letter-spacing: -0.012em !important;
+}
+
+/* Outstanding Pro-Grade Status Badges mapping */
+.badge-status {
+  padding: 0.45em 0.8em !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  font-size: 0.75rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  border: 1px solid transparent !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Specific status variances with modern glassmorphism opacity styling */
+.badge-status-draft, .badge-status-pending-invoice {
+  background-color: rgba(108, 117, 125, 0.09) !important;
+  color: #5c636a !important;
+  border-color: rgba(108, 117, 125, 0.2) !important;
+}
+.badge-status-submitted, .badge-status-lead, .badge-status-contacted {
+  background-color: rgba(13, 110, 253, 0.09) !important;
+  color: #0d6efd !important;
+  border-color: rgba(13, 110, 253, 0.2) !important;
+}
+.badge-status-approved, .badge-status-paid, .badge-status-won, .badge-status-completed, .badge-status-active {
+  background-color: rgba(25, 135, 84, 0.09) !important;
+  color: #198754 !important;
+  border-color: rgba(25, 135, 84, 0.2) !important;
+}
+.badge-status-rejected, .badge-status-overdue, .badge-status-lost, .badge-status-suspended {
+  background-color: rgba(220, 53, 69, 0.09) !important;
+  color: #dc3545 !important;
+  border-color: rgba(220, 53, 69, 0.2) !important;
+}
+.badge-status-expired, .badge-status-pending, .badge-status-unpaid {
+  background-color: rgba(255, 193, 7, 0.12) !important;
+  color: #9d7200 !important;
+  border-color: rgba(255, 193, 7, 0.28) !important;
+}
+.badge-status-negotiation, .badge-status-ongoing, .badge-status-mobilizing, .badge-status-proposal {
+  background-color: rgba(13, 202, 240, 0.1) !important;
+  color: #008da2 !important;
+  border-color: rgba(13, 202, 240, 0.2) !important;
+}
+.badge-status-ready, .badge-status-ready_for_invoice {
+  background-color: rgba(111, 66, 193, 0.09) !important;
+  color: #6610f2 !important;
+  border-color: rgba(111, 66, 193, 0.2) !important;
+}
+
+/* Sidebar Submenu Layout */
+.sidebar-submenu {
+  list-style: none !important;
+  padding-left: 1.1rem !important;
+  border-left: 1px dashed rgba(255, 255, 255, 0.12) !important;
+  margin-left: 1.35rem !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.4rem !important;
+}
+.sidebar-submenu .nav-link {
+  padding: 0.4rem 0.6rem !important;
+  font-size: 0.81rem !important;
+  color: rgba(255, 255, 255, 0.52) !important;
+  transition: all 0.12s ease-in-out !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  text-decoration: none !important;
+}
+.sidebar-submenu .nav-link:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 4px !important;
+}
+.sidebar-submenu .nav-link.active {
+  color: #3b82f6 !important;
+  font-weight: 500 !important;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  border-radius: 4px !important;
+}
+.sidebar-header-title {
+  font-size: 0.68rem !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.38) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  padding: 0.8rem 1rem 0.25rem 1rem !important;
+}
+.sidebar-parent-btn {
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  transition: background-color 0.15s ease !important;
+}
+.sidebar-parent-btn[aria-expanded="true"] {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  color: #fff !important;
+}
+.sidebar-parent-btn[aria-expanded="true"] .fa-chevron-right {
+  transform: rotate(90deg) !important;
+}
+.sidebar-parent-btn .fa-chevron-right {
+  transition: transform 0.2s ease !important;
+  font-size: 0.72rem !important;
+}
+
+/* Standard Modern Table Style Override for all Data Grids */
+.google-sheet-table {
+  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0;
+  font-size: 0.875rem !important;
+  background-color: #ffffff !important;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+.google-sheet-table th {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: none !important;
+  padding: 12px 16px !important;
+  font-size: 0.75rem !important;
+  vertical-align: middle !important;
+}
+.google-sheet-table td {
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: none !important;
+  padding: 12px 16px !important;
+  vertical-align: middle !important;
+  color: #334155 !important;
+  transition: background-color 0.15s ease;
+}
+.google-sheet-table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+.google-sheet-table tbody tr:hover td {
+  background-color: #f1f5f9 !important;
+}
+
+/* --- ERP Form & Button Professional Overrides --- */
+
+/* Buttons */
+.btn {
+  font-weight: 500;
+  border-radius: 0.375rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background-color: var(--admin-blue) !important;
+  border-color: var(--admin-blue) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8 !important;
+  border-color: #1e40af !important;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background-color: var(--admin-emerald) !important;
+  border-color: var(--admin-emerald) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.25);
+}
+.btn-success:hover {
+  background-color: #059669 !important;
+  border-color: #047857 !important;
+  box-shadow: 0 4px 6px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-warning {
+  background-color: var(--admin-amber) !important;
+  border-color: var(--admin-amber) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.25);
+}
+.btn-warning:hover {
+  background-color: #d97706 !important;
+  border-color: #b45309 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 6px rgba(245, 158, 11, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background-color: var(--admin-rose) !important;
+  border-color: var(--admin-rose) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.25);
+}
+.btn-danger:hover {
+  background-color: #dc2626 !important;
+  border-color: #b91c1c !important;
+  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-outline-danger {
+  color: var(--admin-rose) !important;
+  border-color: var(--admin-rose) !important;
+}
+.btn-outline-danger:hover {
+  background-color: var(--admin-rose) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+/* Forms */
+.form-control, .form-select {
+  border-radius: 0.375rem;
+  border-color: #cbd5e1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  background-color: #f8fafc;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--admin-blue);
+  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+  background-color: #ffffff;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+}
+
+.modal-header.bg-primary {
+  background-color: var(--admin-blue) !important;
+}

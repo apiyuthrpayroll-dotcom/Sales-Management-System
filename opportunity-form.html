@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sales Master CRM - ฟอร์มกรอกบันทึกโอกาสงานขาย (Opportunity Form)</title>
+
+  <!-- Google Font: Source Sans Pro & Kanit (Thailand UI support) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&display=swap">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- AdminLTE 4 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/css/adminlte.min.css">
+  
+  <!-- Custom Application Override CSS -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+
+  <div class="app-wrapper wrapper">
+    <!-- Navbar Shell Injected via app.js -->
+    <!-- Sidebar Shell Injected via app.js -->
+
+    <!-- Main Content Stage Area -->
+    <main class="app-main p-3" style="min-height: 100vh;">
+      <!-- Content Header (Page header) -->
+      <div class="container-fluid mb-3 pt-2">
+        <div class="row align-items-center">
+          <div class="col-sm-6">
+            <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase" id="opp-page-title"><i class="fas fa-plus-circle text-primary"></i> บันทึกข้อมูลโอกาสขายรายใหม่</h1>
+            <p class="text-muted small m-0" id="opp-page-desc">ป้อนรายละเอียดเพื่อสร้างสัญญา คาดหมายรายจ่ายประมาณการ และสรุปสถานะทีมเจรจาการค้า</p>
+          </div>
+          <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
+            <a href="opportunities.html" class="btn btn-outline-secondary btn-sm"><i class="fa fa-arrow-left me-1"></i>กลับหน้ารวมเครื่องมือ</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Form Stage body Container -->
+      <div class="container-fluid">
+        <div class="row">
+          
+          <!-- Column: Form inputs Card -->
+          <div class="col-12 col-xl-8">
+            <div class="card-admin card-primary shadow-sm">
+              <div class="card-admin-header bg-light">
+                <span class="card-admin-title fw-bold" id="opp-card-indicator"><i class="fa fa-edit text-primary"></i> ใบเสนอคอร์สรายละเอียดทางการขายและการปิดยอด</span>
+              </div>
+              <div class="card-admin-body px-4 py-3">
+                
+                <form id="opportunityDetailForm" onsubmit="event.preventDefault(); saveOpportunityAction();">
+                  
+                  <!-- Hidden inputs -->
+                  <input type="hidden" id="opp-form-id">
+
+                  <div class="row g-3">
+                    
+                    <div class="col-md-6">
+                      <label for="opp-customer" class="form-label small fw-bold">เลือกบัญชีลีด / ลูกค้าองค์กร <span class="text-danger">*</span></label>
+                      <select class="form-select" id="opp-customer" required>
+                        <option value="" disabled selected>-- กรุณาเลือกบัญชีลูกค้าผู้รับผิดชอบ --</option>
+                        <!-- Dynamic select elements retrieved via customer master -->
+                      </select>
+                      <div class="form-text text-muted" style="font-size: 0.72rem;">ไม่พบบัญชีลูกค้า? <a href="customers.html" class="text-decoration-none text-primary">ไปหน้าทะเบียนลูกค้าเพื่อสร้างบัญชี</a></div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label for="opp-project-name" class="form-label small fw-bold">ชื่อโครงการ / วัตถุประสงค์เจรจา <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="opp-project-name" placeholder="เช่น โครงการทดสอบซ่อมบำรุงประจำปีโรงงานแปรรูป" required>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label for="opp-service-type" class="form-label small fw-bold">ประเภทขอบเขตงานบริการ <span class="text-danger">*</span></label>
+                      <select class="form-select" id="opp-service-type" required>
+                        <option value="Testing Service">Testing Service (ทดสอบและวิเคราะห์เคมี)</option>
+                        <option value="Equipment Rental">Equipment Rental (เช่าเครื่องจักรและอุปกรณ์ซ่อม)</option>
+                        <option value="Manpower Supply">Manpower Supply (ส่งพนักงานเทคนิคซ่อมหน้างาน)</option>
+                        <option value="Engineering Service">Engineering Service (วิศวกรรมโครงสร้างและการออกแบบ)</option>
+                        <option value="Fabrication">Fabrication (ตัด ประกอบ ขึ้นรูปถังความดัน)</option>
+                        <option value="Machining">Machining (กลึง มิลลิ่ง ซ่อมบำรุงชิ้นส่วนโลหะ)</option>
+                        <option value="Integrity Assessment">Integrity Assessment (ประเมินความปลอดภัยโรงงาน)</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label for="opp-lead-source" class="form-label small fw-bold">แหล่งที่มาของโอกาสขาย <span class="text-danger">*</span></label>
+                      <select class="form-select" id="opp-lead-source" required>
+                        <option value="Website">Website (เว็บบอร์ด / ลงชื่อออนไลน์)</option>
+                        <option value="Connection">Connection (คนรู้จักภายใน คอร์สอบรม)</option>
+                        <option value="Existing Customer">Existing Customer (ลูกค้าประจำต่ออายุสัญญา)</option>
+                        <option value="Tender">Tender (ยื่นประกวดราคากลางทางราชการ)</option>
+                        <option value="Cold Call">Cold Call (ฝ่ายขายสำรวจเป้าหมายหน้าใหม่)</option>
+                        <option value="Referral">Referral (ลูกค้าเก่าแนะนำส่งมอบต่อปีก)</option>
+                        <option value="Walk In">Walk In (เดินติดต่อสอบถามทางหน้าประตู)</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label for="opp-location" class="form-label small fw-bold">พื้นที่ดำเนินโครงการ <span class="text-danger">*</span></label>
+                      <select class="form-select" id="opp-location" required>
+                        <option value="Chonburi">ระนอง-ชลบุรี (Eastern Seaboard)</option>
+                        <option value="Rayong">ระยอง (Map Ta Phut Industrial)</option>
+                        <option value="Bangkok">กรุงเทพมหานครและปริมณฑล</option>
+                        <option value="Songkhla">สงขลา (Offshore / ภาคใต้)</option>
+                        <option value="Kanchanaburi">กาญจนบุรีและปริมณฑลตะวันตก</option>
+                        <option value="Other">พื้นที่จังหวัดต่าง ๆ / ต่างประเทศ</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label for="opp-estimated-value" class="form-label small fw-bold">มูลค่างานขายโดยประมาณการ (Estimated Value) <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light fw-bold">฿</span>
+                        <input type="number" step="100.00" class="form-control" id="opp-estimated-value" placeholder="ระบุมูลค่าเงินก่อนภาษีมูลค่าเพิ่ม" required>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label for="opp-expected-date" class="form-label small fw-bold">คาดหมายวันครบกำหนดสรุปปิดยอดดีล (Deadline) <span class="text-danger">*</span></label>
+                      <input type="date" class="form-control" id="opp-expected-date" required>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="bg-light p-3 rounded border border-light-subtle">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                          <label for="opp-probability" class="form-label small fw-bold m-0"><i class="fa fa-percentage text-indigo"></i> ความน่าจะเป็นที่จะปิดการขายได้สำเร็จ (Probability)</label>
+                          <span class="badge bg-indigo px-3 py-1 font-monospace fs-6 fw-bold shadow-xs border text-white" id="opp-prob-bubble">50%</span>
+                        </div>
+                        <input type="range" class="form-range" id="opp-probability" min="0" max="100" step="5" value="50">
+                        <div class="d-flex justify-content-between text-muted" style="font-size: 0.68rem;">
+                          <span>0% (ยกเลิก / แพ้พรีเซนส์แน่นอน)</span>
+                          <span>50% (ส่งใบเสนอราคาแล้ว/รอเจรจา)</span>
+                          <span>100% (เซ็นสัญญาซื้อขาย/จบ Won)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label for="opp-salesperson" class="form-label small fw-bold">ผู้ดูแลสัญญา / พนักงานขาย (Sales Representative) <span class="text-danger">*</span></label>
+                      <select class="form-select" id="opp-salesperson" required>
+                        <option value="เอกชัย วงศ์ดี (S01)">เอกชัย วงศ์ดี (S01)</option>
+                        <option value="สุชาดา เลิศวิริยะ (S02)">สุชาดา เลิศวิริยะ (S02)</option>
+                        <option value="ธนพล คำดี (S03)">ธนพล คำดี (S03)</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label for="opp-status" class="form-label small fw-bold">สถานะความคืบหน้าโครงการทางการค้า <span class="text-danger">*</span></label>
+                      <select class="form-select" id="opp-status" required>
+                        <option value="Lead" selected>Lead (กำลังประเมินขอบเขตเบื้องต้น)</option>
+                        <option value="Qualified">Qualified (ประเมินว่ามีโอกาสขายจริงจัง)</option>
+                        <option value="Proposal">Proposal (ยื่นเล่มและเสนอราคากลางเรียบร้อย)</option>
+                        <option value="Negotiation">Negotiation (อยู่ขั้นตอนพูดคุยส่วนลดสิทธิ์และรายละเอียด)</option>
+                        <option value="Won">Won (ชนะการประมูล ได้รับ PO/จัดซื้อซื้อสัญญางานแล้ว)</option>
+                        <option value="Lost">Lost (ลบลัดพลาดประมูลและสูญเสียทางการค้า)</option>
+                        <option value="Cancelled">Cancelled (ลูกค้ายกเลิกโครงงานทั้งหมด)</option>
+                      </select>
+                    </div>
+
+                    <div class="col-12 mt-3">
+                      <label for="opp-remarks" class="form-label small fw-bold">บันทึกขั้นตอนเพิ่มเติม (Remarks / Scope Outline)</label>
+                      <textarea class="form-control" id="opp-remarks" rows="2" placeholder="ระบุเหตุผล ข้อตกลงความต้องการหลัก หรือประเด็นเจรจาคั่นสัญญาวิเคราะห์"></textarea>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="opp-internal" class="form-label small fw-bold mb-1"><i class="fa fa-lock text-muted text-xs"></i> บันทึกข้อฟีดแบคภายในทีม (Private Team Notes)</label>
+                      <textarea class="form-control" id="opp-internal" rows="2" placeholder="ระบุเชิงประเมิน เช่น จุดอ่อนคู่แข่ง งบประมาณแฝง หรือเงื่อนไขปิดดีลของจัดซื้อลูกค้า"></textarea>
+                    </div>
+
+                  </div>
+
+                  <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                    <a href="opportunities.html" class="btn btn-outline-secondary px-3">ยกเลิกบันทึก</a>
+                    <button type="submit" class="btn btn-primary fw-bold px-4"><i class="fa fa-save me-1"></i> บันทึกข้อมูลโอกาสขาย</button>
+                  </div>
+
+                </form>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Column: Sidebar statistics help details -->
+          <div class="col-12 col-xl-4 col-print-none">
+            <div class="card-admin card-info shadow-sm">
+              <div class="card-admin-header">
+                <span class="card-admin-title small font-bold"><i class="fa fa-question-circle text-info"></i> ข้อมูลช่วยเหลือในระบบเจรจายอดขาย</span>
+              </div>
+              <div class="card-admin-body">
+                <div class="d-flex flex-column gap-3">
+                  <div class="bg-indigo bg-opacity-10 p-2.5 rounded border border-indigo border-opacity-10">
+                    <div class="small fw-bold text-indigo"><i class="fa fa-calculator me-1"></i>เกณฑ์คํานวณมูลค่าถ่วงน้ำหนัก (Weighted Value)</div>
+                    <p class="text-xs text-muted m-0 mt-1">สมการคํานวณหลัก: <code class="small text-indigo fw-bold">Estimated_Value * (Success_Probability / 100)</code><br>เครื่องมือถ่วงน้ำหนักช่วยในการคาดหมายกระแสเงินหมุนเวียน (Cash Flow) ของบริษัทอย่างเป็นสากล</p>
+                  </div>
+
+                  <div>
+                    <span class="small fw-bold text-dark d-block mb-1"><i class="fa fa-star text-warning me-1"></i>มาตรฐานการระบุความก้าวหน้าดีลขาย:</span>
+                    <ul class="text-muted small ps-3 m-0 d-flex flex-column gap-1">
+                      <li><strong>Lead (10%)</strong>: ส่งโปรไฟล์เบื้องต้น หรือเพิ่งลงทะเบียนเจรจา</li>
+                      <li><strong>Qualified (30%)</strong>: ระบุขอบเขตงานได้พร้อมส่งทีมเข้าไซต์</li>
+                      <li><strong>Proposal (60%)</strong>: เล่มใบเสนอราคาส่งถึงมือจัดซื้อกลางแล้ว</li>
+                      <li><strong>Negotiation (80%)</strong>: อยู่ระหว่างเจรจายอดเทรดส่วนลดสัญญาสัปดาห์สุดท้าย</li>
+                      <li><strong>Won (100%)</strong>: ดีลการค้ารอดชัยเซ็น PO รับงานอย่างเป็นทางการ</li>
+                    </ul>
+                  </div>
+
+                  <div id="opp-edit-audit-box" class="border-top pt-3 d-none">
+                    <span class="small fw-bold text-dark d-block"><i class="fa fa-history text-muted me-1"></i>บันทึกประวัติการแก้ไขใบงาน:</span>
+                    <div id="opp-audit-list" class="small mt-2 text-muted.font-monospace">
+                      <!-- Filled conditionally when in edit mode -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer block -->
+    <footer class="app-footer text-center bg-white border-top py-3 text-muted small no-print mt-auto">
+      <div class="float-end d-none d-sm-inline ms-3">AdminLTE 4.0 Sales Suite Beta</div>
+      <strong>Copyright &copy; 2026 <a href="https://ai.studio/build" class="text-decoration-none">AI Studio Workspace</a>.</strong> สงวนลิขสิทธิ์ระบบอย่างถูกต้องสมบูรณ์
+    </footer>
+  </div>
+
+  <!-- script resources Core -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/js/adminlte.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="/supabase.js"></script>
+  <script src="/app.js"></script>
+
+  <!-- Inline Opportunity form handling logic -->
+  <script>
+    let activeOpportunityEditId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Populate customers selective dropdown
+      await loadCustomersToDropdown();
+
+      // 2. Add slider bubble display listeners
+      bindSliderListener();
+
+      // 3. Inspect if editing parameter is specified
+      const params = new URLSearchParams(window.location.search);
+      const editingId = params.get('id');
+      if (editingId) {
+        setupFormEditMode(editingId);
+      }
+    });
+
+    async function loadCustomersToDropdown() {
+      try {
+        const customers = await SupabaseDB.getCustomers();
+        const select = document.getElementById('opp-customer');
+        if (!select) return;
+
+        // Strip default
+        select.innerHTML = '<option value="" disabled selected>-- กรุณาเลือกบัญชีลูกค้าผู้รับผิดชอบ --</option>';
+        
+        customers.forEach(cust => {
+          if (cust.status === 'Active') {
+            const opt = document.createElement('option');
+            opt.value = cust.id;
+            opt.innerText = `${cust.customer_name} (${cust.customer_code})`;
+            select.appendChild(opt);
+          }
+        });
+      } catch (err) {
+        console.error("Dropdown client injection failed", err);
+        showToastAlert('ไม่สามารถประมวลรายชื่อผู้จ่ายลูกค้าได้', 'danger');
+      }
+    }
+
+    function bindSliderListener() {
+      const slider = document.getElementById('opp-probability');
+      const bubble = document.getElementById('opp-prob-bubble');
+      if (slider && bubble) {
+        slider.addEventListener('input', (e) => {
+          bubble.innerText = `${e.target.value}%`;
+        });
+      }
+
+      // Automatically preset standard probability rates when change status dropdown
+      const statusSelect = document.getElementById('opp-status');
+      if (statusSelect && slider && bubble) {
+        statusSelect.addEventListener('change', (e) => {
+          const val = e.target.value;
+          const mappedRates = {
+            'Lead': 10,
+            'Qualified': 30,
+            'Proposal': 60,
+            'Negotiation': 80,
+            'Won': 100,
+            'Lost': 0,
+            'Cancelled': 0
+          };
+          if (mappedRates[val] !== undefined) {
+            slider.value = mappedRates[val];
+            bubble.innerText = `${mappedRates[val]}%`;
+          }
+        });
+      }
+    }
+
+    async function setupFormEditMode(id) {
+      toggleGlobalLoader(true);
+      try {
+        const opportunities = await SupabaseDB.getOpportunities();
+        const target = opportunities.find(o => o.id === id);
+        if (!target) {
+          showToastAlert('ไม่พบระเบียนโอกาสงานขายหมายเลขนี้ในระบบ!', 'danger');
+          window.location.href = 'opportunities.html';
+          return;
+        }
+
+        activeOpportunityEditId = id;
+
+        // Custom titles display updates
+        document.getElementById('opp-page-title').innerHTML = `<i class="fas fa-edit text-primary"></i> แก้ไขข้อมูลโอกาสขายสำหรับดีล ${target.opportunity_no}`;
+        document.getElementById('opp-page-desc').innerText = `อัปเดตสถานะความก้าวหน้า มูลค่า และโครงสร้างเจรจาการค้าเพื่อให้โมเดลแดชบอร์ดสรุปวิเคราะห์ยอดแม่นยำที่สุด`;
+        document.getElementById('opp-card-indicator').innerHTML = `<i class="fa fa-edit text-primary"></i> ปรับปรุงดีลการค้าหมายเลขพอร์ท: <span class="font-monospace fw-bold">${target.opportunity_no}</span>`;
+        
+        // Populate form inputs
+        document.getElementById('opp-form-id').value = target.id;
+        document.getElementById('opp-customer').value = target.customer_id;
+        document.getElementById('opp-project-name').value = target.project_name;
+        document.getElementById('opp-service-type').value = target.service_type;
+        document.getElementById('opp-lead-source').value = target.lead_source;
+        document.getElementById('opp-location').value = target.project_location || 'Other';
+        document.getElementById('opp-estimated-value').value = target.estimated_value;
+        document.getElementById('opp-expected-date').value = target.expected_close_date || '';
+        document.getElementById('opp-salesperson').value = target.sales_person_id;
+        document.getElementById('opp-status').value = target.status;
+        
+        // Slider value
+        document.getElementById('opp-probability').value = target.success_probability;
+        document.getElementById('opp-prob-bubble').innerText = `${target.success_probability}%`;
+
+        document.getElementById('opp-remarks').value = target.remarks || '';
+        document.getElementById('opp-internal').value = target.internal_notes || '';
+
+        // Display historical audit logs for this ID specifically
+        document.getElementById('opp-edit-audit-box').classList.remove('d-none');
+        const logsContainer = document.getElementById('opp-audit-list');
+        if (logsContainer) {
+          const allActs = await SupabaseDB.getActivities();
+          const targetActs = allActs.filter(a => a.target_id === id);
+          if (targetActs.length === 0) {
+            logsContainer.innerHTML = '<span class="text-muted small">ยังไม่มีผู้แก้ไขระเบียนนี้นับตั้งแต่ลงทะเบียน</span>';
+          } else {
+            logsContainer.innerHTML = targetActs.map(a => `
+              <div class="mb-1 pb-1 border-bottom border-light" style="font-size:0.72rem;">
+                <span class="fw-bold">${a.action}</span><br>
+                <div class="text-muted">${new Date(a.created_at).toLocaleString('th-TH')} - ${a.details}</div>
+              </div>
+            `).join('');
+          }
+        }
+
+      } catch (err) {
+        console.error("Load single opportunity target failed", err);
+        showToastAlert('โหลดข้อมูลโอกาสขายเพื่อแก้ไขล้มเหลว', 'danger');
+      } finally {
+        toggleGlobalLoader(false);
+      }
+    }
+
+    async function saveOpportunityAction() {
+      const form = document.getElementById('opportunityDetailForm');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const id = document.getElementById('opp-form-id').value;
+      const payload = {
+        customer_id: document.getElementById('opp-customer').value,
+        project_name: document.getElementById('opp-project-name').value.trim(),
+        service_type: document.getElementById('opp-service-type').value,
+        lead_source: document.getElementById('opp-lead-source').value,
+        project_location: document.getElementById('opp-location').value,
+        estimated_value: parseFloat(document.getElementById('opp-estimated-value').value),
+        expected_close_date: document.getElementById('opp-expected-date').value,
+        success_probability: parseInt(document.getElementById('opp-probability').value, 10),
+        sales_person_id: document.getElementById('opp-salesperson').value,
+        status: document.getElementById('opp-status').value,
+        remarks: document.getElementById('opp-remarks').value.trim(),
+        internal_notes: document.getElementById('opp-internal').value.trim()
+      };
+
+      toggleGlobalLoader(true);
+      try {
+        if (id) {
+          // Edit Update
+          await SupabaseDB.updateOpportunity(id, payload);
+          await SupabaseDB.addActivity('แก้ไขโครงการขาย', 'Opportunity', id, `ประเมินอัปเดตสิทธิ์รายละเอียดสัญญาสินเชื่อของดีล "${payload.project_name}" (มูลค่าปรับเป็น ฿${payload.estimated_value.toLocaleString()})`);
+          showToastAlert('อัปเดตรายละเอียดสัญญางานขายเรียบร้อย', 'success');
+        } else {
+          // Insertion
+          const res = await SupabaseDB.addOpportunity(payload);
+          await SupabaseDB.addActivity('จดทะเบียนโอกาสขายใหม่', 'Opportunity', res.id || 'new', `ลงตารางเป้าหมายงานใหม่สำหรับโครงการ "${payload.project_name}" มูลค่ายอดประมาณ ฿${payload.estimated_value.toLocaleString()}`);
+          showToastAlert('บันทึกเพิ่มโอกาสงานขายสำเร็จเรียบร้อยแล้ว', 'success');
+        }
+
+        // Redirect back on success
+        setTimeout(() => {
+          window.location.href = 'opportunities.html';
+        }, 1200);
+
+      } catch (err) {
+        console.error("Failed to save opportunity document", err);
+        showToastAlert('บันทึกข้อมูลล้มเหลว ข้อผิดพลาด: ' + err.message, 'danger');
+      } finally {
+        toggleGlobalLoader(false);
+      }
+    }
+  </script>
+</body>
+</html>

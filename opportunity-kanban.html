@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sales Master CRM - กระดานไอเดีย Pipeline (Kanban Board)</title>
+
+  <!-- Google Font: Source Sans Pro & Kanit (Thailand UI support) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&display=swap">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- AdminLTE 4 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/css/adminlte.min.css">
+  
+  <!-- Custom Application Override CSS -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+
+  <div class="app-wrapper wrapper">
+    <!-- Navbar Shell Injected via app.js -->
+    <!-- Sidebar Shell Injected via app.js -->
+
+    <!-- Main Content Stage Area -->
+    <main class="app-main p-3" style="min-height: 100vh;">
+      <!-- Content Header (Page header) -->
+      <div class="container-fluid mb-3 pt-2">
+        <div class="row align-items-center">
+          <div class="col-sm-6">
+            <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase"><i class="fas fa-columns text-primary"></i> กระดานควบคุมโอกาสขาย (Pipeline Board)</h1>
+            <p class="text-muted small m-0">ลากและวางดีลงานขายเปลี่ยนกลุ่มสัญญาทันที เพิ่มประสิทธิภาพประสานงานและการคิดเปรียบเทียบมูลค่า</p>
+          </div>
+          <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
+            <div class="btn-group shadow-sm">
+              <a href="opportunities.html" class="btn btn-outline-secondary btn-sm"><i class="fa fa-list me-1"></i>ดูแบบตารางข้อมูล</a>
+              <a href="opportunity-form.html" class="btn btn-primary btn-sm"><i class="fa fa-plus-circle me-1"></i>สร้างโอกาสขายใหม่</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Kanban stage content -->
+      <div class="container-fluid">
+        <div class="alert alert-light border shadow-sm py-2 px-3 small d-flex align-items-center gap-1.5 mb-3">
+          <i class="fa fa-info-circle text-primary"></i>
+          <span><strong>วิธีการใช้งาน:</strong> คลิกลากดีลโครงการค้างไว้และลากข้ามคอลัมน์เพื่อเปลี่ยนสถานะงานขายด่วน ระบบจะปรับปรุงความน่าจะเป็นรวมถึงอัดสถิติบันทึกลงฐานข้อมูลให้อัตโนมัติ</span>
+        </div>
+
+        <!-- Kanban Board Container -->
+        <div class="kanban-board" id="crm-kanban-board">
+          
+          <!-- Column 1: Lead -->
+          <div class="kanban-column" id="col-Lead" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="handleDrop(event, 'Lead')">
+            <div class="kanban-column-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa fa-circle text-secondary font-xs"></i>
+                <span class="kanban-column-title">Lead (ผู้ติดต่อใหม่)</span>
+              </div>
+              <span class="kanban-column-badge" id="badge-count-Lead">0</span>
+            </div>
+            <div class="text-xs text-muted mb-2 px-1 font-monospace" id="col-sum-Lead">มูลค่า: ฿0.00</div>
+            <div class="kanban-cards-container" id="cards-Lead">
+              <!-- Cards load dynamically -->
+            </div>
+          </div>
+
+          <!-- Column 2: Qualified -->
+          <div class="kanban-column" id="col-Qualified" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="handleDrop(event, 'Qualified')">
+            <div class="kanban-column-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa fa-circle text-info font-xs"></i>
+                <span class="kanban-column-title">Qualified (ผ่านเกณฑ์)</span>
+              </div>
+              <span class="kanban-column-badge" id="badge-count-Qualified">0</span>
+            </div>
+            <div class="text-xs text-muted mb-2 px-1 font-monospace" id="col-sum-Qualified">มูลค่า: ฿0.00</div>
+            <div class="kanban-cards-container" id="cards-Qualified">
+              <!-- Cards load dynamically -->
+            </div>
+          </div>
+
+          <!-- Column 3: Proposal -->
+          <div class="kanban-column" id="col-Proposal" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="handleDrop(event, 'Proposal')">
+            <div class="kanban-column-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa fa-circle text-warning font-xs"></i>
+                <span class="kanban-column-title">Proposal (ยื่นเสนอราคา)</span>
+              </div>
+              <span class="kanban-column-badge" id="badge-count-Proposal">0</span>
+            </div>
+            <div class="text-xs text-muted mb-2 px-1 font-monospace" id="col-sum-Proposal">มูลค่า: ฿0.00</div>
+            <div class="kanban-cards-container" id="cards-Proposal">
+              <!-- Cards load dynamically -->
+            </div>
+          </div>
+
+          <!-- Column 4: Negotiation -->
+          <div class="kanban-column" id="col-Negotiation" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="handleDrop(event, 'Negotiation')">
+            <div class="kanban-column-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa fa-circle text-orange font-xs" style="color: #fd7e14;"></i>
+                <span class="kanban-column-title">Negotiation (เจรจาต่อรอง)</span>
+              </div>
+              <span class="kanban-column-badge" id="badge-count-Negotiation">0</span>
+            </div>
+            <div class="text-xs text-muted mb-2 px-1 font-monospace" id="col-sum-Negotiation">มูลค่า: ฿0.00</div>
+            <div class="kanban-cards-container" id="cards-Negotiation">
+              <!-- Cards load dynamically -->
+            </div>
+          </div>
+
+          <!-- Column 5: Won -->
+          <div class="kanban-column" id="col-Won" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="handleDrop(event, 'Won')">
+            <div class="kanban-column-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa fa-circle text-success font-xs"></i>
+                <span class="kanban-column-title">Won (ปิดการขายสำเร็จ)</span>
+              </div>
+              <span class="kanban-column-badge" id="badge-count-Won">0</span>
+            </div>
+            <div class="text-xs text-muted mb-2 px-1 font-monospace" id="col-sum-Won">มูลค่า: ฿0.00</div>
+            <div class="kanban-cards-container" id="cards-Won">
+              <!-- Cards load dynamically -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer block -->
+    <footer class="app-footer text-center bg-white border-top py-3 text-muted small no-print mt-auto">
+      <div class="float-end d-none d-sm-inline ms-3">AdminLTE 4.0 Sales Suite Beta</div>
+      <strong>Copyright &copy; 2026 <a href="https://ai.studio/build" class="text-decoration-none">AI Studio Workspace</a>.</strong> สงวนลิขสิทธิ์ระบบอย่างถูกต้องสมบูรณ์
+    </footer>
+  </div>
+
+  <!-- script resources Core -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/js/adminlte.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="/supabase.js"></script>
+  <script src="/app.js"></script>
+
+  <!-- Inline Kanban controller script -->
+  <script>
+    let cachedOpportunitiesList = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadKanbanPipeline();
+    });
+
+    async function loadKanbanPipeline() {
+      toggleGlobalLoader(true);
+      try {
+        cachedOpportunitiesList = await SupabaseDB.getOpportunities();
+        renderKanbanColumns(cachedOpportunitiesList);
+      } catch (err) {
+        console.error("Failed to fetch kanban dataset", err);
+        showToastAlert('โหลดกระดานโอกาสขายล้มเหลว', 'danger');
+      } finally {
+        toggleGlobalLoader(false);
+      }
+    }
+
+    function renderKanbanColumns(opportunities) {
+      const columns = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won'];
+      const formatter = new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 });
+
+      columns.forEach(status => {
+        const listContainer = document.getElementById(`cards-${status}`);
+        if (!listContainer) return;
+
+        // Filter and aggregate stats items
+        const colOpps = opportunities.filter(o => o.status === status);
+        const colSum = colOpps.reduce((sum, item) => sum + (parseFloat(item.estimated_value) || 0), 0);
+
+        // Update headers count badges & values
+        document.getElementById(`badge-count-${status}`).innerText = colOpps.length;
+        document.getElementById(`col-sum-${status}`).innerText = `มูลค่ารวม: ${formatter.format(colSum)}`;
+
+        if (colOpps.length === 0) {
+          listContainer.innerHTML = `
+            <div class="text-center p-3 text-muted small border-dashed rounded bg-light bg-opacity-50 border-secondary border-opacity-10 py-4 mb-2">
+              <i class="fa fa-folder-open mb-1 opacity-40"></i> ไม่มีดีลค้าง
+            </div>
+          `;
+          return;
+        }
+
+        listContainer.innerHTML = colOpps.map(opp => {
+          const custName = opp.customer ? opp.customer.customer_name : 'ไม่พบข้อมูลลูกค้า';
+          const shortCustName = custName.length > 28 ? custName.substring(0, 26) + '...' : custName;
+          
+          return `
+            <div class="kanban-card card animate__animated animate__fadeIn" id="card-${opp.id}" draggable="true" ondragstart="handleDragStart(event, '${opp.id}')">
+              <div class="kanban-card-title fw-bold text-dark m-0 lh-sm">${opp.project_name}</div>
+              <div class="small text-muted py-1 d-flex align-items-center gap-1" style="font-size: 0.77rem;">
+                <i class="fa fa-building opacity-75"></i> ${shortCustName}
+              </div>
+              
+              <div class="d-flex align-items-center justify-content-between mt-2 pt-1.5 border-top border-light border-opacity-50">
+                <span class="font-monospace small fw-black text-primary">${opp.opportunity_no}</span>
+                <span class="text-dark fw-bold small">${formatter.format(opp.estimated_value)}</span>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between mt-1 pt-1 opacity-75" style="font-size:0.7rem;">
+                <span class="fw-semibold"><i class="fa fa-user me-0.5"></i> ${opp.sales_person_id || 'ยังไม่กำหนด'}</span>
+                <span class="fw-bold text-indigo"><i class="fa fa-percentage me-0.5"></i> ${opp.success_probability}%</span>
+              </div>
+              
+              <!-- Quick access editing line -->
+              <div class="text-end mt-1 d-none-print">
+                <a href="opportunity-form.html?id=${opp.id}" class="text-xs text-decoration-none color-admin-link text-primary"><i class="fa fa-pencil-alt text-xs"></i> ปรับปรุงรายละเอียด</a>
+              </div>
+            </div>
+          `;
+        }).join('');
+      });
+    }
+
+    // HTML5 native Drag Operations
+    function handleDragStart(e, id) {
+      e.dataTransfer.setData('text/plain', id);
+      document.getElementById(`card-${id}`)?.classList.add('opacity-50');
+    }
+
+    function allowDrop(e) {
+      e.preventDefault();
+      const col = e.currentTarget;
+      col.classList.add('drag-over');
+    }
+
+    function dragLeave(e) {
+      const col = e.currentTarget;
+      col.classList.remove('drag-over');
+    }
+
+    // Drops mutation logic
+    async function handleDrop(e, nextStatus) {
+      e.preventDefault();
+      const col = e.currentTarget;
+      col.classList.remove('drag-over');
+
+      const id = e.dataTransfer.getData('text/plain');
+      const card = document.getElementById(`card-${id}`);
+      if (card) card.classList.remove('opacity-50');
+
+      if (!id) return;
+
+      const opp = cachedOpportunitiesList.find(o => o.id === id);
+      if (!opp) return;
+
+      // Avoid double drops onto identical column status
+      if (opp.status === nextStatus) return;
+
+      // Assign realistic probability relative to pipeline stage
+      const defaultProbabilities = {
+        'Lead': 10,
+        'Qualified': 30,
+        'Proposal': 60,
+        'Negotiation': 80,
+        'Won': 100
+      };
+      
+      const prob = defaultProbabilities[nextStatus] || opp.success_probability;
+
+      toggleGlobalLoader(true);
+      try {
+        const payload = {
+          status: nextStatus,
+          success_probability: prob
+        };
+
+        await SupabaseDB.updateOpportunity(id, payload);
+        await SupabaseDB.addActivity('การลากเปลี่ยนสถานะ (Drop)', 'Opportunity', id, `ทำการลากบอร์ดอัปเดตงานขายโครงการ "${opp.project_name}" ไปอยู่ช่อง ${nextStatus} (ความน่าจะเป็นปรับเป็น ${prob}%)`);
+
+        showToastAlert(`คุณทำการเคลื่อนดีล ${opp.opportunity_no} ไปยังช่อง ${nextStatus} สำเร็จ!`, 'success');
+        
+        // Refresh local UI columns
+        loadKanbanPipeline();
+
+      } catch (err) {
+        console.error("Mutation failed on Drop", err);
+        showToastAlert('ไม่สามารถปรับโครงงานผ่านกระดานได้', 'danger');
+      } finally {
+        toggleGlobalLoader(false);
+      }
+    }
+  </script>
+</body>
+</html>

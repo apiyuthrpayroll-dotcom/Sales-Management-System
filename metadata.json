@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Remix: Remix: Remix: Remix: CRM Sales Management System",
+  "description": "ระบบจัดการลูกค้าสัมพันธ์ (CRM Sales Management System) สำหรับบริหารจัดการลูกค้าและโอกาสทางการขาย (Customer + Opportunity) รวมถึงรายงานและการวิเคราะห์ข้อมูล",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

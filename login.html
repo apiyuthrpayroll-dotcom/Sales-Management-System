@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sales Master CRM - เข้าสู่ระบบ (Sign In)</title>
+
+  <!-- Google Font: Kanit (Thailand UI support) & Source Sans 3 -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&display=swap">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  
+  <style>
+    :root {
+      --primary-color: #3b82f6;
+      --secondary-color: #6366f1;
+      --glass-bg: rgba(255, 255, 255, 0.45);
+      --glass-bg-dark: rgba(15, 23, 42, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.3);
+      --glass-border-dark: rgba(255, 255, 255, 0.1);
+      --text-color: #1e293b;
+    }
+
+    body {
+      font-family: 'Kanit', 'Source Sans 3', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      position: relative;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+      color: #fff;
+    }
+
+    /* Glowing Backdrop Mesh Circles */
+    .bg-glowing-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      z-index: 1;
+      opacity: 0.65;
+    }
+
+    .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.8) 0%, rgba(99, 102, 241, 0) 70%);
+      top: -100px;
+      left: -100px;
+    }
+
+    .blob-2 {
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.6) 0%, rgba(236, 72, 153, 0) 70%);
+      bottom: -150px;
+      right: -100px;
+    }
+
+    .blob-3 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(20, 184, 166, 0.5) 0%, rgba(20, 184, 166, 0) 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .login-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 480px;
+      padding: 20px;
+    }
+
+    /* Modern Glassmorphic Card */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(25px) saturate(180%);
+      -webkit-backdrop-filter: blur(25px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.125);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      transition: all 0.4s ease;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 25px 60px rgba(99, 102, 241, 0.15);
+    }
+
+    .brand-logo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .brand-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.5rem;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+      margin-bottom: 12px;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .brand-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .brand-subtitle {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      text-align: center;
+    }
+
+    /* Glass Inputs */
+    .form-group-glass {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-glass {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-radius: 12px;
+      padding: 14px 14px 14px 45px;
+      font-size: 0.95rem;
+      width: 100%;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-glass:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(99, 102, 241, 0.6);
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.25);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .input-glass:focus + .input-icon {
+      color: var(--primary-color);
+    }
+
+    /* Dropdown/Select customization */
+    .select-glass {
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-radius: 12px;
+      padding: 14px 40px 14px 45px;
+      font-size: 0.95rem;
+      width: 100%;
+      outline: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .select-glass:focus {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: rgba(99, 102, 241, 0.6);
+    }
+
+    .select-glass option {
+      background-color: #0f172a;
+      color: #fff;
+    }
+
+    /* Primary Interactive Buttons */
+    .btn-gradient {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      border: none;
+      color: #fff;
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: 600;
+      font-size: 1rem;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+      transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-gradient:active {
+      transform: translateY(0);
+    }
+
+    /* Tabs for Sign In & Sign Up toggle */
+    .auth-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.6);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .auth-tab.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .checkbox-glass {
+      accent-color: var(--primary-color);
+      cursor: pointer;
+    }
+
+    .text-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.85rem;
+      transition: color 0.3s ease;
+    }
+
+    .text-link:hover {
+      color: var(--secondary-color);
+      text-decoration: underline;
+    }
+
+    .divider-or {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 0.8rem;
+      margin: 20px 0;
+    }
+
+    .divider-or::before, .divider-or::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .divider-or:not(:empty)::before {
+      margin-right: .5em;
+    }
+
+    .divider-or:not(:empty)::after {
+      margin-left: .5em;
+    }
+
+    .demo-account-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .demo-account-pill:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #fff;
+    }
+
+    /* Page load transition */
+    .fade-in {
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- glowing background animations -->
+  <div class="bg-glowing-blob blob-1"></div>
+  <div class="bg-glowing-blob blob-2"></div>
+  <div class="bg-glowing-blob blob-3"></div>
+
+  <div class="login-container fade-in">
+    <div class="glass-card">
+      
+      <!-- Brand & Header -->
+      <div class="brand-logo-container">
+        <div class="brand-logo">IKM</div>
+        <h1 class="brand-title">Sales Master CRM</h1>
+        <p class="brand-subtitle">ระบบบริหารความสัมพันธ์และประเมินงานขาย</p>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="form-signin" onsubmit="handleSignIn(event)">
+        <div class="form-group-glass">
+          <input type="email" id="signin-email" class="input-glass" placeholder="ชื่ออีเมลผู้ใช้ (Work Email)" required autocomplete="email">
+          <i class="fas fa-envelope input-icon"></i>
+        </div>
+
+        <div class="form-group-glass">
+          <input type="password" id="signin-password" class="input-glass" placeholder="รหัสผ่าน (Password)" required autocomplete="current-password">
+          <i class="fas fa-lock input-icon"></i>
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div class="form-check d-flex align-items-center gap-2">
+            <input class="form-check-input checkbox-glass" type="checkbox" id="signin-remember">
+            <label class="form-check-label small text-white-50" style="cursor: pointer;" for="signin-remember">จดจำฉันไว้ (Remember Me)</label>
+          </div>
+          <a href="#" class="text-link" onclick="handleForgotPassword(event)">ลืมรหัสผ่าน?</a>
+        </div>
+
+        <button type="submit" class="btn btn-gradient mb-3" id="btn-signin-submit">
+          <span id="btn-signin-text">ลงชื่อเข้าใช้ระบบ</span>
+          <span class="spinner-border spinner-border-sm d-none" id="btn-signin-spinner" role="status"></span>
+        </button>
+      </form>
+
+
+
+      <!-- Quick Demo Accounts -->
+      <div id="demo-section">
+        <div class="divider-or">หรือ ทดลองใช้บัญชีตัวอย่าง</div>
+        <div class="d-flex flex-column gap-2">
+          <div class="demo-account-pill" onclick="fillDemoAccount('Apiyut.noeikhiaw@th.ikm.com', 'Admin')">
+            <span class="fw-medium text-white"><i class="fas fa-user-shield text-warning me-1.5"></i> Apiyut (Admin Account)</span>
+            <span class="badge bg-primary bg-opacity-25 text-primary small">คลิกเพื่อใช้</span>
+          </div>
+          <div class="demo-account-pill" onclick="fillDemoAccount('pimjai.k@ikm-testing.co.th', 'Sales Manager')">
+            <span class="fw-medium text-white-50"><i class="fas fa-user-tie text-info me-1.5"></i> พิมพ์ใจ (Sales Manager)</span>
+            <span class="badge bg-secondary bg-opacity-25 text-white-50 small">คลิกเพื่อใช้</span>
+          </div>
+          <div class="demo-account-pill" onclick="fillDemoAccount('wiriya.s@ikm-testing.co.th', 'Sales Rep')">
+            <span class="fw-medium text-white-50"><i class="fas fa-user text-success me-1.5"></i> วิริยะ (Sales Representative)</span>
+            <span class="badge bg-secondary bg-opacity-25 text-white-50 small">คลิกเพื่อใช้</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Supabase JS Client SDK -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <!-- Main Supabase Client Config & Connection Manager -->
+  <script src="/supabase.js"></script>
+
+  <script>
+
+
+    // Auto-fill demo account details and helper info
+    function fillDemoAccount(email, role) {
+      document.getElementById('signin-email').value = email;
+      document.getElementById('signin-password').value = 'crm123456'; // Default demo password
+      document.getElementById('signin-remember').checked = true;
+      
+      Swal.fire({
+        title: 'เตรียมความพร้อม!',
+        html: `ระบบได้เติมข้อมูลเข้าสู่ระบบสำหรับสิทธิ์ <b>${role}</b> เรียบร้อยแล้ว<br><br><small class="text-muted">หมายเหตุ: ระบบจะทดลองเข้าใช้งานผ่านบัญชีองค์กรกลาง หรือหากไม่มีประวัติบัญชีจริง จะใช้ข้อมูลแคชแบบไร้รอยต่อ</small>`,
+        icon: 'info',
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#3b82f6'
+      });
+    }
+
+    // Load saved email if remember me was active
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedEmail = localStorage.getItem('crm_remembered_email');
+      if (savedEmail) {
+        document.getElementById('signin-email').value = savedEmail;
+        document.getElementById('signin-remember').checked = true;
+      }
+    });
+
+    // Supabase Auth: Sign In
+    async function handleSignIn(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('signin-email').value.trim();
+      const password = document.getElementById('signin-password').value;
+      const remember = document.getElementById('signin-remember').checked;
+
+      const btnText = document.getElementById('btn-signin-text');
+      const btnSpinner = document.getElementById('btn-signin-spinner');
+      const submitBtn = document.getElementById('btn-signin-submit');
+
+      submitBtn.disabled = true;
+      btnText.classList.add('d-none');
+      btnSpinner.classList.remove('d-none');
+
+      try {
+        let authResult = null;
+        let loginSuccess = false;
+        let userRole = 'Sales Rep';
+        let fullName = email.split('@')[0];
+
+        // Retrieve and sync users first
+        let dbUsersList = [];
+        try {
+          dbUsersList = await SupabaseDB.getUsers();
+        } catch (e) {
+          console.warn("Failed to retrieve users, falling back to local cache", e);
+          dbUsersList = JSON.parse(localStorage.getItem('crm_users_list')) || [];
+        }
+
+        const foundUser = dbUsersList.find(u => u.email && u.email.trim().toLowerCase() === email.toLowerCase());
+
+        // 1. Can Lock User (สามารถ Lock User ไม่ให้ใช้งานได้)
+        if (foundUser && foundUser.status === 'Suspended') {
+          throw new Error("บัญชีผู้ใช้งานนี้ถูกระงับการใช้งาน (Locked/Suspended) โดยผู้ดูแลระบบ กรุณาติดต่อผู้ดูแลระบบเพื่อขอเปิดสิทธิ์ใช้งาน");
+        }
+
+        // 2. Admin-defined and updated password validation
+        let passwordMatched = false;
+        if (foundUser) {
+          const expectedPassword = foundUser.password || 'crm123456';
+          if (password === expectedPassword) {
+            passwordMatched = true;
+            userRole = foundUser.role;
+            fullName = foundUser.fullname;
+          }
+        } else {
+          // If the user doesn't exist in our tables yet, we fallback to default password check for default demo accounts
+          if (password === 'crm123456') {
+            passwordMatched = true;
+            if (email.toLowerCase().includes('apiyut')) {
+              userRole = 'Admin';
+              fullName = 'Apiyut (Admin)';
+            } else if (email.toLowerCase().includes('pimjai')) {
+              userRole = 'Sales Manager';
+              fullName = 'พิมพ์ใจ กิตติคุณ';
+            } else if (email.toLowerCase().includes('wiriya')) {
+              userRole = 'Sales Rep';
+              fullName = 'วิริยะ สว่างงาม';
+            } else if (email.toLowerCase().includes('somsri')) {
+              userRole = 'Auditor';
+              fullName = 'สมศรี จิตรประสงค์';
+            }
+          }
+        }
+
+        if (!passwordMatched) {
+          throw new Error("รหัสผ่านไม่ถูกต้อง (Incorrect password) กรุณาตรวจสอบและลองอีกครั้ง");
+        }
+
+        // Keep session data aligned
+        loginSuccess = true;
+
+        if (loginSuccess) {
+          // Remember Me logic
+          if (remember) {
+            localStorage.setItem('crm_remembered_email', email);
+          } else {
+            localStorage.removeItem('crm_remembered_email');
+          }
+
+          // Cache active role and session metadata
+          localStorage.setItem('crm_user_role', userRole);
+          localStorage.setItem('crm_user_fullname', fullName);
+          localStorage.setItem('crm_user_email', email);
+          localStorage.setItem('crm_user_id', authResult && authResult.user ? authResult.user.id : '00000000-0000-0000-0000-000000000000');
+
+          if (authResult && authResult.session) {
+            localStorage.setItem('supabase_session_token', authResult.session.access_token);
+          } else {
+            localStorage.removeItem('supabase_session_token');
+          }
+
+          Swal.fire({
+            title: 'ยินดีต้อนรับเข้าสู่ระบบ!',
+            text: `สิทธิ์ใช้งานของคุณคือ: ${userRole}`,
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = 'index.html';
+          });
+        }
+      } catch (err) {
+        Swal.fire({
+          title: 'เข้าสู่ระบบไม่สำเร็จ',
+          text: err.message || 'รหัสผ่านไม่ถูกต้อง หรือไม่มีบัญชีนี้ในระบบ',
+          icon: 'error',
+          confirmButtonText: 'ลองอีกครั้ง',
+          confirmButtonColor: '#ef4444'
+        });
+      } finally {
+        submitBtn.disabled = false;
+        btnText.classList.remove('d-none');
+        btnSpinner.classList.add('d-none');
+      }
+    }
+
+
+
+    // Supabase Auth: Forgot Password
+    async function handleForgotPassword(e) {
+      e.preventDefault();
+      
+      const { value: email } = await Swal.fire({
+        title: 'กู้คืนรหัสผ่านของคุณ',
+        input: 'email',
+        inputLabel: 'โปรดใส่อีเมลงานของคุณเพื่อส่งคำขอเปลี่ยนรหัสผ่าน',
+        inputPlaceholder: 'user@ikm-testing.co.th',
+        confirmButtonText: 'ส่งลิงก์เปลี่ยนรหัส',
+        confirmButtonColor: '#3b82f6',
+        showCancelButton: true,
+        cancelButtonText: 'ยกเลิก',
+        inputValidator: (value) => {
+          if (!value) {
+            return 'กรุณากรอกอีเมลด้วยครับ!'
+          }
+        }
+      });
+
+      if (email) {
+        Swal.fire({
+          title: 'กำลังดำเนินการ...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        try {
+          if (window.supabaseClient) {
+            const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+              redirectTo: window.location.origin + '/reset-password.html'
+            });
+
+            if (error) throw error;
+
+            Swal.fire({
+              title: 'ส่งลิงก์สำเร็จ!',
+              text: 'ลิงก์การกู้คืนรหัสผ่านถูกส่งไปยังอีเมลของคุณแล้ว โปรดตรวจทานกล่องข้อความขาเข้า',
+              icon: 'success',
+              confirmButtonColor: '#3b82f6'
+            });
+          } else {
+            // Local fallback simulation
+            setTimeout(() => {
+              Swal.fire({
+                title: 'ดำเนินการสำเร็จ (จำลอง)',
+                text: `คำขอกู้คืนถูกจำลองสำเร็จสำหรับบัญชี ${email}`,
+                icon: 'success',
+                confirmButtonColor: '#3b82f6'
+              });
+            }, 1000);
+          }
+        } catch (err) {
+          Swal.fire({
+            title: 'ส่งคำขอไม่สำเร็จ',
+            text: err.message || 'เกิดข้อผิดพลาดในการตรวจสอบระบบความปลอดภัย',
+            icon: 'error',
+            confirmButtonColor: '#ef4444'
+          });
+        }
+      }
+    }
+  </script>
+</body>
+</html>
