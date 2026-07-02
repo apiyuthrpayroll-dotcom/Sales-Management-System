@@ -225,6 +225,7 @@
                 <div>ตัวแทนขายหลัก: <strong id="print-so-sales">-</strong></div>
                 <div>Job Number: <strong id="print-so-job-no">-</strong></div>
                 <div>PO Reference: <strong id="print-so-po-no">-</strong></div>
+                <div>เวอร์ชัน: <strong id="print-so-version">v1.0</strong></div>
               </div>
             </div>
 
@@ -277,17 +278,22 @@
             
             <div class="card card-body shadow-sm border-0 mb-3">
               <div class="row g-3">
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                   <label class="form-label small fw-bold">ชื่อโครงการ / Campaign Name <span class="text-danger">*</span></label>
                   <input type="text" class="form-control" id="edit-project-name" required placeholder="พิมพ์ระบุชื่อโครงการหรือแคมเปญสั่งงาน">
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                   <label class="form-label small fw-bold">Job Number <span class="text-secondary">(Manual Key / ซ้ำกันได้)</span></label>
                   <input type="text" class="form-control" id="edit-job-no" placeholder="เช่น JOB-2026-001">
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                   <label class="form-label small fw-bold">เลขที่ PO ของลูกค้า / Customer PO Reference</label>
                   <input type="text" class="form-control" id="edit-po-no" placeholder="เช่น PO-PTT-450122">
+                </div>
+                <div class="col-12 col-md-3">
+                  <label class="form-label small fw-bold">เวอร์ชัน / Version <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control font-monospace" id="edit-version" placeholder="v1.0" required>
+                  <div id="edit-version-flow" class="small mt-1 text-muted" style="display:none;"></div>
                 </div>
               </div>
             </div>
@@ -543,7 +549,10 @@
             <td><strong class="font-monospace text-primary">${soNo}</strong></td>
             <td><span class="font-monospace text-muted">${q.quotation_no}</span></td>
             <td>
-              <div class="fw-bold text-dark">${q.project_name || q.title || '-'}</div>
+              <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                ${q.project_name || q.title || '-'}
+                <span class="badge bg-secondary font-monospace" style="font-size: 0.72rem; padding: 0.2em 0.5em;">${q.version || 'v1.0'}</span>
+              </div>
               <div class="text-xs text-muted py-0.5">
                 <span class="me-2"><i class="fa fa-briefcase"></i> Job: <strong>${q.job_no || '-'}</strong></span>
                 <span><i class="fa fa-file-contract"></i> PO: <strong>${q.po_no || '-'}</strong></span>
@@ -610,6 +619,7 @@
       document.getElementById('print-so-sales').innerText = q.sales_person || '-';
       document.getElementById('print-so-job-no').innerText = q.job_no || 'ไม่มี (None)';
       document.getElementById('print-so-po-no').innerText = q.po_no || 'ไม่มี (None)';
+      document.getElementById('print-so-version').innerText = q.version || 'v1.0';
 
       // Title config
       const titleEl = document.getElementById('print-so-title');
@@ -757,64 +767,9 @@
       });
     }
 
-    // Duplicate Sales Order (Requirement 5)
+    // Duplicate Sales Order (Requirement 5) - now routes directly to edit modal as a duplicate
     async function duplicateSalesOrder(id) {
-      const q = quotationsCached.find(item => item.id === id);
-      if (!q) return;
-
-      const result = await Swal.fire({
-        title: 'ยืนยันทำสำเนาใบสั่งขาย?',
-        text: `ต้องการสร้างสำเนาใบสั่งขายใหม่โดยคัดลอกข้อมูลจากต้นฉบับเลขที่ ${q.quotation_no.replace('QT-', 'SO-')} หรือไม่?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'ใช่, คัดลอกสร้างใหม่',
-        cancelButtonText: 'ยกเลิก',
-        confirmButtonColor: '#198754'
-      });
-
-      if (result.isConfirmed) {
-        toggleGlobalLoader(true);
-        try {
-          // Create new quotation payload (as a SO since status is Approved)
-          const payload = {
-            title: q.project_name || q.title || 'Sales Order Copy',
-            project_name: q.project_name || q.title || '',
-            customer_id: q.customer_id,
-            quotation_date: new Date().toISOString().split('T')[0],
-            validity_days: q.validity_days || 30,
-            payment_term: q.payment_term || '30 Days',
-            sales_person: q.sales_person || 'System Copier',
-            status: 'Approved', // Keeps it active as a Sales Order
-            items: q.items ? q.items.map(it => ({ ...it })) : [],
-            total_value: q.total_value,
-            tax_rate: q.tax_rate || 7,
-            grand_total: q.grand_total,
-            terms_conditions: q.terms_conditions || '',
-            remarks: q.remarks || 'คัดลอกสร้างจากใบสั่งขาย ' + q.quotation_no.replace('QT-', 'SO-'),
-            job_no: q.job_no || '',
-            po_no: q.po_no || ''
-          };
-
-          const newQuote = await SupabaseDB.addQuotation(payload);
-          
-          // Default status to Pending in fulfillment cache
-          soFulfillmentStatus[newQuote.id] = 'Pending';
-          localStorage.setItem('crm_so_fulfillment', JSON.stringify(soFulfillmentStatus));
-
-          await Swal.fire({
-            title: 'ทำสำเนาสำเร็จ!',
-            text: `สร้างใบสั่งขายใบใหม่รหัส: ${newQuote.quotation_no.replace('QT-', 'SO-')} เรียบร้อยแล้ว`,
-            icon: 'success'
-          });
-
-          await loadSalesOrders();
-        } catch (err) {
-          console.error(err);
-          showToastAlert('การทำสำเนาล้มเหลว', 'danger');
-        } finally {
-          toggleGlobalLoader(false);
-        }
-      }
+      openEditSOModal(id, true);
     }
 
     // Delete Sales Order (Requirement 7 restriction handled during render)
@@ -848,7 +803,188 @@
       }
     }
 
-    // Collect item rows
+    // EDIT MODAL ACTIONS (Now supports both normal editing and duplication editing)
+    let duplicateSourceQuote = null;
+
+    function incrementVersion(ver) {
+      if (!ver) return 'v1.1';
+      const match = ver.match(/v?(\d+)\.(\d+)/i);
+      if (match) {
+        const major = parseInt(match[1], 10);
+        const minor = parseInt(match[2], 10) + 1;
+        return `v${major}.${minor}`;
+      }
+      return ver + '.1';
+    }
+
+    function openEditSOModal(id, isDuplicate = false) {
+      const q = quotationsCached.find(item => item.id === id);
+      if (!q) return;
+
+      if (isDuplicate) {
+        duplicateSourceQuote = q;
+        document.getElementById('edit-so-id').value = 'new-duplicate';
+        
+        document.getElementById('edit-project-name').value = q.project_name || q.title || '';
+        document.getElementById('edit-job-no').value = q.job_no || '';
+        document.getElementById('edit-po-no').value = q.po_no || '';
+        
+        // Default clone version to source's version (or v1.0 if not specified)
+        const verVal = q.version || 'v1.0';
+        document.getElementById('edit-version').value = verVal;
+        
+        const flowEl = document.getElementById('edit-version-flow');
+        if (flowEl) {
+          flowEl.style.display = 'block';
+          flowEl.innerHTML = `<span class="badge bg-success"><i class="fa fa-copy me-1"></i>ทำสำเนาใหม่ (เริ่มจากเวอร์ชัน ${verVal})</span>`;
+        }
+      } else {
+        duplicateSourceQuote = null;
+        document.getElementById('edit-so-id').value = q.id;
+        
+        document.getElementById('edit-project-name').value = q.project_name || q.title || '';
+        document.getElementById('edit-job-no').value = q.job_no || '';
+        document.getElementById('edit-po-no').value = q.po_no || '';
+        
+        // Auto-increment version on edit
+        const currentVer = q.version || 'v1.0';
+        const nextVer = incrementVersion(currentVer);
+        document.getElementById('edit-version').value = nextVer;
+        
+        const flowEl = document.getElementById('edit-version-flow');
+        if (flowEl) {
+          flowEl.style.display = 'block';
+          flowEl.innerHTML = `<span class="badge bg-secondary">${currentVer}</span> <i class="fa fa-arrow-right mx-1 small text-muted"></i> <span class="badge bg-success">${nextVer}</span>`;
+        }
+      }
+
+      const tbody = document.getElementById('edit-items-table-body');
+      tbody.innerHTML = '';
+      editItemIndexCounter = 0;
+
+      const items = q.items || [];
+      items.forEach(it => {
+        addEditItemRow(it);
+      });
+
+      if (items.length === 0) {
+        addEditItemRow();
+      }
+
+      recalculateEditTotals();
+
+      // Update dialog title to match state
+      const titleEl = document.getElementById('soEditModalLabel');
+      if (titleEl) {
+        titleEl.innerHTML = isDuplicate 
+          ? `<i class="fa fa-copy text-success me-2"></i>ทำสำเนาใบสั่งขายใหม่ (New Duplicate Sales Order)`
+          : `<i class="fa fa-edit text-primary me-2"></i>แก้ไขรายละเอียดใบสั่งขาย (Edit Sales Order)`;
+      }
+
+      const modal = new bootstrap.Modal(document.getElementById('soEditModal'));
+      modal.show();
+    }
+
+    function addEditItemRow(item = null) {
+      editItemIndexCounter++;
+      const tbody = document.getElementById('edit-items-table-body');
+
+      const desc = item ? item.description : '';
+      const qty = item ? item.qty : 1;
+      const unit = item ? item.unit : 'Set';
+      const dur = item ? item.duration : 1;
+      const rate = item ? item.unit_rate : 0;
+      const total = item ? item.total_price : 0;
+
+      const rowHtml = `
+        <tr class="edit-item-row" id="edit-item-row-${editItemIndexCounter}">
+          <td class="text-center fw-bold text-muted edit-index-lbl">${editItemIndexCounter}</td>
+          <td>
+            <input type="text" class="form-control form-control-sm edit-item-desc" value="${desc}" placeholder="กรอกรายละเอียดรายการงานขายหรือบริการเครื่องมือ" required>
+          </td>
+          <td>
+            <input type="number" class="form-control form-control-sm text-center edit-item-qty" value="${qty}" oninput="triggerLineEditCalculation(${editItemIndexCounter})" required min="1">
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm text-center edit-item-unit" value="${unit}" placeholder="Set/Job">
+          </td>
+          <td>
+            <input type="number" class="form-control form-control-sm text-center edit-item-dur" value="${dur}" oninput="triggerLineEditCalculation(${editItemIndexCounter})" required min="1">
+          </td>
+          <td>
+            <input type="number" class="form-control form-control-sm text-end edit-item-rate" value="${rate}" step="0.01" oninput="triggerLineEditCalculation(${editItemIndexCounter})" required>
+          </td>
+          <td>
+            <input type="number" class="form-control form-control-sm text-end edit-item-total bg-light font-monospace" value="${total}" readonly>
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeEditItemRow(${editItemIndexCounter})">
+              <i class="fa fa-minus-circle fs-5"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+      tbody.insertAdjacentHTML('beforeend', rowHtml);
+      triggerLineEditCalculation(editItemIndexCounter);
+    }
+
+    function removeEditItemRow(id) {
+      const row = document.getElementById(`edit-item-row-${id}`);
+      if (row) {
+        row.remove();
+        reindexEditItemRows();
+        recalculateEditTotals();
+      }
+    }
+
+    function reindexEditItemRows() {
+      let counter = 1;
+      document.querySelectorAll('.edit-item-row').forEach(row => {
+        row.querySelector('.edit-index-lbl').innerHTML = counter;
+        counter++;
+      });
+    }
+
+    function triggerLineEditCalculation(id) {
+      const row = document.getElementById(`edit-item-row-${id}`);
+      if (!row) return;
+
+      const qty = parseFloat(row.querySelector('.edit-item-qty').value) || 0;
+      const dur = parseFloat(row.querySelector('.edit-item-dur').value) || 1;
+      const rate = parseFloat(row.querySelector('.edit-item-rate').value) || 0;
+
+      const total = qty * dur * rate;
+      row.querySelector('.edit-item-total').value = total.toFixed(2);
+
+      recalculateEditTotals();
+    }
+
+    function recalculateEditTotals() {
+      let subtotal = 0;
+      document.querySelectorAll('.edit-item-row').forEach(row => {
+        const total = parseFloat(row.querySelector('.edit-item-total').value) || 0;
+        subtotal += total;
+      });
+
+      const vat = subtotal * 0.07;
+      const grand = subtotal + vat;
+
+      document.getElementById('edit-calc-subtotal').innerHTML = subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
+      document.getElementById('edit-calc-tax').innerHTML = vat.toLocaleString(undefined, { minimumFractionDigits: 2 });
+      document.getElementById('edit-calc-grandtotal').innerHTML = grand.toLocaleString(undefined, { minimumFractionDigits: 2 });
+    }
+
+    async function saveSalesOrderEdit(event) {
+      event.preventDefault();
+      toggleGlobalLoader(true);
+
+      const id = document.getElementById('edit-so-id').value;
+      const projectName = document.getElementById('edit-project-name').value;
+      const jobNo = document.getElementById('edit-job-no').value;
+      const poNo = document.getElementById('edit-po-no').value;
+      const versionVal = document.getElementById('edit-version').value || 'v1.0';
+
+      // Collect item rows
       const items = [];
       document.querySelectorAll('.edit-item-row').forEach((row, idx) => {
         items.push({
@@ -865,29 +1001,75 @@
       const total_value = items.reduce((sum, item) => sum + item.total_price, 0);
       const grand_total = total_value * 1.07;
 
-      const payload = {
-        project_name: projectName,
-        title: projectName, // keep title synced with project name for general display
-        job_no: jobNo,
-        po_no: poNo,
-        items: items,
-        total_value: total_value,
-        grand_total: grand_total
-      };
+      if (id === 'new-duplicate') {
+        // Save as a brand new sales order copy
+        const q = duplicateSourceQuote || {};
+        const payload = {
+          title: projectName,
+          project_name: projectName,
+          customer_id: q.customer_id,
+          quotation_date: new Date().toISOString().split('T')[0],
+          validity_days: q.validity_days || 30,
+          payment_term: q.payment_term || '30 Days',
+          sales_person: q.sales_person || 'System Broker',
+          status: q.status || 'Approved', // Preserves the original status (Approved or Invoiced)
+          items: items,
+          total_value: total_value,
+          tax_rate: q.tax_rate || 7,
+          grand_total: grand_total,
+          terms_conditions: q.terms_conditions || '',
+          remarks: 'คัดลอกสร้างใหม่จากใบสั่งขายเดิม ' + (q.quotation_no ? q.quotation_no.replace('QT-', 'SO-') : ''),
+          job_no: jobNo,
+          po_no: poNo,
+          version: versionVal
+        };
 
-      try {
-        const updated = await SupabaseDB.updateQuotation(id, payload);
-        showToastAlert(`บันทึกปรับปรุงข้อมูลใบสั่งขายสำเร็จ: ${updated.quotation_no.replace('QT-', 'SO-')}`, 'success');
-        
-        const modal = bootstrap.Modal.getInstance(document.getElementById('soEditModal'));
-        modal.hide();
+        try {
+          const newQuote = await SupabaseDB.addQuotation(payload);
+          // Preserve the original fulfillment status
+          const originalFulfillment = soFulfillmentStatus[q.id] || (q.status === 'Invoiced' ? 'Invoiced' : 'Pending');
+          soFulfillmentStatus[newQuote.id] = originalFulfillment;
+          localStorage.setItem('crm_so_fulfillment', JSON.stringify(soFulfillmentStatus));
 
-        await loadSalesOrders();
-      } catch (err) {
-        console.error(err);
-        showToastAlert('บันทึกปรับปรุงล้มเหลว', 'danger');
-      } finally {
-        toggleGlobalLoader(false);
+          showToastAlert(`ทำสำเนาและบันทึกใบสั่งขายใหม่สำเร็จ: ${newQuote.quotation_no.replace('QT-', 'SO-')}`, 'success');
+          
+          const modal = bootstrap.Modal.getInstance(document.getElementById('soEditModal'));
+          if (modal) modal.hide();
+
+          await loadSalesOrders();
+        } catch (err) {
+          console.error(err);
+          showToastAlert('สร้างสำเนาใบสั่งขายล้มเหลว', 'danger');
+        } finally {
+          toggleGlobalLoader(false);
+        }
+      } else {
+        // Normal update
+        const payload = {
+          project_name: projectName,
+          title: projectName, // keep title synced
+          job_no: jobNo,
+          po_no: poNo,
+          items: items,
+          total_value: total_value,
+          grand_total: grand_total,
+          version: versionVal
+        };
+
+        try {
+          const updated = await SupabaseDB.updateQuotation(id, payload);
+          showToastAlert(`บันทึกปรับปรุงข้อมูลใบสั่งขายสำเร็จ: ${updated.quotation_no.replace('QT-', 'SO-')}`, 'success');
+          
+          const modal = bootstrap.Modal.getInstance(document.getElementById('soEditModal'));
+          if (modal) modal.hide();
+
+          await loadSalesOrders();
+        } catch (err) {
+          console.error(err);
+          showToastAlert('บันทึกปรับปรุงล้มเหลว', 'danger');
+        } finally {
+          toggleGlobalLoader(false);
+        }
       }
     }
 

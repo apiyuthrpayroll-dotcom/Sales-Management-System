@@ -616,23 +616,55 @@ function initLocalData() {
 
 initLocalData();
 
+let _cachedConnectionResult = null;
+let _lastConnectionCheckTime = 0;
+
+let _customersCache = null;
+let _customersCacheTime = 0;
+
+let _opportunitiesCache = null;
+let _opportunitiesCacheTime = 0;
+
+let _quotationsCache = null;
+let _quotationsCacheTime = 0;
+
+function clearSupabaseCaches() {
+  _customersCache = null;
+  _customersCacheTime = 0;
+  _opportunitiesCache = null;
+  _opportunitiesCacheTime = 0;
+  _quotationsCache = null;
+  _quotationsCacheTime = 0;
+}
+
 const SupabaseDB = {
   // Test connection to cloud database
   async testConnection() {
     if (!getConnectivityMode()) return false;
+    const now = Date.now();
+    // Cache connection status for 30 seconds to avoid massive redundant network calls
+    if (_cachedConnectionResult !== null && (now - _lastConnectionCheckTime) < 30000) {
+      return _cachedConnectionResult;
+    }
     try {
       await restRequest('/customers?select=id&limit=1', { method: 'GET' });
-      return true;
+      _cachedConnectionResult = true;
     } catch (e) {
       console.warn("REST endpoint offline or schema not present. Falling back to LocalStorage.", e);
-      return false;
+      _cachedConnectionResult = false;
     }
+    _lastConnectionCheckTime = Date.now();
+    return _cachedConnectionResult;
   },
 
   // -----------------------
   // CUSTOMER & CONTACTS CRUD
   // -----------------------
   async getCustomers() {
+    const now = Date.now();
+    if (_customersCache !== null && (now - _customersCacheTime) < 5000) {
+      return _customersCache;
+    }
     const isCloud = await this.testConnection();
     if (isCloud) {
       try {
@@ -653,22 +685,31 @@ const SupabaseDB = {
         });
 
         localStorage.setItem('crm_customers', JSON.stringify(map));
+        _customersCache = map;
+        _customersCacheTime = Date.now();
         return map;
       } catch (e) {
         console.warn("Fetch Cloud Customers failed. fallback to local", e);
-        return JSON.parse(localStorage.getItem('crm_customers')) || [];
+        const fallback = JSON.parse(localStorage.getItem('crm_customers')) || [];
+        _customersCache = fallback;
+        _customersCacheTime = Date.now();
+        return fallback;
       }
     } else {
       const custs = JSON.parse(localStorage.getItem('crm_customers')) || [];
       const conts = JSON.parse(localStorage.getItem('crm_contacts')) || [];
-      return custs.map(cust => ({
+      const map = custs.map(cust => ({
         ...cust,
         contacts: conts.filter(c => c.customer_id === cust.id)
       }));
+      _customersCache = map;
+      _customersCacheTime = Date.now();
+      return map;
     }
   },
 
   async addCustomer(customerData) {
+    clearSupabaseCaches();
     const customers = JSON.parse(localStorage.getItem('crm_customers')) || [];
     
     // Auto customer code
@@ -736,6 +777,7 @@ const SupabaseDB = {
   },
 
   async updateCustomer(id, updates) {
+    clearSupabaseCaches();
     // Save locally
     const customers = JSON.parse(localStorage.getItem('crm_customers')) || [];
     const idx = customers.findIndex(c => c.id === id);
@@ -799,6 +841,7 @@ const SupabaseDB = {
   },
 
   async deleteCustomer(id) {
+    clearSupabaseCaches();
     if (!this.isAdmin()) {
       throw new Error("คุณไม่มีสิทธิ์ลบข้อมูลลูกค้า เฉพาะ Admin เท่านั้น (Admin permission required)");
     }
@@ -836,6 +879,10 @@ const SupabaseDB = {
   // OPPORTUNITIES CRUD
   // -----------------------
   async getOpportunities() {
+    const now = Date.now();
+    if (_opportunitiesCache !== null && (now - _opportunitiesCacheTime) < 5000) {
+      return _opportunitiesCache;
+    }
     const isCloud = await this.testConnection();
     const localCusts = await this.getCustomers();
     const custMap = new Map(localCusts.map(c => [c.id, c]));
@@ -848,21 +895,30 @@ const SupabaseDB = {
           customer: custMap.get(opp.customer_id)
         }));
         localStorage.setItem('crm_opportunities', JSON.stringify(hydrated));
+        _opportunitiesCache = hydrated;
+        _opportunitiesCacheTime = Date.now();
         return hydrated;
       } catch (err) {
         console.warn("Fetch Cloud Opportunities failed. fallback to local", err);
-        return JSON.parse(localStorage.getItem('crm_opportunities')) || [];
+        const fallback = JSON.parse(localStorage.getItem('crm_opportunities')) || [];
+        _opportunitiesCache = fallback;
+        _opportunitiesCacheTime = Date.now();
+        return fallback;
       }
     } else {
       const opps = JSON.parse(localStorage.getItem('crm_opportunities')) || [];
-      return opps.map(opp => ({
+      const map = opps.map(opp => ({
         ...opp,
         customer: custMap.get(opp.customer_id)
       })).sort((a,b) => b.opportunity_no.localeCompare(a.opportunity_no));
+      _opportunitiesCache = map;
+      _opportunitiesCacheTime = Date.now();
+      return map;
     }
   },
 
   async addOpportunity(oppData) {
+    clearSupabaseCaches();
     const opportunities = JSON.parse(localStorage.getItem('crm_opportunities')) || [];
     
     // Auto Generate Code
@@ -915,6 +971,7 @@ const SupabaseDB = {
   },
 
   async updateOpportunity(id, updates) {
+    clearSupabaseCaches();
     const opportunities = JSON.parse(localStorage.getItem('crm_opportunities')) || [];
     const idx = opportunities.findIndex(o => o.id === id);
     if (idx !== -1) {
@@ -947,6 +1004,7 @@ const SupabaseDB = {
   },
 
   async deleteOpportunity(id) {
+    clearSupabaseCaches();
     if (!this.isAdmin()) {
       throw new Error("คุณไม่มีสิทธิ์ลบข้อมูลโอกาสขาย เฉพาะ Admin เท่านั้น (Admin permission required)");
     }
@@ -969,6 +1027,10 @@ const SupabaseDB = {
   // QUOTATIONS CRUD
   // -----------------------
   async getQuotations() {
+    const now = Date.now();
+    if (_quotationsCache !== null && (now - _quotationsCacheTime) < 5000) {
+      return _quotationsCache;
+    }
     const isCloud = await this.testConnection();
     const localCusts = await this.getCustomers();
     const custMap = new Map(localCusts.map(c => [c.id, c]));
@@ -984,17 +1046,22 @@ const SupabaseDB = {
           opportunity: oppMap.get(q.opportunity_id)
         }));
         localStorage.setItem('crm_quotations', JSON.stringify(hydrated));
+        _quotationsCache = hydrated;
+        _quotationsCacheTime = Date.now();
         return hydrated;
       } catch (err) {
         console.warn("Fetch Cloud Quotations failed, using local fallback", err);
       }
     }
     const quotes = JSON.parse(localStorage.getItem('crm_quotations')) || [];
-    return quotes.map(q => ({
+    const map = quotes.map(q => ({
       ...q,
       customer: custMap.get(q.customer_id),
       opportunity: oppMap.get(q.opportunity_id)
     })).sort((a, b) => b.quotation_no.localeCompare(a.quotation_no));
+    _quotationsCache = map;
+    _quotationsCacheTime = Date.now();
+    return map;
   },
 
   async getQuotationById(id) {
@@ -1003,6 +1070,7 @@ const SupabaseDB = {
   },
 
   async addQuotation(quoteData) {
+    clearSupabaseCaches();
     const quotes = JSON.parse(localStorage.getItem('crm_quotations')) || [];
     
     // Auto Generate Code based on the year of quotation_date
@@ -1054,6 +1122,7 @@ const SupabaseDB = {
   },
 
   async updateQuotation(id, updates, isEditMode = false) {
+    clearSupabaseCaches();
     const quotes = JSON.parse(localStorage.getItem('crm_quotations')) || [];
     const idx = quotes.findIndex(q => q.id === id);
     if (idx !== -1) {
@@ -1106,6 +1175,7 @@ const SupabaseDB = {
   },
 
   async deleteQuotation(id) {
+    clearSupabaseCaches();
     if (!this.isAdmin()) {
       throw new Error("คุณไม่มีสิทธิ์ลบข้อมูลใบเสนอราคา เฉพาะ Admin เท่านั้น (Admin permission required)");
     }
