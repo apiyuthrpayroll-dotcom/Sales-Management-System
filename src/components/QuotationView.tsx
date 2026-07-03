@@ -746,65 +746,65 @@ export default function QuotationView({
                     <col className="w-[100px]" />
                     <col className="w-[110px]" />
                   </colgroup>
-           <thead>
-  <tr className="h-[36px] text-[10px] font-bold">
-    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">ITEM</th>
-    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">QTY</th>
-    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">UNIT</th>
-    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">DESCRIPTION</th>
-    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">
-      <div className="flex flex-col items-center justify-center">
-        <span>DURATION</span>
-        <span className="text-[8px] font-normal lowercase">Days</span>
-      </div>
-    </th>
-    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">
-      <div className="flex flex-col items-center justify-center">
-        <span>UNIT RATE</span>
-        <span className="text-[8px] font-normal">Per Day</span>
-      </div>
-    </th>
-    <th className="border-b border-black font-bold p-1 text-center align-middle">TOTAL PRICE</th>
-  </tr>
-</thead>
+                  <thead>
+                    <tr className="h-[36px] text-[10px] font-bold">
+                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">ITEM</th>
+                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">QTY</th>
+                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">UNIT</th>
+                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">DESCRIPTION</th>
+                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">
+                        <div className="flex flex-col items-center justify-center">
+                          <span>DURATION</span>
+                          <span className="text-[8px] font-normal lowercase">Days</span>
+                        </div>
+                      </th>
+                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">
+                        <div className="flex flex-col items-center justify-center">
+                          <span>UNIT RATE</span>
+                          <span className="text-[8px] font-normal">Per Day</span>
+                        </div>
+                      </th>
+                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">TOTAL PRICE</th>
+                    </tr>
+                  </thead>
                   <tbody>
                     {/* Item Rows */}
                     {printItems.map((it: any, idx: number) => (
-                      <tr key={it.id || idx} className="text-[10.5px] h-[28px] align-middle">
-                        <td className="border-r border-black text-center font-mono font-medium text-slate-700 p-1">{idx + 1}</td>
-                        <td className="border-r border-black text-center font-mono font-medium p-1">{it.qty}</td>
-                        <td className="border-r border-black text-center p-1">{it.unit}</td>
-                        <td className="border-r border-black px-3 py-1.5 text-left whitespace-pre-wrap leading-relaxed font-medium break-all">{it.description}</td>
-                        <td className="border-r border-black text-center font-mono p-1">{it.duration_days || it.duration || "1"}</td>
-                        <td className="border-r border-black text-right px-2 font-mono p-1">{it.unit_rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                        <td className="text-right px-2 font-mono font-semibold p-1">{it.total_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <tr key={it.id || idx} className={`text-[10.5px] h-[28px] align-middle ${idx % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
+                        <td className="border-l border-r border-black text-center font-mono font-medium text-slate-700 p-1">{idx + 1}</td>
+                        <td className="border-l border-r border-black text-center font-mono font-medium p-1">{it.qty}</td>
+                        <td className="border-l border-r border-black text-center p-1">{it.unit}</td>
+                        <td className="border-l border-r border-black px-3 py-1.5 text-left whitespace-pre-wrap leading-relaxed font-medium break-words">{it.description}</td>
+                        <td className="border-l border-r border-black text-center font-mono p-1">{it.duration_days || it.duration || "1"}</td>
+                        <td className="border-l border-r border-black text-right px-2 font-mono p-1">{it.unit_rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className="border-l border-r border-black text-right px-2 font-mono font-semibold p-1">{it.total_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                       </tr>
                     ))}
 
                     {/* Filler rows continuing vertical and horizontal borders */}
                     {Array.from({ length: Math.max(1, 10 - printItems.length) }).map((_, idx) => (
-                      <tr key={`empty-${idx}`} className="text-[10.5px] h-[28px] align-middle">
-                        <td className="border-r border-black text-center font-mono font-medium text-slate-700 p-1"></td>
-                        <td className="border-r border-black text-center font-mono font-medium p-1"></td>
-                        <td className="border-r border-black text-center p-1"></td>
-                        <td className="border-r border-black px-3 py-1.5 text-left text-[10px] italic font-semibold text-slate-500 leading-relaxed align-top whitespace-pre-wrap">
+                      <tr key={`empty-${idx}`} className={`text-[10.5px] h-[28px] align-middle ${(printItems.length + idx) % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
+                        <td className="border-l border-r border-black text-center font-mono font-medium text-slate-700 p-1"></td>
+                        <td className="border-l border-r border-black text-center font-mono font-medium p-1"></td>
+                        <td className="border-l border-r border-black text-center p-1"></td>
+                        <td className="border-l border-r border-black px-3 py-1.5 text-left text-[10px] italic font-semibold text-slate-500 leading-relaxed align-top whitespace-pre-wrap">
                           {idx === 0 ? "Note : Air Compressor, Electrical, Water, Loading and Lifting Equipment at Client Side By client." : ""}
                         </td>
-                        <td className="border-r border-black text-center font-mono p-1"></td>
-                        <td className="border-r border-black text-right px-2 font-mono p-1"></td>
-                        <td className="text-right px-2 font-mono font-semibold p-1"></td>
+                        <td className="border-l border-r border-black text-center font-mono p-1"></td>
+                        <td className="border-l border-r border-black text-right px-2 font-mono p-1"></td>
+                        <td className="border-l border-r border-black text-right px-2 font-mono font-semibold p-1"></td>
                       </tr>
                     ))}
 
                     {/* *** LAST ENTRY *** Row */}
                     <tr className="text-[9px] font-bold tracking-[0.25em] text-slate-400 uppercase select-none h-[24px] bg-white">
-                      <td className="border-r border-black"></td>
-                      <td className="border-r border-black"></td>
-                      <td className="border-r border-black"></td>
-                      <td className="border-r border-black text-center align-middle">*** LAST ENTRY ***</td>
-                      <td className="border-r border-black"></td>
-                      <td className="border-r border-black"></td>
-                      <td></td>
+                      <td className="border-l border-r border-b border-black"></td>
+                      <td className="border-l border-r border-b border-black"></td>
+                      <td className="border-l border-r border-b border-black"></td>
+                      <td className="border-l border-r border-b border-black text-center align-middle">*** LAST ENTRY ***</td>
+                      <td className="border-l border-r border-b border-black"></td>
+                      <td className="border-l border-r border-b border-black"></td>
+                      <td className="border-l border-r border-b border-black"></td>
                     </tr>
                   </tbody>
                 </table>
