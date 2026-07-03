@@ -241,7 +241,8 @@ export default function QuotationView({
               <tr className="bg-[#F8F9FA] border-b border-slate-250 text-[10px] font-mono text-slate-400 select-none">
                 <th className="border border-slate-200 bg-[#E8EAED] text-center w-10 py-1"></th>
                 <th className="border border-slate-200 text-center w-36">A</th>
-                <th className="border border-slate-200 text-center">B</th>
+                <th className="border border-slate-200 text-center w-40">B1</th>
+                <th className="border border-slate-200 text-center">B2</th>
                 <th className="border border-slate-200 text-center w-40">C</th>
                 <th className="border border-slate-200 text-center w-40">D</th>
                 <th className="border border-slate-200 text-center w-44">E</th>
@@ -252,6 +253,7 @@ export default function QuotationView({
               <tr className="bg-[#F8F9FA] border-b-2 border-slate-300 text-xs font-semibold text-slate-600">
                 <th className="border border-slate-200 bg-[#E8EAED] text-center w-10 font-mono select-none"></th>
                 <th className="border border-slate-200 px-3 py-2 text-slate-700">เอกสาร</th>
+                <th className="border border-slate-200 px-3 py-2 text-slate-700">ตัวแทนขาย (Sale Rep)</th>
                 <th className="border border-slate-200 px-3 py-2 text-slate-700">องค์กรลูกค้า / โครงการ</th>
                 <th className="border border-slate-200 px-3 py-2 text-right text-slate-700">ยอดรวม (ก่อน VAT)</th>
                 <th className="border border-slate-200 px-3 py-2 text-right text-slate-900 font-extrabold">ยอดสุทธิ (รวม VAT)</th>
@@ -263,7 +265,7 @@ export default function QuotationView({
             <tbody className="text-xs text-slate-700">
               {filteredQuotes.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-12 text-slate-400 text-xs border border-slate-200">
+                  <td colSpan={9} className="text-center py-12 text-slate-400 text-xs border border-slate-200">
                     ไม่พบข้อมูลใบเสนอราคาตามช่วงคำค้นหาที่ระบุ
                   </td>
                 </tr>
@@ -279,6 +281,9 @@ export default function QuotationView({
                     </td>
                     <td className="border border-slate-200 px-3 py-1.5 font-mono text-slate-600 truncate">
                       {q.quotation_no}
+                    </td>
+                    <td className="border border-slate-200 px-3 py-1.5 text-slate-700 font-medium">
+                      {q.sales_person || "ธนพล คำดี (S03)"}
                     </td>
                     <td className="border border-slate-200 px-3 py-1.5">
                       <span className="font-bold text-slate-800 block">{q.customer_name}</span>
@@ -510,194 +515,349 @@ export default function QuotationView({
       )}
 
       {/* Professional Printed Template Preview Modal */}
-      {viewingQuote && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-3xs flex items-center justify-center z-50 p-4 overflow-y-auto animate-fade-in print:bg-white print:p-0 print:absolute">
-          <div className="bg-white rounded-2xl shadow-3xl w-full max-w-3xl overflow-hidden my-8 animate-scale-up print:shadow-none print:my-0 print:rounded-none">
-            
-            {/* Header control toolbar (Hidden in print) */}
-            <div className="bg-slate-50 px-6 py-4 border-b border-slate-150 flex items-center justify-between print:hidden">
-              <span className="text-sm font-extrabold text-slate-800 flex items-center gap-1.5">
-                <Printer className="w-4.5 h-4.5 text-indigo-600" />
-                ใบเสนอราคาต้นฉบับดราฟต์ / Print Preview ({viewingQuote.quotation_no})
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handlePrint}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  สั่งพิมพ์แบบฟอร์ม / Print PDF
-                </button>
-                <button onClick={() => setViewingQuote(null)} className="p-1 bg-white border border-slate-200 text-slate-400 hover:text-slate-600 rounded">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+      {viewingQuote && (() => {
+        const clientObj = customers.find(c => c.id === viewingQuote.customer_id);
+        const attentionName = clientObj?.contacts?.[0]?.contact_name || "Khun Sawit Kong-ngoen";
+        const printItems = (viewingQuote.items && viewingQuote.items.length > 0)
+          ? viewingQuote.items
+          : [{
+              id: "fallback",
+              item_no: 1,
+              qty: 1,
+              unit: "Lot",
+              description: viewingQuote.subject,
+              duration_days: 1,
+              unit_rate: viewingQuote.total_amount,
+              total_price: viewingQuote.total_amount
+            }];
 
-            {/* Print canvas sheets */}
-            <div className="p-8 md:p-10 space-y-6 font-sans bg-white print:p-0 text-slate-800">
+        return (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-3xs flex items-center justify-center z-50 p-4 overflow-y-auto animate-fade-in print-modal-overlay print:bg-white print:p-0 print:absolute print:inset-0">
+            <div className="bg-white rounded-2xl shadow-3xl w-full max-w-[210mm] overflow-hidden my-8 animate-scale-up print-modal-content print:shadow-none print:my-0 print:rounded-none print:w-[210mm] print:min-h-[297mm]">
               
-              {/* Document Banner */}
-              <div className="flex justify-between items-start border-b-2 border-rose-600 pb-5">
-                <div className="flex gap-4">
-                  <img src="https://drive.google.com/uc?export=view&id=1u2v-GT6YDaWZZoravixstbtyQkvudkbw" alt="IKM Logo" className="h-16 w-auto object-contain shrink-0" referrerPolicy="no-referrer" />
-                  <div>
-                    <h1 className="text-slate-950 font-black text-lg uppercase tracking-wider leading-none">IKM Testing (Thailand) Co., Ltd.</h1>
-                    <span className="text-[10px] text-slate-500 block mt-1 leading-relaxed">
-                      110/3 Moo 2, Ban-Chang, Ban-Chang, Rayong 21130 THAILAND<br />
-                      Tel: +66 (0) 38 604 186 / Fax: +66 (0) 38 604 189
-                    </span>
-                    <span className="text-[10px] text-slate-400 block font-mono mt-0.5">TAX ID: 0105552089123 (Head Office) | Email: info@ikmtesting.co.th</span>
-                  </div>
+              {/* Header control toolbar (Hidden in print) */}
+              <div className="bg-slate-50 px-6 py-4 border-b border-slate-150 flex items-center justify-between print:hidden">
+                <span className="text-sm font-extrabold text-slate-800 flex items-center gap-1.5">
+                  <Printer className="w-4.5 h-4.5 text-blue-600" />
+                  ใบเสนอราคาต้นฉบับดราฟต์ / Print Preview ({viewingQuote.quotation_no})
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handlePrint}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                    สั่งพิมพ์แบบฟอร์ม / Print PDF
+                  </button>
+                  <button onClick={() => setViewingQuote(null)} className="p-1 bg-white border border-slate-200 text-slate-400 hover:text-slate-600 rounded">
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
-                <div className="text-right space-y-0.5">
-                  <h2 className="text-rose-600 font-extrabold text-2xl tracking-wider leading-none uppercase">QUOTATION</h2>
-                  <span className="text-[11px] font-bold text-slate-400 block pb-1">ใบเสนอราคา</span>
-                  <div className="text-[11px] bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg space-y-0.5 text-left inline-block min-w-[180px]">
-                    <div className="flex justify-between">
-                      <span className="text-slate-400 font-medium">Doc No.:</span>
-                      <span className="font-mono font-bold text-slate-800">{viewingQuote.quotation_no}</span>
+              </div>
+
+              {/* Print canvas sheets */}
+              <div 
+                className="print-area bg-white mx-auto print:shadow-none print:border-none print:p-0 text-slate-800"
+                style={{
+                  width: "210mm",
+                  minHeight: "297mm",
+                  padding: "18mm 18mm",
+                  boxSizing: "border-box",
+                  position: "relative",
+                }}
+              >
+                <style>{`
+                  @import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Inter:wght@300;400;500;600;700;800&family=Alex+Brush&display=swap');
+                  
+                  @media print {
+                    @page { 
+                      size: A4 portrait; 
+                      margin: 0; 
+                    }
+                    body { 
+                      background: white !important; 
+                      -webkit-print-color-adjust: exact; 
+                      print-color-adjust: exact; 
+                    }
+                    /* Hide layout wrappers and dashboard elements */
+                    .app-wrapper, .wrapper, .app-main, footer, nav, aside, header, .app-footer, .no-print, #navbar-shell, #sidebar-shell {
+                      display: none !important;
+                    }
+                    #quotation-module > *:not(.print-modal-overlay) {
+                      display: none !important;
+                    }
+                    /* Expand parent blocks to be clean */
+                    html, body, #react-quotations, #quotation-module {
+                      margin: 0 !important;
+                      padding: 0 !important;
+                      background: white !important;
+                      height: auto !important;
+                      min-height: 100% !important;
+                      overflow: visible !important;
+                      box-shadow: none !important;
+                      border: none !important;
+                    }
+                    .app-main {
+                      margin-left: 0 !important;
+                    }
+                    /* Frame the overlay modal perfectly */
+                    .print-modal-overlay {
+                      position: absolute !important;
+                      left: 0 !important;
+                      top: 0 !important;
+                      width: 210mm !important;
+                      height: auto !important;
+                      min-height: 297mm !important;
+                      background: white !important;
+                      padding: 0 !important;
+                      margin: 0 !important;
+                      z-index: 99999 !important;
+                      display: block !important;
+                      overflow: visible !important;
+                      box-shadow: none !important;
+                      border: none !important;
+                    }
+                    .print-modal-content {
+                      width: 210mm !important;
+                      min-height: 297mm !important;
+                      border: none !important;
+                      box-shadow: none !important;
+                      margin: 0 !important;
+                      padding: 0 !important;
+                      background: white !important;
+                    }
+                    .print-area { 
+                      border: none !important; 
+                      box-shadow: none !important; 
+                      padding: 15mm 15mm !important; 
+                    }
+                  }
+                  
+                  .print-area, .print-area table, .print-area td, .print-area th, .print-area div, .print-area span, .print-area p {
+                    font-family: 'Inter', 'Sarabun', sans-serif !important;
+                  }
+
+                  .font-signature {
+                    font-family: 'Alex Brush', cursive !important;
+                  }
+                `}</style>
+
+                {/* Elegant Header with Logo & Brand details */}
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex-1 pr-6 text-left">
+                    <div className="text-[14px] font-bold text-black uppercase tracking-wide">
+                      IKM TESTING (THAILAND) CO., LTD.
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400 font-medium">Date:</span>
-                      <span className="font-bold text-slate-800">{viewingQuote.issue_date}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400 font-medium">Valid Until:</span>
-                      <span className="font-bold text-amber-600">{viewingQuote.valid_until}</span>
+                    <div className="text-[10px] leading-relaxed text-slate-700 mt-1">
+                      <p>155/167 Moo 5, Samnakthon Sub-district, Banchang District, Rayong Province</p>
+                      <p>Thailand 21130</p>
+                      <p className="mt-1">Tel : + 66 38 601 996 to 8</p>
                     </div>
                   </div>
-                  <div className="text-left bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg mt-1 max-w-[240px] inline-block w-full">
-                    <span className="text-[9px] text-slate-400 block font-semibold uppercase tracking-wider">Subject / เรื่อง:</span>
-                    <span className="text-[11px] font-black text-slate-800 block break-words leading-tight mt-0.5">{viewingQuote.subject}</span>
+                  <div className="text-right shrink-0">
+                    <img
+                      src="https://lh3.googleusercontent.com/d/133co_Er6IxolsybTkqnn4Ez570c4Aa56"
+                      alt="IKM Logo"
+                      className="h-[48px] object-contain select-none"
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
                 </div>
-              </div>
 
-              {/* Bill To Info */}
-              <div className="grid grid-cols-2 gap-6 text-xs">
-                <div className="p-4 bg-slate-50 border border-slate-150 rounded-xl space-y-1">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">ผู้รับบริการ / CUSTOMER INFO:</div>
-                  <div className="text-slate-900 font-black text-sm">{viewingQuote.customer_name}</div>
-                  <div className="text-slate-600 leading-relaxed space-y-0.5">
-                    <div><strong>Tax ID:</strong> {customers.find(c => c.id === viewingQuote.customer_id)?.tax_id || '-'}</div>
-                    <div><strong>Phone:</strong> {customers.find(c => c.id === viewingQuote.customer_id)?.phone || '-'}</div>
-                    <div><strong>Address:</strong> {customers.find(c => c.id === viewingQuote.customer_id)?.address || '-'}</div>
-                  </div>
-                </div>
-                <div className="p-4 bg-slate-50 border border-slate-150 rounded-xl space-y-2">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">ขอบเขตบริการ / PROJECT SCOPE:</div>
-                  <div className="text-slate-900 font-extrabold text-xs">{viewingQuote.subject}</div>
-                  <div className="text-slate-500 leading-relaxed text-[11px]">
-                    <strong>Scope & Details:</strong> This proposal represents professional testing services, manpower supply, or technical rental conforming exactly to structural requirements.
-                  </div>
-                </div>
-              </div>
+                {/* Thick solid black divider line */}
+                <div className="border-b-2 border-black mb-3"></div>
 
-              {/* Items Table details */}
-              <div className="overflow-hidden border border-slate-300 rounded-lg">
-                <table className="w-full text-xs text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-100 border-b border-slate-300 font-bold uppercase text-slate-700">
-                      <th className="px-3 py-2 border-r border-slate-300 text-center w-12 text-[10px]">ลำดับ<br/>(No.)</th>
-                      <th className="px-3 py-2 border-r border-slate-300 text-[10px]">รายละเอียดงาน<br/>(Description of Services)</th>
-                      <th className="px-3 py-2 border-r border-slate-300 text-center w-14 text-[10px]">จำนวน<br/>(Qty)</th>
-                      <th className="px-3 py-2 border-r border-slate-300 text-center w-14 text-[10px]">หน่วย<br/>(Unit)</th>
-                      <th className="px-3 py-2 border-r border-slate-300 text-center w-14 text-[10px]">ระยะเวลางาน<br/>(Days)</th>
-                      <th className="px-3 py-2 border-r border-slate-300 text-right w-24 text-[10px]">ราคาต่อหน่วย<br/>(Rate THB)</th>
-                      <th className="px-3 py-2 text-right w-28 text-[10px]">จำนวนเงิน<br/>(Total THB)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 text-slate-800">
-                    {viewingQuote.items && viewingQuote.items.length > 0 ? (
-                      viewingQuote.items.map((item, idx) => (
-                        <tr key={item.id || idx} className="hover:bg-slate-50/40">
-                          <td className="px-3 py-2.5 border-r border-slate-200 text-center font-mono">{idx + 1}</td>
-                          <td className="px-3 py-2.5 border-r border-slate-200 whitespace-pre-line tracking-tight leading-relaxed">
-                            {item.description}
-                          </td>
-                          <td className="px-3 py-2.5 border-r border-slate-200 text-center font-mono font-bold">{item.qty}</td>
-                          <td className="px-3 py-2.5 border-r border-slate-200 text-center">{item.unit}</td>
-                          <td className="px-3 py-2.5 border-r border-slate-200 text-center font-mono">{item.duration_days || '1'}</td>
-                          <td className="px-3 py-2.5 border-r border-slate-200 text-right font-mono">
-                            {item.unit_rate ? item.unit_rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
-                          </td>
-                          <td className="px-3 py-2.5 text-right font-mono font-bold">
-                            {item.total_price ? item.total_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr className="hover:bg-slate-50/40">
-                        <td className="px-3 py-3 border-r border-slate-200 text-center font-mono">1</td>
-                        <td className="px-3 py-3 border-r border-slate-200">
-                          <span className="font-extrabold text-slate-900 block">{viewingQuote.subject}</span>
-                          <span className="text-[10px] text-slate-400 block mt-0.5">Project code / Ref: {viewingQuote.opportunity_id || 'CRM-REF'}</span>
-                        </td>
-                        <td className="px-3 py-3 border-r border-slate-200 text-center font-mono">1</td>
-                        <td className="px-3 py-3 border-r border-slate-200 text-center">Lot</td>
-                        <td className="px-3 py-3 border-r border-slate-200 text-center font-mono">1</td>
-                        <td className="px-3 py-3 border-r border-slate-200 text-right font-mono">
-                          {viewingQuote.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </td>
-                        <td className="px-3 py-3 text-right font-mono font-bold">
-                          {viewingQuote.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                {/* Centered Document Title */}
+                <div className="text-center mb-4">
+                  <h2 className="text-[14px] font-bold tracking-[0.25em] text-black">
+                    QUOTATION
+                  </h2>
+                </div>
 
-              {/* Calculation Summaries */}
-              <div className="flex justify-between items-start text-xs pt-2">
-                <div className="max-w-md text-slate-500 font-medium leading-relaxed bg-slate-50 p-3 border border-slate-200 rounded-xl">
-                  <div className="text-slate-800 font-bold mb-1">TERMS & CONDITIONS:</div>
-                  <div className="text-[10px] space-y-0.5 whitespace-pre-line text-slate-500 font-mono">
-                    {viewingQuote.remarks ? `Remarks: ${viewingQuote.remarks}\n` : ''}
-                    - Price holds for 30 days from date of printing.<br />
-                    - Standard credit payment terms: 30 days unless specified otherwise.<br />
-                    - Standard VAT of 7% applies to aggregate totals.
-                  </div>
-                </div>
-                <div className="w-72 space-y-1.5 border border-slate-300 p-4 rounded-xl bg-slate-50">
-                  <div className="flex justify-between text-slate-600">
-                    <span>รวมเป็นเงิน / Subtotal (THB):</span>
-                    <span className="font-mono font-bold">{viewingQuote.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600">
-                    <span>ภาษีมูลค่าเพิ่ม / VAT (7%):</span>
-                    <span className="font-mono font-bold">{viewingQuote.vat_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                  </div>
-                  <div className="flex justify-between border-t border-slate-300 pt-2 text-rose-600 font-black text-sm">
-                    <span>ยอดสุทธิ / Grand Total:</span>
-                    <span className="font-mono">{viewingQuote.grand_total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                  </div>
-                </div>
-              </div>
+                {/* Two Column Customer Info & Quotation Metadata Cards */}
+                <div className="grid grid-cols-2 gap-8 text-[11px] mb-4 text-left">
+                  {/* Left side Grid */}
+                  <div className="grid grid-cols-[55px_15px_1fr] gap-y-1 align-start">
+                    <div className="font-semibold text-slate-800">To</div>
+                    <div className="text-slate-600">:</div>
+                    <div className="text-black font-medium">{clientObj?.customer_name || viewingQuote.customer_name || "STP&I Company Limited"}</div>
 
-              {/* Authorized execution block */}
-              <div className="grid grid-cols-2 gap-12 pt-10 text-center text-xs">
-                <div className="space-y-10">
-                  <span className="text-slate-400 font-black uppercase tracking-wider block">PREPARED & APPROVED BY:</span>
-                  <div className="border-b border-slate-300 w-52 mx-auto pb-1 text-slate-700 font-extrabold uppercase font-mono">
-                    IKM TECHNICAL TEAM
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-medium block">Authorized Signatory & Stamp</span>
-                </div>
-                <div className="space-y-10">
-                  <span className="text-slate-400 font-black uppercase tracking-wider block">ACCEPTED BY CUSTOMER:</span>
-                  <div className="border-b border-slate-300 w-52 mx-auto pb-1 text-slate-700 font-semibold font-mono">
-                    .....................................................
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-medium block">Signature & Company Seal</span>
-                </div>
-              </div>
+                    <div className="font-semibold text-slate-800">Attn</div>
+                    <div className="text-slate-600">:</div>
+                    <div className="text-black">{attentionName}</div>
 
+                    <div className="font-semibold text-slate-800">Tel</div>
+                    <div className="text-slate-600">:</div>
+                    <div className="text-black">{clientObj?.phone || "+66(0)93-296-9151"}</div>
+
+                    <div className="font-semibold text-slate-800">Email</div>
+                    <div className="text-slate-600">:</div>
+                    <div className="text-black break-all">{clientObj?.email || "sawit.k@stpi.co.th"}</div>
+
+                    {/* Spacer */}
+                    <div className="col-span-3 h-2"></div>
+
+                    <div className="font-semibold text-slate-800">From</div>
+                    <div className="text-slate-600">:</div>
+                    <div className="text-black">{viewingQuote.sales_person || "ธนพล คำดี (S03)"}</div>
+
+                    <div className="font-semibold text-slate-800">CC</div>
+                    <div className="text-slate-600">:</div>
+                    <div className="text-black">-</div>
+
+                    <div className="font-semibold text-slate-800">Subject</div>
+                    <div className="text-slate-600">:</div>
+                    <div className="text-black font-bold break-words">{viewingQuote.subject}</div>
+                  </div>
+
+                  {/* Right side Grid */}
+                  <div className="grid grid-cols-[80px_15px_1fr] gap-y-1 align-start">
+                    <div className="font-semibold text-slate-800">Our Ref.</div>
+                    <div className="text-slate-600">:</div>
+                    <div className="text-black font-bold">{viewingQuote.quotation_no}</div>
+
+                    <div className="font-semibold text-slate-800">Date</div>
+                    <div className="text-slate-600">:</div>
+                    <div className="text-black">
+                      {new Date(viewingQuote.issue_date).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </div>
+
+                    {/* Spacer matching left column Tel row */}
+                    <div className="col-span-3 h-[18px]"></div>
+
+                    <div className="font-semibold text-slate-800">No. of Page</div>
+                    <div className="text-slate-600">:</div>
+                    <div className="text-black">1 of 1</div>
+                  </div>
+                </div>
+
+                {/* Rigid Table with solid black borders */}
+                <div className="border border-black flex flex-col mb-2 text-black bg-white" style={{ minHeight: "440px" }}>
+                  {/* Table Header */}
+                  <div className="flex border-b border-black text-center text-[10px] font-bold uppercase tracking-wider bg-white min-h-[35px] items-stretch">
+                    <div className="w-[45px] border-r border-black flex items-center justify-center font-bold">ITEM</div>
+                    <div className="w-[45px] border-r border-black flex items-center justify-center font-bold">QTY</div>
+                    <div className="w-[55px] border-r border-black flex items-center justify-center font-bold">UNIT</div>
+                    <div className="flex-1 border-r border-black flex items-center justify-center font-bold">DESCRIPTION</div>
+                    <div className="w-[85px] border-r border-black flex flex-col items-center justify-center leading-tight py-0.5">
+                      <span>DURATION</span>
+                      <span className="text-[8.5px] font-normal lowercase">Days</span>
+                    </div>
+                    <div className="w-[100px] border-r border-black flex flex-col items-center justify-center leading-tight py-0.5">
+                      <span>UNIT RATE</span>
+                      <span className="text-[8.5px] font-normal">Per Day</span>
+                    </div>
+                    <div className="w-[110px] flex items-center justify-center font-bold">TOTAL PRICE</div>
+                  </div>
+
+                  {/* Item Rows */}
+                  {printItems.map((it: any, idx: number) => (
+                    <div key={it.id || idx} className="flex border-b border-black text-[10.5px] items-stretch min-h-[28px]">
+                      <div className="w-[45px] border-r border-black flex items-center justify-center font-mono font-medium text-slate-700">{idx + 1}</div>
+                      <div className="w-[45px] border-r border-black flex items-center justify-center font-mono font-medium">{it.qty}</div>
+                      <div className="w-[55px] border-r border-black flex items-center justify-center">{it.unit}</div>
+                      <div className="flex-1 border-r border-black px-3 py-1.5 text-left whitespace-pre-wrap leading-relaxed font-medium break-all">{it.description}</div>
+                      <div className="w-[85px] border-r border-black flex items-center justify-center font-mono">{it.duration_days || it.duration || "1"}</div>
+                      <div className="w-[100px] border-r border-black flex items-center justify-end px-2 font-mono">{it.unit_rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      <div className="w-[110px] flex items-center justify-end px-2 font-mono font-semibold">{it.total_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    </div>
+                  ))}
+
+                  {/* Filler row continuing vertical borders */}
+                  <div className="flex flex-1 items-stretch min-h-[120px]">
+                    <div className="w-[45px] border-r border-black h-full"></div>
+                    <div className="w-[45px] border-r border-black h-full"></div>
+                    <div className="w-[55px] border-r border-black h-full"></div>
+                    <div className="flex-1 border-r border-black h-full px-3 py-4 text-left text-[10px] italic font-semibold text-slate-500 leading-relaxed">
+                      Note : Air Compressor, Electrical, Water, Loading and Lifting Equipment at Client Side By client.
+                    </div>
+                    <div className="w-[85px] border-r border-black h-full"></div>
+                    <div className="w-[100px] border-r border-black h-full"></div>
+                    <div className="w-[110px] h-full"></div>
+                  </div>
+
+                  {/* *** LAST ENTRY *** Row */}
+                  <div className="flex border-t border-black text-[9px] font-bold tracking-[0.25em] text-slate-400 uppercase select-none min-h-[24px] items-stretch bg-white">
+                    <div className="w-[45px] border-r border-black h-full"></div>
+                    <div className="w-[45px] border-r border-black h-full"></div>
+                    <div className="w-[55px] border-r border-black h-full"></div>
+                    <div className="flex-1 border-r border-black h-full flex items-center justify-center">*** LAST ENTRY ***</div>
+                    <div className="w-[85px] border-r border-black h-full"></div>
+                    <div className="w-[100px] border-r border-black h-full"></div>
+                    <div className="w-[110px] h-full"></div>
+                  </div>
+                </div>
+
+                {/* Total Value aligned right */}
+                <div className="flex justify-end items-center mb-4">
+                  <span className="text-[11px] font-bold text-black mr-6">Total Value</span>
+                  <div className="border border-black w-[110px] py-1 px-2 text-right font-mono font-bold text-[11px] bg-white">
+                    {viewingQuote.total_amount.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })}
+                  </div>
+                </div>
+
+                {/* Terms / Remarks Blocks */}
+                <div className="text-[9.5px] leading-relaxed text-left space-y-1.5 text-slate-700 pl-4 mb-6">
+                  <div className="font-bold text-black">Terms & Conditions:</div>
+                  <div className="space-y-0.5">
+                    <p>- 30 days validity from date of quotation.</p>
+                    <p>- All prices above are quoted in THB</p>
+                    <p>- All prices does not include 7% VAT</p>
+                    <p>- Payment term: 30 Days from date of invoice.</p>
+                    <p>- Please state our IKM reference no. on your work/purchase order.</p>
+                    <p>- IKM Testing shall not be liable for loss or damage or delay or failure in performance hereunder arising or resulting directly</p>
+                    <p className="pl-3">or indirectly from amongst other things such as epidemics and/or quarantine restrictions.</p>
+                    <p>- If contract or PO is cancelled after mobilization has started, then all expenses incurred shall be invoiced to Client.</p>
+                    <p>- Above price will be charged by unit rate and actual</p>
+                  </div>
+                </div>
+
+                {/* Dual Signatures Section */}
+                <div className="grid grid-cols-2 gap-12 text-[11px] pt-4 text-left">
+                  <div className="flex flex-col justify-between h-[120px]">
+                    <div className="text-slate-800">Thanks and Regards</div>
+                    
+                    <div className="mt-auto">
+                      <div className="border-b border-black w-[200px] mb-1"></div>
+                      <div className="font-bold text-black">IKM Testing (Thailand) Co., Ltd.</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col justify-between h-[120px] pl-6">
+                    <div className="font-bold text-black">CONFIRMED AND ACCEPTED BY</div>
+                    
+                    <div className="mt-auto">
+                      <div className="border-b border-black w-[220px] mb-1"></div>
+                      <div className="text-black font-semibold uppercase tracking-wide text-[9px]">SIGNATURE & COMPANY STAMP</div>
+                      <div className="text-[10px] text-slate-700 mt-1">
+                        <span>DATE :</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Page Numbering Footer */}
+                <div className="absolute bottom-[10px] left-0 w-full px-8 flex justify-between text-[9px] text-slate-500 font-medium">
+                  <div>Location: BDS Folder</div>
+                  <div>Page 1 of 1</div>
+                  <div className="text-right leading-tight">
+                    <div>TH-BDS-FRM-003 Rev 0</div>
+                    <div>Effective Date: 01 Jul 2026</div>
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

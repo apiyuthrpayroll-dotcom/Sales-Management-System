@@ -401,6 +401,9 @@ function QuoteList({
                 Quote No
               </th>
               <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Sale Rep
+              </th>
+              <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Project / Customer
               </th>
               <th className="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
@@ -429,6 +432,9 @@ function QuoteList({
                       Rev.{q.revision_number}
                     </span>
                   ) : null}
+                </td>
+                <td className="py-3 px-4 text-sm font-medium text-slate-700">
+                  {getUsername(q.sales_person || "ธนพล คำดี (S03)")}
                 </td>
                 <td className="py-3 px-4">
                   <div className="text-sm font-bold text-slate-800">
@@ -511,7 +517,7 @@ function QuoteList({
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-12 text-center text-slate-500">
+                <td colSpan={7} className="py-12 text-center text-slate-500">
                   No quotation records found.
                 </td>
               </tr>
@@ -806,8 +812,8 @@ function QuoteForm({ id, onClose, quotations, customers }: any) {
                 <tr>
                   <th className="py-2 px-3">Description</th>
                   <th className="py-2 px-3 w-20 text-center">Qty</th>
-                  <th className="py-2 px-3 w-24 text-center">Duration Day</th>
                   <th className="py-2 px-3 w-20 text-center">Unit</th>
+                  <th className="py-2 px-3 w-24 text-center">Duration Day</th>
                   <th className="py-2 px-3 w-32 text-right">Unit Rate</th>
                   <th className="py-2 px-3 w-32 text-right">Total</th>
                   <th className="py-2 px-3 w-28 text-center">Actions</th>
@@ -847,6 +853,17 @@ function QuoteForm({ id, onClose, quotations, customers }: any) {
                     </td>
                     <td className="p-2">
                       <input
+                        value={item.unit}
+                        onChange={(e) => {
+                          const newI = [...items];
+                          newI[index].unit = e.target.value;
+                          setItems(newI);
+                        }}
+                        className="w-full px-2 py-1 text-sm border-0 focus:ring-2 focus:ring-blue-500 rounded bg-slate-50 text-center"
+                      />
+                    </td>
+                    <td className="p-2">
+                      <input
                         type="number"
                         min="1"
                         step="any"
@@ -859,17 +876,6 @@ function QuoteForm({ id, onClose, quotations, customers }: any) {
                         }}
                         className="w-full px-2 py-1 text-sm border-0 focus:ring-2 focus:ring-blue-500 rounded bg-slate-50 text-center"
                         required
-                      />
-                    </td>
-                    <td className="p-2">
-                      <input
-                        value={item.unit}
-                        onChange={(e) => {
-                          const newI = [...items];
-                          newI[index].unit = e.target.value;
-                          setItems(newI);
-                        }}
-                        className="w-full px-2 py-1 text-sm border-0 focus:ring-2 focus:ring-blue-500 rounded bg-slate-50 text-center"
                       />
                     </td>
                     <td className="p-2">
@@ -1080,307 +1086,223 @@ function PrintPreview({ id, onClose, onEdit, quotations, customers }: any) {
          `}</style>
 
         {/* Elegant Header with Logo & Brand details */}
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-start mb-2">
           <div className="flex-1 pr-6">
-            <div className="text-[15px] font-black tracking-tight text-slate-800 mb-1.5">
+            <div className="text-[14px] font-bold text-black uppercase tracking-wide">
               IKM TESTING (THAILAND) CO., LTD.
             </div>
-            <div className="text-[10.5px] leading-relaxed text-slate-500 space-y-0.5">
+            <div className="text-[10px] leading-relaxed text-slate-700 mt-1">
               <p>
                 155/167 Moo 5, Samnakthon Sub-district, Banchang District,
                 Rayong Province
               </p>
               <p>Thailand 21130</p>
-              <p className="font-medium text-slate-600 mt-1">
-                Tel: + 66 38 601 996 to 8 | Email: info@ikmtesting.co.th | Tax
-                ID: 0105552089123
+              <p className="mt-1">
+                Tel : + 66 38 601 996 to 8
               </p>
             </div>
           </div>
           <div className="text-right shrink-0">
             <img
-              src="https://drive.google.com/uc?export=view&id=1u2v-GT6YDaWZZoravixstbtyQkvudkbw"
+              src="https://lh3.googleusercontent.com/d/133co_Er6IxolsybTkqnn4Ez570c4Aa56"
               alt="IKM Logo"
-              className="h-[52px] object-contain select-none"
+              className="h-[48px] object-contain select-none"
               referrerPolicy="no-referrer"
             />
           </div>
         </div>
 
-        {/* Premium Double Border Divider Line */}
-        <div className="relative mb-5">
-          <div className="h-[3px] bg-slate-850 rounded-full"></div>
-          <div className="h-[1px] bg-slate-200 mt-0.5"></div>
+        {/* Thick solid black divider line */}
+        <div className="border-b-2 border-black mb-3"></div>
+
+        {/* Centered Document Title */}
+        <div className="text-center mb-4">
+          <h2 className="text-[14px] font-bold tracking-[0.25em] text-black">
+            QUOTATION
+          </h2>
         </div>
 
         {/* Two Column Customer Info & Quotation Metadata Cards */}
-        <div className="grid grid-cols-2 gap-5 text-[11px] mb-5 text-left">
-          {/* Customer (To) Details */}
-          <div className="bg-slate-50/70 border border-slate-200/50 rounded-xl p-3.5 space-y-1.5">
-            <span className="text-[9px] font-extrabold tracking-widest text-blue-700 uppercase block mb-1">
-              CLIENT DETAILS (BILL TO)
-            </span>
-            <div className="grid grid-cols-[65px_10px_1fr]">
-              <div className="text-slate-400 font-medium">Customer</div>
-              <div className="text-slate-400">:</div>
-              <div className="font-bold text-slate-800">
-                {customer?.customer_name || "STP&I Company Limited"}
-              </div>
+        <div className="grid grid-cols-2 gap-8 text-[11px] mb-4 text-left">
+          {/* Left side Grid */}
+          <div className="grid grid-cols-[55px_15px_1fr] gap-y-1 align-start">
+            <div className="font-semibold text-slate-800">To</div>
+            <div className="text-slate-600">:</div>
+            <div className="text-black font-medium">{customer?.customer_name || "STP&I Company Limited"}</div>
 
-              <div className="text-slate-400 font-medium mt-0.5">Attention</div>
-              <div className="text-slate-400 mt-0.5">:</div>
-              <div className="font-semibold text-slate-700 mt-0.5">
-                {quote.attention || "Khun Sawit Kong-ngoen"}
-              </div>
+            <div className="font-semibold text-slate-800">Attn</div>
+            <div className="text-slate-600">:</div>
+            <div className="text-black">{quote.attention || "Khun Sawit Kong-ngoen"}</div>
 
-              <div className="text-slate-400 font-medium">Telephone</div>
-              <div className="text-slate-400">:</div>
-              <div className="text-slate-700">
-                {customer?.phone || "+66(0)93-296-9151"}
-              </div>
+            <div className="font-semibold text-slate-800">Tel</div>
+            <div className="text-slate-600">:</div>
+            <div className="text-black">{customer?.phone || "+66(0)93-296-9151"}</div>
 
-              <div className="text-slate-400 font-medium">Email</div>
-              <div className="text-slate-400">:</div>
-              <div className="text-blue-600 font-medium underline decoration-blue-200">
-                {customer?.email || "sawit.k@stpi.co.th"}
-              </div>
-            </div>
+            <div className="font-semibold text-slate-800">Email</div>
+            <div className="text-slate-600">:</div>
+            <div className="text-black break-all">{customer?.email || "sawit.k@stpi.co.th"}</div>
+
+            {/* Spacer */}
+            <div className="col-span-3 h-2"></div>
+
+            <div className="font-semibold text-slate-800">From</div>
+            <div className="text-slate-600">:</div>
+            <div className="text-black">{quote.sales_person}</div>
+
+            <div className="font-semibold text-slate-800">CC</div>
+            <div className="text-slate-600">:</div>
+            <div className="text-black">{quote.cc || "-"}</div>
+
+            <div className="font-semibold text-slate-800">Subject</div>
+            <div className="text-slate-600">:</div>
+            <div className="text-black font-bold break-words">{quote.title}</div>
           </div>
 
-          {/* Quotation Ref & Metadata */}
-          <div className="bg-slate-50/70 border border-slate-200/50 rounded-xl p-3.5 space-y-1.5">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-[9px] font-extrabold tracking-widest text-slate-500 uppercase">
-                DOCUMENT TYPE
-              </span>
-              <span className="text-[14px] font-black text-slate-900 tracking-wide">
-                QUOTATION
-              </span>
+          {/* Right side Grid */}
+          <div className="grid grid-cols-[80px_15px_1fr] gap-y-1 align-start">
+            <div className="font-semibold text-slate-800">Our Ref.</div>
+            <div className="text-slate-600">:</div>
+            <div className="text-black font-bold">
+              {quote.quotation_no}
+              {quote.revision_number > 0 ? `-R${quote.revision_number}` : ""}
             </div>
-            <div className="grid grid-cols-[80px_10px_1fr]">
-              <div className="text-slate-400 font-medium">Our Ref.</div>
-              <div className="text-slate-400">:</div>
-              <div className="font-bold text-slate-800">
-                {quote.quotation_no}
-                {quote.revision_number > 0 ? `-R${quote.revision_number}` : ""}
-              </div>
 
-              <div className="text-slate-400 font-medium mt-0.5">Subject</div>
-              <div className="text-slate-400 mt-0.5">:</div>
-              <div className="font-bold text-slate-800 break-words leading-snug text-[11px]">
-                {quote.title}
-              </div>
-
-              <div className="text-slate-400 font-medium mt-0.5">Date</div>
-              <div className="text-slate-400 mt-0.5">:</div>
-              <div className="text-slate-700 mt-0.5">
-                {new Date(quote.quotation_date).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </div>
-
-              <div className="text-slate-400 font-medium">No. of Pages</div>
-              <div className="text-slate-400">:</div>
-              <div className="text-slate-700">1</div>
+            <div className="font-semibold text-slate-800">Date</div>
+            <div className="text-slate-600">:</div>
+            <div className="text-black">
+              {new Date(quote.quotation_date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
             </div>
+
+            {/* Spacer matching left column Tel row */}
+            <div className="col-span-3 h-[18px]"></div>
+
+            <div className="font-semibold text-slate-800">No. of Page</div>
+            <div className="text-slate-600">:</div>
+            <div className="text-black">1 of 1</div>
           </div>
         </div>
 
-        {/* Document Staff Context Panel */}
-        <div className="bg-slate-50/45 border-y border-slate-200/50 py-2.5 px-4 text-[11px] leading-relaxed mb-5 grid grid-cols-2 gap-4 text-left">
-          <div className="flex gap-2">
-            <span className="text-slate-400 font-medium shrink-0">From:</span>
-            <span className="text-slate-700 font-medium">
-              {quote.sales_person}{" "}
-              <span className="text-slate-400 text-[10px]">
-                ({quote.sales_email || "example@th.IKM.com"})
-              </span>
-            </span>
+        {/* Rigid Table with solid black borders */}
+        <div className="border border-black flex flex-col mb-2 text-black bg-white" style={{ minHeight: "440px" }}>
+          {/* Table Header */}
+          <div className="flex border-b border-black text-center text-[10px] font-bold uppercase tracking-wider bg-white min-h-[35px] items-stretch">
+            <div className="w-[45px] border-r border-black flex items-center justify-center font-bold">ITEM</div>
+            <div className="w-[45px] border-r border-black flex items-center justify-center font-bold">QTY</div>
+            <div className="w-[55px] border-r border-black flex items-center justify-center font-bold">UNIT</div>
+            <div className="flex-1 border-r border-black flex items-center justify-center font-bold">DESCRIPTION</div>
+            <div className="w-[85px] border-r border-black flex flex-col items-center justify-center leading-tight py-0.5">
+              <span>DURATION</span>
+              <span className="text-[8.5px] font-normal lowercase">Days</span>
+            </div>
+            <div className="w-[100px] border-r border-black flex flex-col items-center justify-center leading-tight py-0.5">
+              <span>UNIT RATE</span>
+              <span className="text-[8.5px] font-normal">Per Day</span>
+            </div>
+            <div className="w-[110px] flex items-center justify-center font-bold">TOTAL PRICE</div>
           </div>
-          <div className="flex gap-2 justify-end">
-            <span className="text-slate-400 font-medium shrink-0">CC:</span>
-            <span className="text-slate-700">{quote.cc || "-"}</span>
+
+          {/* Item Rows */}
+          {quote.items.map((it: any, idx: number) => (
+            <div key={idx} className="flex border-b border-black text-[10.5px] items-stretch min-h-[28px]">
+              <div className="w-[45px] border-r border-black flex items-center justify-center font-mono font-medium text-slate-700">{idx + 1}</div>
+              <div className="w-[45px] border-r border-black flex items-center justify-center font-mono font-medium">{it.qty}</div>
+              <div className="w-[55px] border-r border-black flex items-center justify-center">{it.unit}</div>
+              <div className="flex-1 border-r border-black px-3 py-1.5 text-left whitespace-pre-wrap leading-relaxed font-medium break-all">{it.description}</div>
+              <div className="w-[85px] border-r border-black flex items-center justify-center font-mono">{it.duration_days || it.duration || "1"}</div>
+              <div className="w-[100px] border-r border-black flex items-center justify-end px-2 font-mono">{it.unit_rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              <div className="w-[110px] flex items-center justify-end px-2 font-mono font-semibold">{it.total_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            </div>
+          ))}
+
+          {/* Filler row continuing vertical borders */}
+          <div className="flex flex-1 items-stretch min-h-[120px]">
+            <div className="w-[45px] border-r border-black h-full"></div>
+            <div className="w-[45px] border-r border-black h-full"></div>
+            <div className="w-[55px] border-r border-black h-full"></div>
+            <div className="flex-1 border-r border-black h-full px-3 py-4 text-left text-[10px] italic font-semibold text-slate-500 leading-relaxed">
+              Note : Air Compressor, Electrical, Water, Loading and Lifting Equipment at Client Side By client.
+            </div>
+            <div className="w-[85px] border-r border-black h-full"></div>
+            <div className="w-[100px] border-r border-black h-full"></div>
+            <div className="w-[110px] h-full"></div>
+          </div>
+
+          {/* *** LAST ENTRY *** Row */}
+          <div className="flex border-t border-black text-[9px] font-bold tracking-[0.25em] text-slate-400 uppercase select-none min-h-[24px] items-stretch bg-white">
+            <div className="w-[45px] border-r border-black h-full"></div>
+            <div className="w-[45px] border-r border-black h-full"></div>
+            <div className="w-[55px] border-r border-black h-full"></div>
+            <div className="flex-1 border-r border-black h-full flex items-center justify-center">*** LAST ENTRY ***</div>
+            <div className="w-[85px] border-r border-black h-full"></div>
+            <div className="w-[100px] border-r border-black h-full"></div>
+            <div className="w-[110px] h-full"></div>
           </div>
         </div>
 
-        {/* Items Table */}
-        <div className="min-h-[380px]">
-          <table className="w-full text-[10.5px] text-left border-collapse border border-slate-200/80 mb-3 table-fixed">
-            <thead>
-              <tr className="bg-slate-900 text-white border-b border-slate-900 text-[9.5px] tracking-wider uppercase font-semibold">
-                <th className="py-2.5 px-2 text-center w-[45px] border-r border-slate-700 font-medium align-middle">
-                  ITEM
-                </th>
-                <th className="py-2.5 px-2 text-center w-[45px] border-r border-slate-700 font-medium align-middle">
-                  QTY
-                </th>
-                <th className="py-2.5 px-2 text-center w-[55px] border-r border-slate-700 font-medium align-middle">
-                  UNIT
-                </th>
-                <th className="py-2.5 px-3 border-r border-slate-700 font-medium align-middle">
-                  DESCRIPTION
-                </th>
-                <th className="py-2.5 px-2 text-center w-[75px] border-r border-slate-700 font-medium align-middle leading-tight">
-                  DURATION
-                  <br />
-                  <span className="text-[8px] opacity-80 lowercase">
-                    (days)
-                  </span>
-                </th>
-                <th className="py-2.5 px-2 text-center w-[95px] border-r border-slate-700 font-medium align-middle leading-tight">
-                  UNIT RATE
-                  <br />
-                  <span className="text-[8px] opacity-80">(THB/Day)</span>
-                </th>
-                <th className="py-2.5 px-2 text-center w-[100px] font-medium align-middle leading-tight">
-                  TOTAL PRICE
-                  <br />
-                  <span className="text-[8px] opacity-80">(THB)</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="align-top divide-y divide-slate-150">
-              {quote.items.map((it: any, idx: number) => (
-                <tr key={idx} className="hover:bg-slate-50/50">
-                  <td className="py-2.5 px-2 text-center border-r border-slate-150 text-slate-400 font-semibold">
-                    {idx + 1}
-                  </td>
-                  <td className="py-2.5 px-2 text-center border-r border-slate-150 font-mono font-medium">
-                    {it.qty}
-                  </td>
-                  <td className="py-2.5 px-2 text-center border-r border-slate-150 text-slate-600 font-medium">
-                    {it.unit}
-                  </td>
-                  <td className="py-2.5 px-3 border-r border-slate-150 break-words text-[11px] text-slate-800 leading-relaxed" style={{ wordBreak: 'break-all' }}>
-                    <div className="font-semibold text-slate-900 whitespace-pre-wrap">
-                      {it.description}
-                    </div>
-                    {it.duration === 1 && it.unit === "Team" && (
-                      <div className="mt-1.5 text-[9.5px] text-slate-500 bg-slate-50 p-2 rounded-md border border-slate-200/50">
-                        ** Manpower rate base on working 8.00 - 17.00 (8hrs) on
-                        Mon to Sat
-                        <br />
-                        OT after 17.00pm. Rate apply by 1.5 time of hourly rate
-                        (Refer to Thai Labour Law)
-                        <br />
-                        Sunday & Public Holiday Rate apply by 2.0 time of
-                        working rate (Refer to Thai Labour Law)
-                      </div>
-                    )}
-                  </td>
-                  <td className="py-2.5 px-2 text-center border-r border-slate-150 font-mono text-slate-700">
-                    {it.duration_days || it.duration || "1"}
-                  </td>
-                  <td className="py-2.5 px-2 text-right border-r border-slate-150 font-mono font-medium text-slate-700">
-                    {it.unit_rate.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                    })}
-                  </td>
-                  <td className="py-2.5 px-2 text-right font-mono font-bold text-slate-900">
-                    {it.total_price.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                    })}
-                  </td>
-                </tr>
-              ))}
-
-              {/* Notes Placeholder inside table */}
-              <tr>
-                <td className="py-4 border-r border-slate-150"></td>
-                <td className="py-4 border-r border-slate-150"></td>
-                <td className="py-4 border-r border-slate-150"></td>
-                <td className="py-4 px-3 border-r border-slate-150 text-[10px] font-semibold italic text-slate-500 leading-relaxed">
-                  {quote.items.length < 3 &&
-                    "Note : Air Compressor, Electrical, Water, Loading and Lifting Equipment at Client Side By client."}
-                </td>
-                <td className="py-4 border-r border-slate-150"></td>
-                <td className="py-4 border-r border-slate-150"></td>
-                <td className="py-4"></td>
-              </tr>
-
-              {/* Last Entry Divider Banner */}
-              <tr className="bg-slate-50/50">
-                <td className="py-2.5 border-r border-slate-150"></td>
-                <td className="py-2.5 border-r border-slate-150"></td>
-                <td className="py-2.5 border-r border-slate-150"></td>
-                <td className="py-2.5 text-center border-r border-slate-150 font-extrabold tracking-[0.25em] text-[9px] text-slate-400 uppercase select-none">
-                  *** LAST ENTRY ***
-                </td>
-                <td className="py-2.5 border-r border-slate-150"></td>
-                <td className="py-2.5 border-r border-slate-150"></td>
-                <td className="py-2.5"></td>
-              </tr>
-
-              {/* Premium Totals Grid Area */}
-              <tr className="border-t border-slate-200">
-                <td colSpan={5} className="border-r border-slate-150 py-2.5"></td>
-                <td className="border-r border-slate-150 text-right px-3 py-2.5 text-slate-500 font-bold text-[10px] tracking-wide uppercase">
-                  Total Value
-                </td>
-                <td className="px-3 py-2.5 text-right font-mono font-black text-slate-900 text-sm bg-slate-50/50">
-                  {quote.total_value.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                  })}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        {/* Total Value aligned right */}
+        <div className="flex justify-end items-center mb-4">
+          <span className="text-[11px] font-bold text-black mr-6">Total Value</span>
+          <div className="border border-black w-[110px] py-1 px-2 text-right font-mono font-bold text-[11px] bg-white">
+            {quote.total_value.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}
+          </div>
         </div>
 
-         {/* Terms / Remarks Blocks */}
-         <div className="text-[10px] leading-relaxed mb-10 space-y-3 bg-slate-50/40 p-3.5 rounded-xl border border-slate-200/50 text-left">
-            {quote.remarks && (
-               <div>
-                  <div className="font-bold text-slate-800 underline uppercase tracking-wider mb-1 text-[9.5px]">Remarks / Notes:</div>
-                  <div className="whitespace-pre-line text-slate-600 font-medium pl-1">{quote.remarks}</div>
-               </div>
-            )}
-            <div>
-              <div className="font-bold text-slate-800 underline uppercase tracking-wider mb-1 text-[9.5px]">Terms & Conditions:</div>
-              <div className="whitespace-pre-wrap text-slate-500 pl-1 leading-normal">{quote.terms_conditions || `- 30 days validity from date of quotation.
-- All prices above are quoted in THB.
-- All prices does not include 7% VAT.
-- Payment term: ${quote.payment_term || '30 Days'} from date of invoice.
-- Please state our IKM reference no. on your work/purchase order.
-- IKM Testing shall not be liable for loss or damage or delay or failure in performance hereunder arising or resulting directly
-  or indirectly from amongst other things such as epidemics and/or quarantine restrictions.
-- If contract or PO is cancelled after mobilization has started, then all expenses incurred shall be invoiced to Client.
-- Above price will be charged by unit rate and actual`}</div>
-            </div>
-         </div>
+        {/* Terms / Remarks Blocks */}
+        <div className="text-[9.5px] leading-relaxed text-left space-y-1.5 text-slate-700 pl-4 mb-6">
+          <div className="font-bold text-black">Terms & Conditions:</div>
+          <div className="space-y-0.5">
+            <p>- 30 days validity from date of quotation.</p>
+            <p>- All prices above are quoted in THB</p>
+            <p>- All prices does not include 7% VAT</p>
+            <p>- Payment term: {quote.payment_term || '30 Days'} from date of invoice.</p>
+            <p>- Please state our IKM reference no. on your work/purchase order.</p>
+            <p>- IKM Testing shall not be liable for loss or damage or delay or failure in performance hereunder arising or resulting directly</p>
+            <p className="pl-3">or indirectly from amongst other things such as epidemics and/or quarantine restrictions.</p>
+            <p>- If contract or PO is cancelled after mobilization has started, then all expenses incurred shall be invoiced to Client.</p>
+            <p>- Above price will be charged by unit rate and actual</p>
+          </div>
+        </div>
 
-         {/* Dual Signatures Section */}
-         <div className="grid grid-cols-[1fr_240px] gap-8 text-[11px] pt-4 text-left">
-            <div className="space-y-1">
-               <div className="text-slate-400 font-medium">Thanks and Regards,</div>
-               
-               {/* Sales Person Beautiful Signature Badging */}
-               <div className="h-[45px] flex items-end mb-2 select-none">
-                 <span className="font-signature text-[32px] text-blue-700/80 leading-none" style={{ fontFamily: "'Alex Brush', cursive" }}>{quote.sales_person?.split(' ')[0]}</span>
-                 <span className="ml-4 px-2 py-0.5 bg-blue-50 text-[8px] text-blue-600 font-bold tracking-wider uppercase border border-blue-100 rounded">IKM VERIFIED</span>
-               </div>
-               
-               <div className="font-bold text-slate-800">{quote.sales_person}</div>
-               <div className="text-slate-500 text-[10px]">IKM Testing (Thailand) Co., Ltd.</div>
-            </div>
+        {/* Dual Signatures Section */}
+        <div className="grid grid-cols-2 gap-12 text-[11px] pt-4 text-left">
+          <div className="flex flex-col justify-between h-[120px]">
+            <div className="text-slate-800">Thanks and Regards</div>
             
-            <div className="bg-slate-50/50 rounded-xl border border-slate-200/40 p-4 flex flex-col justify-between h-[120px]">
-               <div className="text-[9px] font-extrabold text-slate-400 tracking-wider uppercase text-center">CONFIRMED AND ACCEPTED BY</div>
-               <div className="border-b border-dashed border-slate-300 mt-6 mx-2"></div>
-               <div className="text-[9px] text-slate-400 font-semibold text-center uppercase tracking-wide">SIGNATURE & COMPANY STAMP</div>
-               <div className="text-[10px] text-slate-500 flex justify-between px-2 mt-1">
-                 <span>DATE :</span>
-                 <span className="text-slate-300 font-mono">____ / ____ / ____</span>
-               </div>
+            <div className="mt-auto">
+              <div className="border-b border-black w-[200px] mb-1"></div>
+              <div className="font-bold text-black">IKM Testing (Thailand) Co., Ltd.</div>
             </div>
-         </div>
-         
-         {/* Page Numbering Footer */}
-         <div className="absolute bottom-[10px] w-full text-center text-[9px] text-slate-400 tracking-widest font-semibold left-0 uppercase">
-            Page 1 of 1
-         </div>
+          </div>
+          
+          <div className="flex flex-col justify-between h-[120px] pl-6">
+            <div className="font-bold text-black">CONFIRMED AND ACCEPTED BY</div>
+            
+            <div className="mt-auto">
+              <div className="border-b border-black w-[220px] mb-1"></div>
+              <div className="text-black font-semibold uppercase tracking-wide text-[9px]">SIGNATURE & COMPANY STAMP</div>
+              <div className="text-[10px] text-slate-700 mt-1">
+                <span>DATE :</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Page Numbering Footer */}
+        <div className="absolute bottom-[10px] left-0 w-full px-8 flex justify-between text-[9px] text-slate-500 font-medium">
+          <div>Location: BDS Folder</div>
+          <div>Page 1 of 1</div>
+          <div className="text-right leading-tight">
+            <div>TH-BDS-FRM-003 Rev 0</div>
+            <div>Effective Date: 01 Jul 2026</div>
+          </div>
+        </div>
       </div>
     </div>
   );
