@@ -658,7 +658,7 @@ export default function QuotationView({
                     <img
                       src="https://lh3.googleusercontent.com/d/133co_Er6IxolsybTkqnn4Ez570c4Aa56"
                       alt="IKM Logo"
-                      className="h-[48px] object-contain select-none"
+                      className="h-[80px] object-contain select-none"
                       referrerPolicy="no-referrer"
                     />
                   </div>
@@ -669,7 +669,7 @@ export default function QuotationView({
 
                 {/* Centered Document Title */}
                 <div className="text-center mb-4">
-                  <h2 className="text-[14px] font-bold tracking-[0.25em] text-black">
+                  <h2 className="text-[8px] font-bold tracking-[0.25em] text-black">
                     QUOTATION
                   </h2>
                 </div>
@@ -736,61 +736,78 @@ export default function QuotationView({
                 </div>
 
                 {/* Rigid Table with solid black borders */}
-                <div className="border border-black flex flex-col mb-2 text-black bg-white" style={{ minHeight: "440px" }}>
-                  {/* Table Header */}
-                  <div className="flex border-b border-black text-center text-[10px] font-bold uppercase tracking-wider bg-white min-h-[35px] items-stretch">
-                    <div className="w-[45px] border-r border-black flex items-center justify-center font-bold">ITEM</div>
-                    <div className="w-[45px] border-r border-black flex items-center justify-center font-bold">QTY</div>
-                    <div className="w-[55px] border-r border-black flex items-center justify-center font-bold">UNIT</div>
-                    <div className="flex-1 border-r border-black flex items-center justify-center font-bold">DESCRIPTION</div>
-                    <div className="w-[85px] border-r border-black flex flex-col items-center justify-center leading-tight py-0.5">
-                      <span>DURATION</span>
-                      <span className="text-[8.5px] font-normal lowercase">Days</span>
-                    </div>
-                    <div className="w-[100px] border-r border-black flex flex-col items-center justify-center leading-tight py-0.5">
-                      <span>UNIT RATE</span>
-                      <span className="text-[8.5px] font-normal">Per Day</span>
-                    </div>
-                    <div className="w-[110px] flex items-center justify-center font-bold">TOTAL PRICE</div>
-                  </div>
+                <table className="w-full border-collapse border border-black text-black bg-white table-fixed mb-2" style={{ minHeight: "440px" }}>
+                  <colgroup>
+                    <col className="w-[45px]" />
+                    <col className="w-[45px]" />
+                    <col className="w-[55px]" />
+                    <col />
+                    <col className="w-[85px]" />
+                    <col className="w-[100px]" />
+                    <col className="w-[110px]" />
+                  </colgroup>
+           <thead>
+  <tr className="h-[36px] text-[10px] font-bold">
+    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">ITEM</th>
+    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">QTY</th>
+    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">UNIT</th>
+    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">DESCRIPTION</th>
+    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">
+      <div className="flex flex-col items-center justify-center">
+        <span>DURATION</span>
+        <span className="text-[8px] font-normal lowercase">Days</span>
+      </div>
+    </th>
+    <th className="border-r border-b border-black font-bold p-1 text-center align-middle">
+      <div className="flex flex-col items-center justify-center">
+        <span>UNIT RATE</span>
+        <span className="text-[8px] font-normal">Per Day</span>
+      </div>
+    </th>
+    <th className="border-b border-black font-bold p-1 text-center align-middle">TOTAL PRICE</th>
+  </tr>
+</thead>
+                  <tbody>
+                    {/* Item Rows */}
+                    {printItems.map((it: any, idx: number) => (
+                      <tr key={it.id || idx} className="text-[10.5px] h-[28px] align-middle">
+                        <td className="border-r border-black text-center font-mono font-medium text-slate-700 p-1">{idx + 1}</td>
+                        <td className="border-r border-black text-center font-mono font-medium p-1">{it.qty}</td>
+                        <td className="border-r border-black text-center p-1">{it.unit}</td>
+                        <td className="border-r border-black px-3 py-1.5 text-left whitespace-pre-wrap leading-relaxed font-medium break-all">{it.description}</td>
+                        <td className="border-r border-black text-center font-mono p-1">{it.duration_days || it.duration || "1"}</td>
+                        <td className="border-r border-black text-right px-2 font-mono p-1">{it.unit_rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className="text-right px-2 font-mono font-semibold p-1">{it.total_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      </tr>
+                    ))}
 
-                  {/* Item Rows */}
-                  {printItems.map((it: any, idx: number) => (
-                    <div key={it.id || idx} className="flex border-b border-black text-[10.5px] items-stretch min-h-[28px]">
-                      <div className="w-[45px] border-r border-black flex items-center justify-center font-mono font-medium text-slate-700">{idx + 1}</div>
-                      <div className="w-[45px] border-r border-black flex items-center justify-center font-mono font-medium">{it.qty}</div>
-                      <div className="w-[55px] border-r border-black flex items-center justify-center">{it.unit}</div>
-                      <div className="flex-1 border-r border-black px-3 py-1.5 text-left whitespace-pre-wrap leading-relaxed font-medium break-all">{it.description}</div>
-                      <div className="w-[85px] border-r border-black flex items-center justify-center font-mono">{it.duration_days || it.duration || "1"}</div>
-                      <div className="w-[100px] border-r border-black flex items-center justify-end px-2 font-mono">{it.unit_rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                      <div className="w-[110px] flex items-center justify-end px-2 font-mono font-semibold">{it.total_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                    </div>
-                  ))}
+                    {/* Filler rows continuing vertical and horizontal borders */}
+                    {Array.from({ length: Math.max(1, 10 - printItems.length) }).map((_, idx) => (
+                      <tr key={`empty-${idx}`} className="text-[10.5px] h-[28px] align-middle">
+                        <td className="border-r border-black text-center font-mono font-medium text-slate-700 p-1"></td>
+                        <td className="border-r border-black text-center font-mono font-medium p-1"></td>
+                        <td className="border-r border-black text-center p-1"></td>
+                        <td className="border-r border-black px-3 py-1.5 text-left text-[10px] italic font-semibold text-slate-500 leading-relaxed align-top whitespace-pre-wrap">
+                          {idx === 0 ? "Note : Air Compressor, Electrical, Water, Loading and Lifting Equipment at Client Side By client." : ""}
+                        </td>
+                        <td className="border-r border-black text-center font-mono p-1"></td>
+                        <td className="border-r border-black text-right px-2 font-mono p-1"></td>
+                        <td className="text-right px-2 font-mono font-semibold p-1"></td>
+                      </tr>
+                    ))}
 
-                  {/* Filler row continuing vertical borders */}
-                  <div className="flex flex-1 items-stretch min-h-[120px]">
-                    <div className="w-[45px] border-r border-black h-full"></div>
-                    <div className="w-[45px] border-r border-black h-full"></div>
-                    <div className="w-[55px] border-r border-black h-full"></div>
-                    <div className="flex-1 border-r border-black h-full px-3 py-4 text-left text-[10px] italic font-semibold text-slate-500 leading-relaxed">
-                      Note : Air Compressor, Electrical, Water, Loading and Lifting Equipment at Client Side By client.
-                    </div>
-                    <div className="w-[85px] border-r border-black h-full"></div>
-                    <div className="w-[100px] border-r border-black h-full"></div>
-                    <div className="w-[110px] h-full"></div>
-                  </div>
-
-                  {/* *** LAST ENTRY *** Row */}
-                  <div className="flex border-t border-black text-[9px] font-bold tracking-[0.25em] text-slate-400 uppercase select-none min-h-[24px] items-stretch bg-white">
-                    <div className="w-[45px] border-r border-black h-full"></div>
-                    <div className="w-[45px] border-r border-black h-full"></div>
-                    <div className="w-[55px] border-r border-black h-full"></div>
-                    <div className="flex-1 border-r border-black h-full flex items-center justify-center">*** LAST ENTRY ***</div>
-                    <div className="w-[85px] border-r border-black h-full"></div>
-                    <div className="w-[100px] border-r border-black h-full"></div>
-                    <div className="w-[110px] h-full"></div>
-                  </div>
-                </div>
+                    {/* *** LAST ENTRY *** Row */}
+                    <tr className="text-[9px] font-bold tracking-[0.25em] text-slate-400 uppercase select-none h-[24px] bg-white">
+                      <td className="border-r border-black"></td>
+                      <td className="border-r border-black"></td>
+                      <td className="border-r border-black"></td>
+                      <td className="border-r border-black text-center align-middle">*** LAST ENTRY ***</td>
+                      <td className="border-r border-black"></td>
+                      <td className="border-r border-black"></td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
 
                 {/* Total Value aligned right */}
                 <div className="flex justify-end items-center mb-4">
@@ -804,9 +821,9 @@ export default function QuotationView({
                 </div>
 
                 {/* Terms / Remarks Blocks */}
-                <div className="text-[9.5px] leading-relaxed text-left space-y-1.5 text-slate-700 pl-4 mb-6">
+                <div className="text-[9.5px] leading-[1.25] text-left space-y-0.5 text-slate-700 pl-4 mb-3">
                   <div className="font-bold text-black">Terms & Conditions:</div>
-                  <div className="space-y-0.5">
+                  <div className="space-y-[1px]">
                     <p>- 30 days validity from date of quotation.</p>
                     <p>- All prices above are quoted in THB</p>
                     <p>- All prices does not include 7% VAT</p>
