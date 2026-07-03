@@ -669,7 +669,7 @@ export default function QuotationView({
 
                 {/* Centered Document Title */}
                 <div className="text-center mb-4">
-                  <h2 className="text-[8px] font-bold tracking-[0.25em] text-black">
+                  <h2 className="text-[10px] font-bold tracking-[0.25em] text-black">
                     QUOTATION
                   </h2>
                 </div>
