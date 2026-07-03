@@ -260,6 +260,10 @@
         return;
       }
 
+      // Check current user role to determine if they can delete tickets
+      const currentUserRole = localStorage.getItem('crm_user_role') || localStorage.getItem('crm_active_role') || 'Sales';
+      const canDelete = currentUserRole === 'Admin' || currentUserRole === 'System Administrator';
+
       supportTickets.forEach(t => {
         let statusBadge = '';
         if (t.status === 'New' || t.status === 'Pending') {
@@ -300,7 +304,12 @@
                   <button class="btn btn-outline-warning btn-xs" onclick="markProgress('${t.id}')">
                     <i class="fa fa-sync"></i> บรรลุต่อ
                   </button>
-                ` : '<span class="text-success small fw-bold">Job Resolved</span>'}
+                ` : '<span class="text-success small fw-bold me-2">Job Resolved</span>'}
+                ${canDelete ? `
+                  <button class="btn btn-outline-danger btn-xs" onclick="deleteSupportTicket('${t.id}')" title="ลบตั๋วบริการ (Admin Only)">
+                    <i class="fa fa-trash"></i> ลบ
+                  </button>
+                ` : ''}
               </div>
             </td>
           </tr>
@@ -356,6 +365,39 @@
         renderTicketsTable();
         showToastAlert('ปรับสถานะตั๋วช่างกำลังวิ่งเข้าปะการโรงแล้ว', 'warning');
       }
+    }
+
+    function deleteSupportTicket(id) {
+      const currentUserRole = localStorage.getItem('crm_user_role') || localStorage.getItem('crm_active_role') || 'Sales';
+      const canDelete = currentUserRole === 'Admin' || currentUserRole === 'System Administrator';
+
+      if (!canDelete) {
+        Swal.fire({
+          title: 'จำกัดสิทธิ์การเข้าถึง',
+          text: 'เฉพาะ Admin หรือ ผู้ดูแลระบบเท่านั้นที่สามารถลบตั๋วบริการนี้ได้',
+          icon: 'error',
+          confirmButtonColor: '#3085d6'
+        });
+        return;
+      }
+
+      Swal.fire({
+        title: 'ยืนยันการลบตั๋วบริการ?',
+        text: `คุณต้องการลบตั๋วบริการเลขที่ ${id} นี้ออกจากระบบอย่างถาวรหรือไม่?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'ใช่, ต้องการลบ!',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          supportTickets = supportTickets.filter(item => item.id !== id);
+          saveTicketsToStore();
+          renderTicketsTable();
+          showToastAlert('ลบตั๋วบริการออกจากระบบเรียบร้อยแล้ว', 'success');
+        }
+      });
     }
   </script>
 </body>
