@@ -31,6 +31,14 @@ export default function QuotationView({
   const [editingQuote, setEditingQuote] = useState<Quotation | null>(null);
   const [viewingQuote, setViewingQuote] = useState<Quotation | null>(null);
 
+  // Load custom form configurations
+  const savedSignature = localStorage.getItem("saved_authorized_signature");
+  const showStamp = localStorage.getItem("crm_form_show_stamp") !== "false";
+  const tableBorderStyle = localStorage.getItem("crm_form_border_style") || "standard";
+  const titleSize = localStorage.getItem("crm_form_title_size") || "10px";
+  const logoSize = localStorage.getItem("crm_form_logo_size") || "80px";
+  const themeColor = localStorage.getItem("crm_form_theme_color") || "#1e293b";
+
   // Form State
   const [oppId, setOppId] = useState('');
   const [custId, setCustId] = useState('');
@@ -645,7 +653,7 @@ export default function QuotationView({
                 {/* Elegant Header with Logo & Brand details */}
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex-1 pr-6 text-left">
-                    <div className="text-[14px] font-bold text-black uppercase tracking-wide">
+                    <div className="text-[14px] font-bold uppercase tracking-wide" style={{ color: themeColor !== "#1e293b" ? themeColor : "black" }}>
                       IKM TESTING (THAILAND) CO., LTD.
                     </div>
                     <div className="text-[10px] leading-relaxed text-slate-700 mt-1">
@@ -658,7 +666,8 @@ export default function QuotationView({
                     <img
                       src="https://lh3.googleusercontent.com/d/15kgSg9bp-J9mYETYxw2BfAVNNNBAkusA"
                       alt="IKM Logo"
-                      className="h-[80px] object-contain select-none"
+                      className="object-contain select-none"
+                      style={{ height: logoSize }}
                       referrerPolicy="no-referrer"
                     />
                   </div>
@@ -669,7 +678,7 @@ export default function QuotationView({
 
                 {/* Centered Document Title */}
                 <div className="text-center mb-4">
-                  <h2 className="text-[10px] font-bold tracking-[0.25em] text-black">
+                  <h2 className="font-bold tracking-[0.25em] text-black" style={{ fontSize: titleSize }}>
                     QUOTATION
                   </h2>
                 </div>
@@ -736,7 +745,13 @@ export default function QuotationView({
                 </div>
 
                 {/* Rigid Table with solid black borders */}
-                <table className="w-full border-collapse border border-black text-black bg-white table-fixed mb-2" style={{ minHeight: "440px" }}>
+                <table 
+                  className="w-full border-collapse text-black bg-white table-fixed mb-2" 
+                  style={{ 
+                    minHeight: "440px",
+                    border: tableBorderStyle !== "horizontal" ? "1px solid black" : "none"
+                  }}
+                >
                   <colgroup>
                     <col className="w-[45px]" />
                     <col className="w-[45px]" />
@@ -748,63 +763,63 @@ export default function QuotationView({
                   </colgroup>
                   <thead>
                     <tr className="h-[36px] text-[10px] font-bold">
-                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">ITEM</th>
-                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">QTY</th>
-                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">UNIT</th>
-                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">DESCRIPTION</th>
-                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">
+                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>ITEM</th>
+                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>QTY</th>
+                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>UNIT</th>
+                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>DESCRIPTION</th>
+                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>
                         <div className="flex flex-col items-center justify-center">
                           <span>DURATION</span>
                           <span className="text-[8px] font-normal lowercase">Days</span>
                         </div>
                       </th>
-                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">
+                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>
                         <div className="flex flex-col items-center justify-center">
                           <span>UNIT RATE</span>
                           <span className="text-[8px] font-normal">Per Day</span>
                         </div>
                       </th>
-                      <th className="border-l border-r border-b-2 border-black font-bold p-1 text-center align-middle">TOTAL PRICE</th>
+                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>TOTAL PRICE</th>
                     </tr>
                   </thead>
                   <tbody>
                     {/* Item Rows */}
                     {printItems.map((it: any, idx: number) => (
-                      <tr key={it.id || idx} className={`text-[10.5px] h-[28px] align-middle ${idx % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
-                        <td className="border-l border-r border-black text-center font-mono font-medium text-slate-700 p-1">{idx + 1}</td>
-                        <td className="border-l border-r border-black text-center font-mono font-medium p-1">{it.qty}</td>
-                        <td className="border-l border-r border-black text-center p-1">{it.unit}</td>
-                        <td className="border-l border-r border-black px-3 py-1.5 text-left whitespace-pre-wrap leading-relaxed font-medium break-words">{it.description}</td>
-                        <td className="border-l border-r border-black text-center font-mono p-1">{it.duration_days || it.duration || "1"}</td>
-                        <td className="border-l border-r border-black text-right px-2 font-mono p-1">{it.unit_rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                        <td className="border-l border-r border-black text-right px-2 font-mono font-semibold p-1">{it.total_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <tr key={it.id || idx} className={`text-[10.5px] h-[28px] align-middle ${tableBorderStyle === "grid" ? "border-b border-black" : idx % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : "border-b border-slate-200"} text-center font-mono font-medium text-slate-700 p-1`}>{idx + 1}</td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : "border-b border-slate-200"} text-center font-mono font-medium p-1`}>{it.qty}</td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : "border-b border-slate-200"} text-center p-1`}>{it.unit}</td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : "border-b border-slate-200"} px-3 py-1.5 text-left whitespace-pre-wrap leading-relaxed font-medium break-words`}>{it.description}</td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : "border-b border-slate-200"} text-center font-mono p-1`}>{it.duration_days || it.duration || "1"}</td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : "border-b border-slate-200"} text-right px-2 font-mono p-1`}>{it.unit_rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : "border-b border-slate-200"} text-right px-2 font-mono font-semibold p-1`}>{it.total_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                       </tr>
                     ))}
 
                     {/* Filler rows continuing vertical and horizontal borders */}
                     {Array.from({ length: Math.max(1, 10 - printItems.length) }).map((_, idx) => (
-                      <tr key={`empty-${idx}`} className={`text-[10.5px] h-[28px] align-middle ${(printItems.length + idx) % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
-                        <td className="border-l border-r border-black text-center font-mono font-medium text-slate-700 p-1"></td>
-                        <td className="border-l border-r border-black text-center font-mono font-medium p-1"></td>
-                        <td className="border-l border-r border-black text-center p-1"></td>
-                        <td className="border-l border-r border-black px-3 py-1.5 text-left text-[10px] italic font-semibold text-slate-500 leading-relaxed align-top whitespace-pre-wrap">
+                      <tr key={`empty-${idx}`} className={`text-[10.5px] h-[28px] align-middle ${tableBorderStyle === "grid" ? "border-b border-black" : (printItems.length + idx) % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-center font-mono font-medium text-slate-700 p-1`}></td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-center font-mono font-medium p-1`}></td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-center p-1`}></td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} px-3 py-1.5 text-left text-[10px] italic font-semibold text-slate-500 leading-relaxed align-top whitespace-pre-wrap`}>
                           {idx === 0 ? "Note : Air Compressor, Electrical, Water, Loading and Lifting Equipment at Client Side By client." : ""}
                         </td>
-                        <td className="border-l border-r border-black text-center font-mono p-1"></td>
-                        <td className="border-l border-r border-black text-right px-2 font-mono p-1"></td>
-                        <td className="border-l border-r border-black text-right px-2 font-mono font-semibold p-1"></td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-center font-mono p-1`}></td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-right px-2 font-mono p-1`}></td>
+                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-right px-2 font-mono font-semibold p-1`}></td>
                       </tr>
                     ))}
 
                     {/* *** LAST ENTRY *** Row */}
                     <tr className="text-[9px] font-bold tracking-[0.25em] text-slate-400 uppercase select-none h-[24px] bg-white">
-                      <td className="border-l border-r border-b border-black"></td>
-                      <td className="border-l border-r border-b border-black"></td>
-                      <td className="border-l border-r border-b border-black"></td>
-                      <td className="border-l border-r border-b border-black text-center align-middle">*** LAST ENTRY ***</td>
-                      <td className="border-l border-r border-b border-black"></td>
-                      <td className="border-l border-r border-b border-black"></td>
-                      <td className="border-l border-r border-b border-black"></td>
+                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
+                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
+                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
+                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black text-center align-middle`}>*** LAST ENTRY ***</td>
+                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
+                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
+                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
                     </tr>
                   </tbody>
                 </table>
@@ -838,24 +853,40 @@ export default function QuotationView({
 
                 {/* Dual Signatures Section */}
                 <div className="grid grid-cols-2 gap-12 text-[11px] pt-4 text-left">
-                  <div className="flex flex-col justify-between h-[120px]">
+                  <div className="flex flex-col justify-between h-[125px]">
                     <div className="text-slate-800">Thanks and Regards</div>
                     
-                    <div className="mt-auto">
+                    <div className="mt-auto relative">
+                      {savedSignature && (
+                        <img 
+                          src={savedSignature} 
+                          alt="Signature" 
+                          className="h-[55px] object-contain max-w-[200px] absolute bottom-[22px] left-[10px] select-none pointer-events-none"
+                          referrerPolicy="no-referrer"
+                        />
+                      )}
                       <div className="border-b border-black w-[200px] mb-1"></div>
                       <div className="font-bold text-black">IKM Testing (Thailand) Co., Ltd.</div>
                     </div>
                   </div>
                   
-                  <div className="flex flex-col justify-between h-[120px] pl-6">
+                  <div className="flex flex-col justify-between h-[125px] pl-6">
                     <div className="font-bold text-black">CONFIRMED AND ACCEPTED BY</div>
                     
                     <div className="mt-auto">
-                      <div className="border-b border-black w-[220px] mb-1"></div>
-                      <div className="text-black font-semibold uppercase tracking-wide text-[9px]">SIGNATURE & COMPANY STAMP</div>
-                      <div className="text-[10px] text-slate-700 mt-1">
-                        <span>DATE :</span>
-                      </div>
+                      {showStamp ? (
+                        <>
+                          <div className="border-b border-black w-[220px] mb-1"></div>
+                          <div className="text-black font-semibold uppercase tracking-wide text-[9px]">SIGNATURE & COMPANY STAMP</div>
+                          <div className="text-[10px] text-slate-700 mt-1">
+                            <span>DATE :</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="h-[40px] flex items-end">
+                          <div className="border-b border-black w-[220px] mb-1"></div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
