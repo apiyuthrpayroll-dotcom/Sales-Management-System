@@ -1104,7 +1104,7 @@ function PrintPreview({ id, onClose, onEdit, quotations, customers }: any) {
           </div>
           <div className="text-right shrink-0">
             <img
-              src="https://lh3.googleusercontent.com/d/133co_Er6IxolsybTkqnn4Ez570c4Aa56"
+              src="https://lh3.googleusercontent.com/d/15kgSg9bp-J9mYETYxw2BfAVNNNBAkusA"
               alt="IKM Logo"
               className="h-[80px] object-contain select-none"
               referrerPolicy="no-referrer"
