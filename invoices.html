@@ -136,7 +136,7 @@
           </div>
         </div>
 
-        <!-- Invoices List Card -->
+         <!-- Invoices List Card -->
         <div class="card shadow-sm border-0">
           <div class="card-header bg-white border-bottom py-3">
             <h5 class="m-0 fw-bold text-success"><i class="fas fa-receipt"></i> Billing Control Ledger</h5>
@@ -147,20 +147,21 @@
                 <thead class="table-light text-uppercase small font-bold">
                   <tr>
                     <th>Invoice Number</th>
-                    <th>Ref Quotation</th>
-                    <th>Project / Billing Description</th>
+                    <th>IKM INV</th>
+                    <th>Job Number</th>
+                    <th>PO Reference</th>
                     <th>Customer Account</th>
-                    <th>Issue Date</th>
-                    <th>Due Date</th>
-                    <th class="text-end">VAT 7%</th>
+                    <th>Project / Billing Description</th>
+                    <th>Sale Rep</th>
+                    <th>Issue & Due Date</th>
                     <th class="text-end">Total Amount (฿)</th>
                     <th class="text-center">Status</th>
-                    <th class="text-center" style="width: 250px;">Financial Actions</th>
+                    <th class="text-center" style="width: 200px;">Financial Actions</th>
                   </tr>
                 </thead>
                 <tbody id="invoice-table-body">
                   <tr>
-                    <td colspan="10" class="text-center py-5">
+                    <td colspan="11" class="text-center py-5">
                       <div class="spinner-border text-success" role="status"></div>
                       <p class="mt-2 text-muted">Retrieving billing transactions...</p>
                     </td>
@@ -210,6 +211,15 @@
               <div class="col-12 col-md-6">
                 <label class="form-label small fw-bold">Customer Purchase Order (PO) Reference</label>
                 <input type="text" class="form-control" id="form-po-reference" placeholder="e.g. PO007441/2026">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold text-success">IKM-INV (Key Manual) <span class="text-danger">*</span></label>
+                <input type="text" class="form-control border-success fw-bold text-success" id="form-ikm-inv" placeholder="e.g. IKM-INV-260012" required>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold">Job Number</label>
+                <input type="text" class="form-control" id="form-job-no" placeholder="e.g. JOB-26003">
               </div>
 
               <div class="col-12 col-md-4">
@@ -586,7 +596,7 @@
                         <path d="M5,8 C25,8 25,5 45,5 C65,5 65,8 85,8 L95,8" stroke="#FF3333" stroke-width="4.5" fill="none" />
                         <path d="M5,14 C25,14 25,11 45,11 C65,11 65,14 85,14 L95,14" stroke="#FF3333" stroke-width="4.5" fill="none" />
                         <rect x="5" y="21" width="90" height="18" fill="#000" />
-                        <text x="50" y="34" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="11" text-anchor="middle" letter-spacing="4.5">I • K • M</text>
+                        <text x="50" y="34" fill="#fff" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="13" text-anchor="middle" letter-spacing="4">IKM</text>
                       </svg>
                       <div class="doc-title-red" id="print-doc-type">INVOICE / TAX INVOICE</div>
                     </div>
@@ -622,15 +632,26 @@
                       <span class="invoice-meta-label">Due Date:</span>
                       <span class="invoice-meta-value" id="print-due" style="font-weight: bold;">03 Jul 2026</span>
                     </div>
-                    <div style="height: 4px;"></div>
                     <div class="invoice-meta-row">
                       <span class="invoice-meta-label">Invoice Number:</span>
                       <span class="invoice-meta-value" id="print-doc-no" style="font-weight: bold;">IKMTTH-26/256</span>
                     </div>
-                    <div style="height: 4px;"></div>
-                    <div class="invoice-meta-row" style="flex-direction: column; margin-bottom: 0;">
-                      <span class="invoice-meta-label">Reference</span>
-                      <span class="invoice-meta-value" id="print-po-no" style="font-family: inherit; font-size: 8pt;">PO007441/2026</span>
+                    
+                    <div class="invoice-meta-row" style="border-top: 1px dashed #15803d; padding-top: 3px; margin-top: 3px;">
+                      <span class="invoice-meta-label" style="color: #15803d; font-weight: bold;">IKM-INV No. (Manual):</span>
+                      <span class="invoice-meta-value text-success" id="print-ikm-inv" style="font-weight: bold; color: #15803d;">-</span>
+                    </div>
+                    <div class="invoice-meta-row">
+                      <span class="invoice-meta-label">Job Number:</span>
+                      <span class="invoice-meta-value" id="print-job-no">-</span>
+                    </div>
+                    <div class="invoice-meta-row">
+                      <span class="invoice-meta-label">Sales Representative:</span>
+                      <span class="invoice-meta-value" id="print-sales-person">-</span>
+                    </div>
+                    <div class="invoice-meta-row" style="margin-bottom: 0;">
+                      <span class="invoice-meta-label">Customer PO Ref:</span>
+                      <span class="invoice-meta-value" id="print-po-no" style="font-family: inherit;">PO007441/2026</span>
                     </div>
                   </td>
                 </tr>
@@ -688,38 +709,10 @@
                     <span id="print-grandtotal">10,700.00</span>
                   </div>
                 </div>
-              </div>
-
-              <!-- STAMP & BANK INFO -->
+                        <!-- STAMP & BANK INFO -->
               <div class="footer-stamp-bank-section">
-                <!-- Stamp on Left -->
-                <div class="stamp-container">
-                  <svg width="100" height="100" viewBox="0 0 120 120" style="opacity: 0.85; transform: rotate(-4deg); margin-left: 20px;">
-                    <circle cx="60" cy="60" r="48" stroke="#1D4ED8" stroke-width="2.2" fill="none" />
-                    <circle cx="60" cy="60" r="41" stroke="#1D4ED8" stroke-width="0.8" stroke-dasharray="2,2" fill="none" />
-                    <path id="curve-top-stamp" d="M 21,60 A 39,39 0 0,1 99,60" fill="none" />
-                    <path id="curve-bottom-stamp" d="M 99,60 A 39,39 0 0,1 21,60" fill="none" />
-                    
-                    <text font-family="Arial" font-size="4.5" fill="#1D4ED8" font-weight="bold">
-                      <textPath href="#curve-top-stamp" startOffset="50%" text-anchor="middle">
-                        ★ บริษัท ไอเคเอ็ม เทสติ้ง (ประเทศไทย) จำกัด ★
-                      </textPath>
-                    </text>
-                    
-                    <text font-family="Arial" font-size="4.5" fill="#1D4ED8" font-weight="bold">
-                      <textPath href="#curve-bottom-stamp" startOffset="50%" text-anchor="middle">
-                        IKM TESTING (THAILAND) COMPANY LIMITED
-                      </textPath>
-                    </text>
-                    
-                    <path d="M40,53 C48,49 52,57 60,53 C68,49 72,57 80,53" stroke="#1D4ED8" stroke-width="1.2" fill="none" />
-                    <path d="M40,59 C48,55 52,63 60,59 C68,55 72,63 80,59" stroke="#1D4ED8" stroke-width="1.2" fill="none" />
-                    <path d="M40,65 C48,61 52,69 60,65 C68,61 72,69 80,65" stroke="#1D4ED8" stroke-width="1.2" fill="none" />
-                  </svg>
-                </div>
-
-                <!-- Bank info on Right -->
-                <div class="bank-details-box">
+                <!-- Bank info on Left (Full Width, Stamp Removed as per Request) -->
+                <div class="bank-details-box" style="width: 100%;">
                   <p>Please make Cheque payable to<br>
                   <strong>IKM TESTING (THAILAND) CO., LTD.</strong></p>
                   <p style="margin-top: 4px;">Or remit to our bank as follows<br>
@@ -841,6 +834,8 @@
       const filtered = currentInvoices.filter(i => {
         const matchesSearch = !search || 
           i.invoice_no.toLowerCase().includes(search) || 
+          (i.ikm_inv && i.ikm_inv.toLowerCase().includes(search)) ||
+          (i.job_no && i.job_no.toLowerCase().includes(search)) ||
           (i.quotation_no && i.quotation_no.toLowerCase().includes(search)) ||
           i.project_name.toLowerCase().includes(search) ||
           (i.customer && i.customer.customer_name.toLowerCase().includes(search));
@@ -854,7 +849,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="10" class="text-center py-4 text-muted">
+            <td colspan="11" class="text-center py-4 text-muted">
               <i class="fa fa-folder-open fs-2 d-block mb-2 text-secondary"></i>
               No invoice records match the selected filters.
             </td>
@@ -876,23 +871,30 @@
         const row = `
           <tr>
             <td class="font-bold text-success font-monospace" style="font-size:0.95rem;">${i.invoice_no}</td>
-            <td class="small font-monospace">${i.quotation_no || 'Direct'}</td>
+            <td class="font-bold text-primary font-monospace" style="font-size:0.95rem;">${i.ikm_inv || '-'}</td>
+            <td class="small font-monospace text-secondary">${i.job_no || '-'}</td>
+            <td class="small font-monospace">${i.po_reference || '-'}</td>
             <td>
-              <div class="fw-bold">${i.project_name}</div>
-              <div class="text-xs text-muted font-monospace">PO Ref: ${i.po_reference || '-'}</div>
+              <div class="small fw-semibold text-dark">${i.customer ? i.customer.customer_name : 'Customer Account Not Found'}</div>
+              <div class="text-xs text-muted font-monospace">${i.customer ? i.customer.customer_code : '-'}</div>
+            </td>
+            <td>
+              <div class="fw-bold small text-truncate" style="max-width: 200px;" title="${i.project_name}">${i.project_name}</div>
+              <div class="text-xs text-muted font-monospace">QT Ref: ${i.quotation_no || 'Direct'}</div>
               <div class="text-muted font-monospace mt-0.5" style="font-size: 10px; line-height: 1.2;">
                 <span class="d-inline-block me-2" title="Created by"><i class="fa fa-plus-circle text-secondary" style="font-size: 9px;"></i> ${i.created_by ? window.SupabaseDB.getUsernameOrDisplayName(i.created_by) : 'System'}</span>
                 <span class="d-inline-block me-2" title="Updated by"><i class="fa fa-pen text-secondary" style="font-size: 9px;"></i> ${i.updated_by ? window.SupabaseDB.getUsernameOrDisplayName(i.updated_by) : 'System'}</span>
               </div>
             </td>
-            <td>
-              <div class="small fw-semibold text-dark">${i.customer ? i.customer.customer_name : 'Customer Account Not Found'}</div>
-              <div class="text-xs text-muted font-monospace">${i.customer ? i.customer.customer_code : '-'}</div>
+            <td class="small text-secondary">${i.sales_person || '-'}</td>
+            <td class="small">
+              <div><strong>Issue:</strong> ${i.invoice_date}</div>
+              <div class="text-xs text-danger"><strong>Due:</strong> ${i.due_date}</div>
             </td>
-            <td class="small">${i.invoice_date}</td>
-            <td class="small fw-bold text-secondary">${i.due_date}</td>
-            <td class="text-end font-monospace small text-muted">${sub}</td>
-            <td class="text-end font-monospace font-bold text-success" style="font-size: 1rem;">${grand}</td>
+            <td class="text-end font-monospace font-bold text-success" style="font-size: 1rem;">
+              <div>${grand}</div>
+              <div class="text-muted" style="font-size:10px;">VAT: ${sub}</div>
+            </td>
             <td class="text-center">${statusBadge}</td>
             <td class="text-center">
               <div class="btn-group btn-group-sm">
@@ -926,6 +928,8 @@
     function openCreateInvoiceModal() {
       document.getElementById('invoiceForm').reset();
       document.getElementById('inv-form-id').value = '';
+      document.getElementById('form-ikm-inv').value = '';
+      document.getElementById('form-job-no').value = '';
       document.getElementById('invoiceFormModalLabel').innerHTML = '<i class="fa fa-plus-circle text-success"></i> Create New Direct Invoice';
       
       document.getElementById('form-date').value = new Date().toISOString().slice(0, 10);
@@ -956,6 +960,8 @@
         document.getElementById('form-quote-ref').value = i.quotation_no || '';
         document.getElementById('form-project-name').value = i.project_name;
         document.getElementById('form-po-reference').value = i.po_reference || '';
+        document.getElementById('form-ikm-inv').value = i.ikm_inv || '';
+        document.getElementById('form-job-no').value = i.job_no || '';
         document.getElementById('form-date').value = i.invoice_date;
         document.getElementById('form-due').value = i.due_date;
         document.getElementById('form-handler').value = i.sales_person;
@@ -1090,6 +1096,8 @@
       const sales = document.getElementById('form-handler').value;
       const status = document.getElementById('form-status').value;
       const remarks = document.getElementById('form-remarks').value;
+      const ikmInv = document.getElementById('form-ikm-inv').value;
+      const jobNo = document.getElementById('form-job-no').value;
 
       // Extract lines
       const items = [];
@@ -1114,6 +1122,8 @@
         quotation_no: quoteRef || null,
         project_name: project,
         po_reference: poRef,
+        ikm_inv: ikmInv,
+        job_no: jobNo,
         invoice_date: date,
         due_date: due,
         sales_person: sales,
@@ -1223,6 +1233,9 @@
         document.getElementById('print-date').innerText = formatDateDDMMMYYYY(i.invoice_date);
         document.getElementById('print-due').innerText = formatDateDDMMMYYYY(i.due_date);
         document.getElementById('print-po-no').innerText = i.po_reference || 'None';
+        document.getElementById('print-ikm-inv').innerText = i.ikm_inv || 'None';
+        document.getElementById('print-job-no').innerText = i.job_no || 'None';
+        document.getElementById('print-sales-person').innerText = i.sales_person || 'None';
 
         // Line details
         const tbody = document.getElementById('print-items-body');

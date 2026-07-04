@@ -426,8 +426,8 @@ function renderRecentTimeline(activities, customers, opportunities) {
   // Build bullet lists with interactive layout
   let html = `<div class="d-flex flex-column gap-3">`;
   
-  // Show last 6 logs
-  activities.slice(0, 6).forEach((act, idx) => {
+  // Show last 120 logs
+  activities.slice(0, 120).forEach((act, idx) => {
     let typeBadge = '<span class="badge bg-secondary rounded-pill px-2" style="font-size:9px;">System</span>';
     let iconHTML = '<div class="timeline-circle bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;"><i class="fa fa-cog small"></i></div>';
     

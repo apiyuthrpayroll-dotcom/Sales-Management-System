@@ -29,7 +29,6 @@ export default defineConfig(() => {
           'sales-orders': path.resolve(__dirname, 'sales-orders.html'),
           search: path.resolve(__dirname, 'search.html'),
           'strategic-corp': path.resolve(__dirname, 'strategic-corp.html'),
-          'support-desk': path.resolve(__dirname, 'support-desk.html'),
           users: path.resolve(__dirname, 'users.html'),
           login: path.resolve(__dirname, 'login.html'),
         },

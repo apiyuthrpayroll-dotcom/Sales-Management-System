@@ -1040,11 +1040,40 @@ const SupabaseDB = {
     if (isCloud) {
       try {
         const rawQuotes = await restRequest('/quotations?order=quotation_no.desc') || [];
-        const hydrated = rawQuotes.map(q => ({
-          ...q,
-          customer: custMap.get(q.customer_id),
-          opportunity: oppMap.get(q.opportunity_id)
-        }));
+        const hydrated = rawQuotes.map(q => {
+          let project_name = q.project_name || q.title || '';
+          let job_no = q.job_no || '';
+          let po_no = q.po_no || '';
+          let delivery_plan = q.delivery_plan || '';
+          let version = q.version || 'v1.0';
+          let remarks = q.remarks || '';
+
+          if (q.remarks && q.remarks.trim().startsWith('{')) {
+            try {
+              const meta = JSON.parse(q.remarks);
+              if (meta._so_meta) {
+                project_name = meta.project_name || project_name;
+                job_no = meta.job_no || job_no;
+                po_no = meta.po_no || po_no;
+                delivery_plan = meta.delivery_plan || delivery_plan;
+                version = meta.version || version;
+                remarks = meta.remarks || '';
+              }
+            } catch (e) {}
+          }
+
+          return {
+            ...q,
+            project_name,
+            job_no,
+            po_no,
+            delivery_plan,
+            version,
+            remarks,
+            customer: custMap.get(q.customer_id),
+            opportunity: oppMap.get(q.opportunity_id)
+          };
+        });
         localStorage.setItem('crm_quotations', JSON.stringify(hydrated));
         _quotationsCache = hydrated;
         _quotationsCacheTime = Date.now();
@@ -1054,11 +1083,40 @@ const SupabaseDB = {
       }
     }
     const quotes = JSON.parse(localStorage.getItem('crm_quotations')) || [];
-    const map = quotes.map(q => ({
-      ...q,
-      customer: custMap.get(q.customer_id),
-      opportunity: oppMap.get(q.opportunity_id)
-    })).sort((a, b) => b.quotation_no.localeCompare(a.quotation_no));
+    const map = quotes.map(q => {
+      let project_name = q.project_name || q.title || '';
+      let job_no = q.job_no || '';
+      let po_no = q.po_no || '';
+      let delivery_plan = q.delivery_plan || '';
+      let version = q.version || 'v1.0';
+      let remarks = q.remarks || '';
+
+      if (q.remarks && q.remarks.trim().startsWith('{')) {
+        try {
+          const meta = JSON.parse(q.remarks);
+          if (meta._so_meta) {
+            project_name = meta.project_name || project_name;
+            job_no = meta.job_no || job_no;
+            po_no = meta.po_no || po_no;
+            delivery_plan = meta.delivery_plan || delivery_plan;
+            version = meta.version || version;
+            remarks = meta.remarks || '';
+          }
+        } catch (e) {}
+      }
+
+      return {
+        ...q,
+        project_name,
+        job_no,
+        po_no,
+        delivery_plan,
+        version,
+        remarks,
+        customer: custMap.get(q.customer_id),
+        opportunity: oppMap.get(q.opportunity_id)
+      };
+    }).sort((a, b) => b.quotation_no.localeCompare(a.quotation_no));
     _quotationsCache = map;
     _quotationsCacheTime = Date.now();
     return map;
@@ -1108,6 +1166,21 @@ const SupabaseDB = {
     if (isCloud) {
        try {
          const dbPayload = { ...newQuote };
+         // Pack metadata into remarks
+         dbPayload.remarks = JSON.stringify({
+           _so_meta: true,
+           remarks: newQuote.remarks || '',
+           project_name: newQuote.project_name || '',
+           job_no: newQuote.job_no || '',
+           po_no: newQuote.po_no || '',
+           delivery_plan: newQuote.delivery_plan || '',
+           version: newQuote.version || ''
+         });
+         delete dbPayload.project_name;
+         delete dbPayload.job_no;
+         delete dbPayload.po_no;
+         delete dbPayload.delivery_plan;
+         delete dbPayload.version;
          delete dbPayload.customer;
          delete dbPayload.customer_name;
          await restRequest('/quotations', {
@@ -1159,6 +1232,21 @@ const SupabaseDB = {
       if (isCloud) {
         try {
           const dbPayload = { ...updatedQuote };
+          // Pack metadata into remarks
+          dbPayload.remarks = JSON.stringify({
+            _so_meta: true,
+            remarks: updatedQuote.remarks || '',
+            project_name: updatedQuote.project_name || '',
+            job_no: updatedQuote.job_no || '',
+            po_no: updatedQuote.po_no || '',
+            delivery_plan: updatedQuote.delivery_plan || '',
+            version: updatedQuote.version || ''
+          });
+          delete dbPayload.project_name;
+          delete dbPayload.job_no;
+          delete dbPayload.po_no;
+          delete dbPayload.delivery_plan;
+          delete dbPayload.version;
           delete dbPayload.customer;
           delete dbPayload.customer_name;
           await restRequest(`/quotations?id=eq.${id}`, {
@@ -1205,10 +1293,30 @@ const SupabaseDB = {
     if (isCloud) {
       try {
         const rawInvoices = await restRequest('/invoices?order=invoice_no.desc') || [];
-        const hydrated = rawInvoices.map(inv => ({
-          ...inv,
-          customer: custMap.get(inv.customer_id)
-        }));
+        const hydrated = rawInvoices.map(inv => {
+          let ikm_inv = inv.ikm_inv || '';
+          let job_no = inv.job_no || '';
+          let remarks = inv.remarks || '';
+
+          if (inv.remarks && inv.remarks.trim().startsWith('{')) {
+            try {
+              const meta = JSON.parse(inv.remarks);
+              if (meta._inv_meta) {
+                ikm_inv = meta.ikm_inv || ikm_inv;
+                job_no = meta.job_no || job_no;
+                remarks = meta.remarks || '';
+              }
+            } catch (e) {}
+          }
+
+          return {
+            ...inv,
+            ikm_inv,
+            job_no,
+            remarks,
+            customer: custMap.get(inv.customer_id)
+          };
+        });
         localStorage.setItem('crm_invoices', JSON.stringify(hydrated));
         return hydrated;
       } catch (err) {
@@ -1216,10 +1324,30 @@ const SupabaseDB = {
       }
     }
     const invoices = JSON.parse(localStorage.getItem('crm_invoices')) || [];
-    return invoices.map(inv => ({
-      ...inv,
-      customer: custMap.get(inv.customer_id)
-    })).sort((a, b) => b.invoice_no.localeCompare(a.invoice_no));
+    return invoices.map(inv => {
+      let ikm_inv = inv.ikm_inv || '';
+      let job_no = inv.job_no || '';
+      let remarks = inv.remarks || '';
+
+      if (inv.remarks && inv.remarks.trim().startsWith('{')) {
+        try {
+          const meta = JSON.parse(inv.remarks);
+          if (meta._inv_meta) {
+            ikm_inv = meta.ikm_inv || ikm_inv;
+            job_no = meta.job_no || job_no;
+            remarks = meta.remarks || '';
+          }
+        } catch (e) {}
+      }
+
+      return {
+        ...inv,
+        ikm_inv,
+        job_no,
+        remarks,
+        customer: custMap.get(inv.customer_id)
+      };
+    }).sort((a, b) => b.invoice_no.localeCompare(a.invoice_no));
   },
 
   async getInvoiceById(id) {
@@ -1267,9 +1395,21 @@ const SupabaseDB = {
     const isCloud = await this.testConnection();
     if (isCloud) {
        try {
+         const dbPayload = { ...newInv };
+         // Pack metadata into remarks
+         dbPayload.remarks = JSON.stringify({
+           _inv_meta: true,
+           remarks: newInv.remarks || '',
+           ikm_inv: newInv.ikm_inv || '',
+           job_no: newInv.job_no || ''
+         });
+         delete dbPayload.ikm_inv;
+         delete dbPayload.job_no;
+         delete dbPayload.customer;
+         delete dbPayload.customer_name;
          await restRequest('/invoices', {
            method: 'POST',
-           body: JSON.stringify(newInv)
+           body: JSON.stringify(dbPayload)
          });
        } catch (err) {
          console.warn("Cloud addInvoice failed, completed locally", err);
@@ -1297,9 +1437,21 @@ const SupabaseDB = {
       const isCloud = await this.testConnection();
       if (isCloud) {
         try {
+          const dbPayload = { ...updatedInv };
+          // Pack metadata into remarks
+          dbPayload.remarks = JSON.stringify({
+            _inv_meta: true,
+            remarks: updatedInv.remarks || '',
+            ikm_inv: updatedInv.ikm_inv || '',
+            job_no: updatedInv.job_no || ''
+          });
+          delete dbPayload.ikm_inv;
+          delete dbPayload.job_no;
+          delete dbPayload.customer;
+          delete dbPayload.customer_name;
           await restRequest(`/invoices?id=eq.${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(updatedInv)
+            body: JSON.stringify(dbPayload)
           });
         } catch (e) {
           console.warn("Cloud updateInvoice failed, completed locally", e);
@@ -1456,7 +1608,7 @@ const SupabaseDB = {
       created_at: new Date().toISOString()
     };
     activities.unshift(newAct); // standard unshift for immediate timeline display
-    if (activities.length > 50) activities.pop(); // cap at 50 logs of history
+    if (activities.length > 150) activities.pop(); // cap at 150 logs of history
     localStorage.setItem('crm_activities', JSON.stringify(activities));
     return newAct;
   },

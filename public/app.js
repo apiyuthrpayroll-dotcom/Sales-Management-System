@@ -178,14 +178,6 @@ function injectSharedShell() {
                 </a>
               </li>
 
-              <!-- Service Tickets -->
-              <li class="nav-item">
-                <a href="support-desk.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
-                  <i class="fas fa-tools text-success" style="font-size:0.92rem; width: 18px;"></i>
-                  <span data-i18n="menu_support_desk" style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">${menuTitles.support_desk}</span>
-                </a>
-              </li>
-
               <!-- Reports -->
               <li class="nav-item">
                 <a href="reports-bi.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
@@ -304,15 +296,6 @@ function injectSharedShell() {
                       <i class="fas fa-list-check fs-5"></i>
                     </div>
                     <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Sales Orders (SO)</span>
-                  </a>
-                </div>
-                <!-- item 6 -->
-                <div class="col-4">
-                  <a href="support-desk.html" class="text-decoration-none d-block p-2 rounded hover-bg-light">
-                    <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
-                      <i class="fas fa-headset fs-5"></i>
-                    </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Service Tickets</span>
                   </a>
                 </div>
                 <!-- item 7 -->
