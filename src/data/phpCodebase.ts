@@ -246,7 +246,7 @@ $userRole = $_SESSION['user_role'];
 $userId = $_SESSION['user_id'];
 
 // Multi-language system dictionary helper
-$lang = $_SESSION['lang'] ?? 'TH';
+$lang = $_SESSION['lang'] ?? 'EN';
 $translations = [
     'TH' => [
         'welcome_hi' => 'สวัสดีครับ',

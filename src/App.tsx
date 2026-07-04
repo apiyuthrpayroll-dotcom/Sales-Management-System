@@ -113,7 +113,16 @@ export default function App() {
   const [systemMode, setSystemMode] = useState<'simulation' | 'sourcecode'>('simulation');
 
   // Simulation Session State
-  const [lang, setLang] = useState<'TH' | 'EN'>('TH');
+  const [lang, setLangState] = useState<'TH' | 'EN'>(() => {
+    const saved = localStorage.getItem('crm_lang');
+    if (saved === 'TH' || saved === 'EN') return saved;
+    return 'EN';
+  });
+
+  const setLang = (newLang: 'TH' | 'EN') => {
+    setLangState(newLang);
+    localStorage.setItem('crm_lang', newLang);
+  };
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [oppSubView, setOppSubView] = useState<'list' | 'kanban'>('list');
 
@@ -556,7 +565,7 @@ export default function App() {
 
                 {/* Nav items list */}
                 <div className="px-4 space-y-1">
-                  <span className="px-3 text-[9px] uppercase font-bold text-slate-500 tracking-wider block mb-2">เมนูระบบหลัก</span>
+                  <span className="px-3 text-[9px] uppercase font-bold text-slate-500 tracking-wider block mb-2">{lang === 'TH' ? 'เมนูระบบหลัก' : 'MAIN SYSTEM MENU'}</span>
                   
                   {/* Link 1: Dashboard */}
                   <button 
@@ -567,7 +576,7 @@ export default function App() {
                     <span>{t.dashboard}</span>
                   </button>
 
-                  <span className="px-3 text-[9px] uppercase font-bold text-slate-500 tracking-wider block pt-4 mb-2">นิติบุคคล & โครงการ</span>
+                  <span className="px-3 text-[9px] uppercase font-bold text-slate-500 tracking-wider block pt-4 mb-2">{lang === 'TH' ? 'นิติบุคคล & โครงการ' : 'CUSTOMERS & PROJECTS'}</span>
 
                   {/* Link 2: Customers */}
                   <button 
@@ -587,7 +596,7 @@ export default function App() {
                     <span>{t.opportunities}</span>
                   </button>
 
-                  <span className="px-3 text-[9px] uppercase font-bold text-slate-500 tracking-wider block pt-4 mb-2">ระบบเสนอราคา & วางบิล</span>
+                  <span className="px-3 text-[9px] uppercase font-bold text-slate-500 tracking-wider block pt-4 mb-2">{lang === 'TH' ? 'ระบบเสนอราคา & วางบิล' : 'QUOTATION & BILLING'}</span>
 
                   {/* Link 4: Quotations */}
                   <button 
@@ -607,7 +616,7 @@ export default function App() {
                     <span>{t.invoices}</span>
                   </button>
 
-                  <span className="px-3 text-[9px] uppercase font-bold text-slate-500 tracking-wider block pt-4 mb-2">รายงาน</span>
+                  <span className="px-3 text-[9px] uppercase font-bold text-slate-500 tracking-wider block pt-4 mb-2">{lang === 'TH' ? 'รายงาน' : 'REPORTS & BI'}</span>
 
                   {/* Link 6: Reports */}
                   <button 

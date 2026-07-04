@@ -165,7 +165,7 @@ function generateAISmartInsight(opps) {
   const element = document.getElementById('ai-insight-line');
   if (!element) return;
 
-  const currentLang = localStorage.getItem('crm_lang') || 'TH';
+  const currentLang = localStorage.getItem('crm_lang') || 'EN';
   const negotiationOpps = opps.filter(o => o.status === 'Negotiation');
   const proposalOpps = opps.filter(o => o.status === 'Proposal');
   const wonOpps = opps.filter(o => o.status === 'Won');
@@ -209,7 +209,7 @@ function generateAISmartInsight(opps) {
 }
 
 function calculateKPIs(customers, opportunities) {
-  const currentLang = localStorage.getItem('crm_lang') || 'TH';
+  const currentLang = localStorage.getItem('crm_lang') || 'EN';
   // Total Active Opportunities Value
   const activeOpps = opportunities.filter(o => o.status !== 'Lost' && o.status !== 'Cancelled');
   const totalValue = activeOpps.reduce((sum, item) => sum + (parseFloat(item.estimated_value) || 0), 0);
@@ -285,7 +285,7 @@ function renderStatusDistributionChart(opportunities) {
   const ctx = document.getElementById('statusChart');
   if (!ctx) return;
 
-  const currentLang = localStorage.getItem('crm_lang') || 'TH';
+  const currentLang = localStorage.getItem('crm_lang') || 'EN';
   const statuses = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost', 'Cancelled'];
   const statusCounts = statuses.map(st => opportunities.filter(o => o.status === st).length);
 
@@ -349,7 +349,7 @@ function renderPipelineTimelineChart(opportunities) {
   const ctx = document.getElementById('pipelineChart');
   if (!ctx) return;
 
-  const currentLang = localStorage.getItem('crm_lang') || 'TH';
+  const currentLang = localStorage.getItem('crm_lang') || 'EN';
 
   // Group active opportunities values by Expected Close Month-Year e.g. "2026-07"
   const grouped = {};
@@ -454,7 +454,7 @@ function renderRecentTimeline(activities, customers, opportunities) {
   const container = document.getElementById('recent-timeline');
   if (!container) return;
 
-  const currentLang = localStorage.getItem('crm_lang') || 'TH';
+  const currentLang = localStorage.getItem('crm_lang') || 'EN';
 
   if (activities.length === 0) {
     const noActText = currentLang === 'EN' ? "No activities found matching current pipeline" : "ไม่พบประวัติกิจกรรมสอดคล้องกับดีลปัจจุบัน";

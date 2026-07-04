@@ -106,6 +106,32 @@ function injectSharedShell() {
   // Sidebar inject
   const existingSidebar = document.querySelector('.app-sidebar');
   if (!existingSidebar) {
+    const currentLang = localStorage.getItem('crm_lang') || 'EN';
+    const menuTitles = {
+      TH: {
+        dashboard: "แดชบอร์ด",
+        customers: "ข้อมูลลูกค้า",
+        opportunities: "โอกาสงานขาย",
+        quotations: "ใบเสนอราคา",
+        sales_orders: "ใบสั่งขาย",
+        invoices: "ใบแจ้งหนี้",
+        support_desk: "ตั๋วบริการ",
+        reports: "รายงาน",
+        users: "สิทธิ์พนักงาน"
+      },
+      EN: {
+        dashboard: "Dashboard",
+        customers: "Customer Accounts",
+        opportunities: "Sales Opportunities",
+        quotations: "Quotations",
+        sales_orders: "Sales Orders",
+        invoices: "Invoices & Billings",
+        support_desk: "Service Tickets",
+        reports: "BI Reports",
+        users: "Users & Permissions"
+      }
+    }[currentLang];
+
     const sidebarHtml = `
       <aside class="app-sidebar bg-dark text-white shadow" data-bs-theme="dark" style="height: 100vh; position: fixed; top: 0; left: 0; width: 250px; display: flex; flex-direction: column;">
         <!-- Brand logo -->
@@ -125,7 +151,7 @@ function injectSharedShell() {
               <li class="nav-item">
                 <a href="index.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-chart-pie text-primary" style="font-size:0.92rem; width: 18px;"></i>
-                  <span style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">แดชบอร์ด</span>
+                  <span data-i18n="menu_dashboard" style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">${menuTitles.dashboard}</span>
                 </a>
               </li>
 
@@ -133,7 +159,7 @@ function injectSharedShell() {
               <li class="nav-item">
                 <a href="customers.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-users text-info" style="font-size:0.92rem; width: 18px;"></i>
-                  <span style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">ข้อมูลลูกค้า</span>
+                  <span data-i18n="menu_customers" style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">${menuTitles.customers}</span>
                 </a>
               </li>
 
@@ -141,7 +167,7 @@ function injectSharedShell() {
               <li class="nav-item">
                 <a href="opportunities.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-handshake text-warning" style="font-size:0.92rem; width: 18px;"></i>
-                  <span style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">โอกาสงานขาย</span>
+                  <span data-i18n="menu_opportunities" style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">${menuTitles.opportunities}</span>
                 </a>
               </li>
 
@@ -149,7 +175,7 @@ function injectSharedShell() {
               <li class="nav-item">
                 <a href="quotations.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-file-contract text-warning" style="font-size:0.92rem; width: 18px;"></i>
-                  <span style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">ใบเสนอราคา</span>
+                  <span data-i18n="menu_quotations" style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">${menuTitles.quotations}</span>
                 </a>
               </li>
 
@@ -157,7 +183,7 @@ function injectSharedShell() {
               <li class="nav-item">
                 <a href="sales-orders.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-list-check text-primary" style="font-size:0.92rem; width: 18px;"></i>
-                  <span style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">ใบสั่งขาย</span>
+                  <span data-i18n="menu_sales_orders" style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">${menuTitles.sales_orders}</span>
                 </a>
               </li>
 
@@ -165,7 +191,7 @@ function injectSharedShell() {
               <li class="nav-item">
                 <a href="invoices.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-file-invoice text-indigo" style="font-size:0.92rem; width: 18px;"></i>
-                  <span style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">ใบแจ้งหนี้</span>
+                  <span data-i18n="menu_invoices" style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">${menuTitles.invoices}</span>
                 </a>
               </li>
 
@@ -173,7 +199,7 @@ function injectSharedShell() {
               <li class="nav-item">
                 <a href="support-desk.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-tools text-success" style="font-size:0.92rem; width: 18px;"></i>
-                  <span style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">ตั๋วบริการ</span>
+                  <span data-i18n="menu_support_desk" style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">${menuTitles.support_desk}</span>
                 </a>
               </li>
 
@@ -181,7 +207,7 @@ function injectSharedShell() {
               <li class="nav-item">
                 <a href="reports-bi.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-chart-line text-info" style="font-size:0.92rem; width: 18px;"></i>
-                  <span style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">รายงาน</span>
+                  <span data-i18n="menu_reports" style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">${menuTitles.reports}</span>
                 </a>
               </li>
 
@@ -189,7 +215,7 @@ function injectSharedShell() {
               <li class="nav-item">
                 <a href="users.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-user-shield text-muted" style="font-size:0.92rem; width: 18px;"></i>
-                  <span style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">สิทธิ์พนักงาน</span>
+                  <span data-i18n="menu_users" style="font-weight: 500; color: #f3f4f6; font-size: 0.82rem;">${menuTitles.users}</span>
                 </a>
               </li>
 
@@ -874,7 +900,16 @@ const I18N_DICTIONARY = {
     "realtime_update": "อัปเดตแบบเรียลไทม์",
     "recent_activities": "ประวัติกิจกรรมขายล่าสุด (Recent Activities)",
     "pipeline_timeline_title": "ส่วนวิเคราะห์แนวโน้มยอดเงินแต่ละช่วงเดือน (Sales Pipeline Timeline)",
-    "forecast_intl": "คาดการณ์สากล"
+    "forecast_intl": "คาดการณ์สากล",
+    "menu_dashboard": "แดชบอร์ด",
+    "menu_customers": "ข้อมูลลูกค้า",
+    "menu_opportunities": "โอกาสงานขาย",
+    "menu_quotations": "ใบเสนอราคา",
+    "menu_sales_orders": "ใบสั่งขาย",
+    "menu_invoices": "ใบแจ้งหนี้",
+    "menu_support_desk": "ตั๋วบริการ",
+    "menu_reports": "รายงาน",
+    "menu_users": "สิทธิ์พนักงาน"
   },
   EN: {
     "home": " Home",
@@ -927,12 +962,21 @@ const I18N_DICTIONARY = {
     "realtime_update": "Live Sync Feed",
     "recent_activities": "Recent Sales Activities Feed (Recent Activities)",
     "pipeline_timeline_title": "Sales Pipeline Forecast Timeline (Monthly Trend)",
-    "forecast_intl": "Forecast"
+    "forecast_intl": "Forecast",
+    "menu_dashboard": "Dashboard",
+    "menu_customers": "Customer Accounts",
+    "menu_opportunities": "Sales Opportunities",
+    "menu_quotations": "Quotations",
+    "menu_sales_orders": "Sales Orders",
+    "menu_invoices": "Invoices & Billings",
+    "menu_support_desk": "Service Tickets",
+    "menu_reports": "BI Reports",
+    "menu_users": "Users & Permissions"
   }
 };
 
 function initSystemLanguage() {
-  const currentLang = localStorage.getItem('crm_lang') || 'TH';
+  const currentLang = localStorage.getItem('crm_lang') || 'EN';
   const labelEl = document.getElementById('current-lang-lbl');
   if (labelEl) {
     labelEl.innerText = currentLang;
