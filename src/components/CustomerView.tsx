@@ -43,16 +43,19 @@ interface CustomerViewProps {
 }
 
 const INDUSTRY_TYPES = [
-  'Energy & Utilities',
+  'Oil & Gas',
+  'Petrochemical',
+  'Refinery & Chemical',
+  'Power Generation',
+  'Renewable Energy',
+  'Offshore & Marine',
+  'EPC Contractor',
+  'Fabrication Yard',
   'Manufacturing',
-  'Retail',
-  'Telecommunication',
   'Food & Beverage',
-  'Construction',
-  'Healthcare',
-  'Financial Services',
-  'Education',
-  'Other'
+  'Mining, Cement & Utilities',
+  'Government / State Enterprise',
+  'Others'
 ];
 
 const PAYMENT_TERMS = [
@@ -226,19 +229,19 @@ export default function CustomerView({
   // Validate form
   const validateForm = () => {
     const errs: { [key: string]: string } = {};
-    if (!formName.trim()) errs.name = 'กรุณากรอกชื่อลูกค้า';
+    if (!formName.trim()) errs.name = 'Please enter the customer name';
     if (!formTaxId.trim()) {
-      errs.taxId = 'กรุณากรอกเลขผู้เสียภาษี';
+      errs.taxId = 'Please enter the Tax ID';
     } else if (!/^\d{13}$/.test(formTaxId.trim())) {
-      errs.taxId = 'เลขผู้เสียภาษีต้องเป็นตัวเลข 13 หลัก';
+      errs.taxId = 'Tax ID must be a 13-digit number';
     }
-    if (!formPhone.trim()) errs.phone = 'กรุณากรอกเบอร์โทรศัพท์';
+    if (!formPhone.trim()) errs.phone = 'Please enter the phone number';
     if (!formEmail.trim()) {
-      errs.email = 'กรุณากรอกอีเมล';
+      errs.email = 'Please enter the email address';
     } else if (!/\S+@\S+\.\S+/.test(formEmail)) {
-      errs.email = 'รูปแบบอีเมลไม่สอดคล้อง';
+      errs.email = 'Invalid email address format';
     }
-    if (!formAddress.trim()) errs.address = 'กรุณากรอกที่อยู่คลัง/สำนักงาน';
+    if (!formAddress.trim()) errs.address = 'Please enter the registered address';
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -248,7 +251,7 @@ export default function CustomerView({
   const handleSaveCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canModifyCustomer) {
-      onToast('คุณไม่มีสิทธิ์สร้างหรือแก้ไขข้อมูลบริษัทลูกค้า (ติดต่อแอดมินระบบหรือเปลี่ยนบทบาทเป็น Sales หรือ Manager)', 'err');
+      onToast('You do not have permission to create or edit customer profiles. Please contact your administrator or switch role to Sales or Manager.', 'err');
       return;
     }
     if (!validateForm()) return;
@@ -268,18 +271,18 @@ export default function CustomerView({
     try {
       if (editingCustomer) {
         await onUpdate(editingCustomer.id, payload);
-        onToast('อัปเดตข้อมูลลูกค้าสำเร็จ', 'success');
+        onToast('Customer account updated successfully', 'success');
         // Refresh detail view if currently open
         if (viewingCustomer && viewingCustomer.id === editingCustomer.id) {
           setViewingCustomer({ ...viewingCustomer, ...payload });
         }
       } else {
         await onAdd(payload);
-        onToast('สร้างบัญชีลูกค้าใหม่สำเร็จ', 'success');
+        onToast('New customer account created successfully', 'success');
       }
       setIsFormOpen(false);
     } catch {
-      onToast('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'err');
+      onToast('An error occurred while saving information', 'err');
     }
   };
 
@@ -287,18 +290,18 @@ export default function CustomerView({
   const handleDeleteCustomer = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!canDeleteCustomer) {
-      onToast('ปฏิเสธการดำเนินการ: คุณจำเป็นต้องได้รับบทบาทผู้ดูแลระบบ (Admin) เพื่อลบรายชื่อบริษัทลูกค้าองค์กรได้', 'err');
+      onToast('Action Denied: You must have an Admin role to delete corporate customer profiles.', 'err');
       return;
     }
-    if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลลูกค้ารายนี้? สัญญา/ดีลทั้งหมดของลูกค้ารายนี้จะถูกลบไปด้วย')) {
+    if (confirm('Are you sure you want to delete this customer? All associated opportunities and files will be permanently deleted.')) {
       try {
         await onDelete(id);
-        onToast('ลบข้อมูลลูกค้าเรียบร้อยแล้ว', 'success');
+        onToast('Customer profile deleted successfully', 'success');
         if (viewingCustomer && viewingCustomer.id === id) {
           setViewingCustomer(null);
         }
       } catch {
-        onToast('ไม่สามารถลบข้อมูลลูกค้าได้', 'err');
+        onToast('Unable to delete customer profile', 'err');
       }
     }
   };
@@ -326,7 +329,7 @@ export default function CustomerView({
     e.preventDefault();
     if (!viewingCustomer) return;
     if (!contactName.trim() || !contactPhone.trim()) {
-      alert('กรุณากรอกชื่อและเบอร์โทรติดต่อ');
+      alert('Please fill in both the representative name and contact phone number.');
       return;
     }
 
@@ -348,22 +351,22 @@ export default function CustomerView({
       await onUpdate(viewingCustomer.id, { contacts: updatedContacts });
       setViewingCustomer({ ...viewingCustomer, contacts: updatedContacts });
       setIsContactFormOpen(false);
-      onToast('บันทึกข้อมูลผู้ติดต่อสำเร็จ', 'success');
+      onToast('Representative contact saved successfully', 'success');
     } catch {
-      onToast('เกิดข้อผิดพลาดในการบันทึกผู้ติดต่อ', 'err');
+      onToast('An error occurred while saving contact information', 'err');
     }
   };
 
   const handleDeleteContact = async (idx: number) => {
     if (!viewingCustomer) return;
-    if (confirm('ยืนยันลบผู้ติดต่อนี้?')) {
+    if (confirm('Confirm deleting this contact?')) {
       const updatedContacts = viewingCustomer.contacts.filter((_, i) => i !== idx);
       try {
         await onUpdate(viewingCustomer.id, { contacts: updatedContacts });
         setViewingCustomer({ ...viewingCustomer, contacts: updatedContacts });
-        onToast('ลบผู้ติดต่อเรียบร้อย', 'success');
+        onToast('Contact deleted successfully', 'success');
       } catch {
-        onToast('ลบไม่สำเร็จ', 'err');
+        onToast('Failed to delete contact', 'err');
       }
     }
   };
@@ -373,8 +376,8 @@ export default function CustomerView({
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
         <div>
-          <h2 className="text-xl font-bold text-slate-800">จัดการข้อมูลลูกค้า (Customers)</h2>
-          <p className="text-slate-400 text-xs mt-0.5">ค้นหา กรอง และแก้ไขรายชื่อบริษัทคู่ค้าทั้งหมดของระบบ</p>
+          <h2 className="text-xl font-bold text-slate-800">Customer Master</h2>
+          <p className="text-slate-400 text-xs mt-0.5">Search, filter, and edit all customer accounts in the database</p>
         </div>
         <button
           id="btn-add-customer"
@@ -382,7 +385,7 @@ export default function CustomerView({
           className="px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-1.5 focus:outline-none"
         >
           <Plus className="w-4 h-4" />
-          เพิ่มลูกค้าใหม่
+          Add New Customer
         </button>
       </div>
 
@@ -394,7 +397,7 @@ export default function CustomerView({
           <input
             id="search-customer"
             type="text"
-            placeholder="ค้นหาชื่อลูกค้า, รหัส, เบอร์โทร, เลขผู้เสียภาษี..."
+            placeholder="Search client code, company name, industry, or contacts..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500 text-slate-800 transition-all font-sans"
@@ -410,7 +413,7 @@ export default function CustomerView({
             onChange={(e) => setSelectedIndustry(e.target.value)}
             className="w-full text-sm border border-slate-200 bg-slate-50 p-2 rounded-lg focus:outline-none text-slate-700 font-sans"
           >
-            <option value="All">ทุกอุตสาหกรรม</option>
+            <option value="All">All Industries</option>
             {INDUSTRY_TYPES.map(ind => (
               <option key={ind} value={ind}>{ind}</option>
             ))}
@@ -425,9 +428,9 @@ export default function CustomerView({
             onChange={(e) => setSelectedStatus(e.target.value)}
             className="w-full text-sm border border-slate-200 bg-slate-50 p-2 rounded-lg focus:outline-none text-slate-700 font-sans"
           >
-            <option value="All">สถานะสัญญาทั้งหมด</option>
-            <option value="Active">Active (เปิดใช้งาน)</option>
-            <option value="Inactive">Inactive (ปิดใช้งาน)</option>
+            <option value="All">All Contract Statuses</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
           </select>
         </div>
       </div>
@@ -445,7 +448,7 @@ export default function CustomerView({
           <div className="flex items-center gap-1.5 px-3 py-1 bg-white sm:bg-transparent text-xs text-slate-500">
             <span className="font-medium bg-[#E8EAED] px-2 py-1 rounded border border-slate-200 text-slate-700 select-none">Sheet1</span>
             <span className="text-slate-400">|</span>
-            <span className="font-mono font-semibold text-emerald-600">{filteredCustomers.length} แถว (Rows)</span>
+            <span className="font-mono font-semibold text-emerald-600">{filteredCustomers.length} Rows</span>
           </div>
         </div>
 
@@ -455,13 +458,13 @@ export default function CustomerView({
               {/* Header Columns inside the spreadsheet */}
               <tr className="bg-[#f3f3f3] border-b border-slate-300 text-xs font-bold text-slate-700">
                 <th className="px-2 py-2 w-12 text-center border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">#</th>
-                <th className="px-3 py-2 w-32 border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">รหัสลูกค้า</th>
-                <th className="px-3 py-2 w-64 border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">ชื่อบริษัท / นิติบุคคล</th>
-                <th className="px-3 py-2 w-40 border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">กลุ่มธุรกิจ</th>
-                <th className="px-3 py-2 w-40 border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">เบอร์ติดต่อ</th>
-                <th className="px-3 py-2 w-48 border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">อีเมลหลัก</th>
-                <th className="px-3 py-2 w-28 border-r border-slate-300 text-center shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">สถานะ</th>
-                <th className="px-3 py-2 w-40 text-center border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">ดำเนินการ</th>
+                <th className="px-3 py-2 w-32 border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">Customer Code</th>
+                <th className="px-3 py-2 w-64 border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">Corporation Company</th>
+                <th className="px-3 py-2 w-40 border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">Industry Type</th>
+                <th className="px-3 py-2 w-40 border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">Contact Channels</th>
+                <th className="px-3 py-2 w-48 border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">Contacts List</th>
+                <th className="px-3 py-2 w-28 border-r border-slate-300 text-center shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">Status</th>
+                <th className="px-3 py-2 w-40 text-center border-r border-slate-300 shadow-[inset_0_-1px_0_rgba(0,0,0,0.1)]">Control</th>
               </tr>
             </thead>
             <tbody className="text-sm text-slate-800">
@@ -488,20 +491,20 @@ export default function CustomerView({
                     <td className="px-3 py-2 border-r border-slate-300 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
-                          title="ดูรายละเอียด"
+                          title="View Details"
                           onClick={() => { setViewingCustomer(customer); setDetailTab('info'); }}
                           className="px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 hover:text-blue-600 rounded shadow-sm transition-colors flex items-center gap-1.5"
                         >
                           <Eye className="w-3.5 h-3.5 text-blue-500" />
-                          ดูข้อมูล
+                          View Info
                         </button>
                         <button
-                          title="แก้ไขข้อมูล"
+                          title="Edit Info"
                           onClick={(e) => handleOpenEdit(customer, e)}
                           className="px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 hover:text-amber-600 rounded shadow-sm transition-colors flex items-center gap-1.5"
                         >
                           <Edit className="w-3.5 h-3.5 text-amber-500" />
-                          แก้ไข
+                          Edit
                         </button>
                       </div>
                     </td>
@@ -509,7 +512,7 @@ export default function CustomerView({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center text-slate-500 border-b border-slate-300 bg-white">ไม่พบข้อมูลลูกค้าในระบบ</td>
+                  <td colSpan={8} className="p-8 text-center text-slate-500 border-b border-slate-300 bg-white">No customer records found in the database</td>
                 </tr>
               )}
             </tbody>
@@ -524,7 +527,7 @@ export default function CustomerView({
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-blue-700 bg-blue-600 text-white shrink-0">
               <h3 className="text-lg font-bold">
-                {editingCustomer ? `แก้ไขข้อมูลลูกค้า: ${editingCustomer.customer_code}` : 'เพิ่มทะเบียนลูกค้ารายใหม่'}
+                {editingCustomer ? `Edit Customer: ${editingCustomer.customer_code}` : 'Add New Customer Account'}
               </h3>
               <button 
                 onClick={() => setIsFormOpen(false)}
@@ -541,20 +544,20 @@ export default function CustomerView({
                 {/* Section Header */}
                 <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
                   <div className="bg-blue-600 text-white text-sm font-bold px-4 py-1.5 rounded-md shadow-sm">
-                    1. รายละเอียดข้อมูลนิติบุคคล / ลูกค้าหลัก
+                    1. Corporate Entity / Main Client Details
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5">
                   {/* Name */}
                   <div className="md:col-span-2 lg:col-span-3 space-y-1.5">
-                    <label className="text-sm font-bold text-slate-700 block">ชื่อบริษัท / นิติบุคคลลูกค้า <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-bold text-slate-700 block">Corporation Company Name <span className="text-red-500">*</span></label>
                     <input
                       id="form-customer-name"
                       type="text"
                       value={formName}
                       onChange={(e) => setFormName(e.target.value)}
-                      placeholder="ระบุชื่อบริษัทเต็ม (เช่น บริษัท ปตท. จำกัด (มหาชน))"
+                      placeholder="Full legal company name (e.g., PTT Public Company Limited)"
                       className={`w-full p-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-colors ${errors.name ? 'border-red-400 bg-red-50/50' : 'border-slate-300 bg-white'}`}
                     />
                     {errors.name && <span className="text-[11px] text-red-500 block">{errors.name}</span>}
@@ -562,14 +565,14 @@ export default function CustomerView({
 
                   {/* Tax ID */}
                   <div className="space-y-1.5">
-                    <label className="text-sm font-bold text-slate-700 block">เลขประจำตัวผู้เสียภาษี (Tax ID) <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-bold text-slate-700 block">Tax Identification Number (Tax ID) <span className="text-red-500">*</span></label>
                     <input
                       id="form-customer-taxid"
                       type="text"
                       maxLength={13}
                       value={formTaxId}
                       onChange={(e) => setFormTaxId(e.target.value.replace(/\D/g, ''))}
-                      placeholder="ตัวเลข 13 หลัก"
+                      placeholder="13-digit number"
                       className={`w-full p-2.5 text-sm border rounded-lg font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-colors ${errors.taxId ? 'border-red-400 bg-red-50/50' : 'border-slate-300 bg-white'}`}
                     />
                     {errors.taxId && <span className="text-[11px] text-red-500 block">{errors.taxId}</span>}
@@ -577,7 +580,7 @@ export default function CustomerView({
 
                   {/* Industry */}
                   <div className="space-y-1.5">
-                    <label className="text-sm font-bold text-slate-700 block">กลุ่มอุตสาหกรรมธุรกิจ <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-bold text-slate-700 block">Industry Segment <span className="text-red-500">*</span></label>
                     <select
                       id="form-customer-industry"
                       value={formIndustry}
@@ -592,7 +595,7 @@ export default function CustomerView({
 
                   {/* Payment terms */}
                   <div className="space-y-1.5">
-                    <label className="text-sm font-bold text-slate-700 block">เครดิตเทอมชำระเงิน (วัน) <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-bold text-slate-700 block">Credit Terms (Days) <span className="text-red-500">*</span></label>
                     <select
                       id="form-customer-paymentterm"
                       value={formPaymentTerm}
@@ -607,13 +610,13 @@ export default function CustomerView({
 
                   {/* Phone */}
                   <div className="space-y-1.5">
-                    <label className="text-sm font-bold text-slate-700 block font-sans">เบอร์โทรศัพท์สำนักงาน <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-bold text-slate-700 block font-sans">Office Phone Number <span className="text-red-500">*</span></label>
                     <input
                       id="form-customer-phone"
                       type="text"
                       value={formPhone}
                       onChange={(e) => setFormPhone(e.target.value)}
-                      placeholder="เช่น 02-123-4567"
+                      placeholder="e.g. +66 2 123 4567"
                       className={`w-full p-2.5 text-sm border font-mono rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-colors ${errors.phone ? 'border-red-400 bg-red-50/50' : 'border-slate-300 bg-white'}`}
                     />
                     {errors.phone && <span className="text-[11px] text-red-500 block">{errors.phone}</span>}
@@ -621,13 +624,13 @@ export default function CustomerView({
 
                   {/* Email */}
                   <div className="space-y-1.5 lg:col-span-2">
-                    <label className="text-sm font-bold text-slate-700 block font-sans">อีเมลจัดซื้อกลางสำนักงาน <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-bold text-slate-700 block font-sans">Office Procurement Email <span className="text-red-500">*</span></label>
                     <input
                       id="form-customer-email"
                       type="email"
                       value={formEmail}
                       onChange={(e) => setFormEmail(e.target.value)}
-                      placeholder="เช่น procurement@company.com"
+                      placeholder="e.g. procurement@company.com"
                       className={`w-full p-2.5 text-sm border font-mono rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-colors ${errors.email ? 'border-red-400 bg-red-50/50' : 'border-slate-300 bg-white'}`}
                     />
                     {errors.email && <span className="text-[11px] text-red-500 block">{errors.email}</span>}
@@ -635,13 +638,13 @@ export default function CustomerView({
 
                   {/* Address */}
                   <div className="md:col-span-2 lg:col-span-3 space-y-1.5">
-                    <label className="text-sm font-bold text-slate-700 block">ที่อยู่ตามใบรับรองภาษีอากรภพ.20 <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-bold text-slate-700 block">Registered Address (VAT PP.20) <span className="text-red-500">*</span></label>
                     <textarea
                       id="form-customer-address"
                       rows={3}
                       value={formAddress}
                       onChange={(e) => setFormAddress(e.target.value)}
-                      placeholder="ระบุเลขที่อาคาร ชั้น ถนน แขวง เขต จังหวัด และรหัสไปรษณีย์อย่างชัดเจน"
+                      placeholder="Specify building number, floor, road, district, province, and postal code clearly"
                       className={`w-full p-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-colors resize-y ${errors.address ? 'border-red-400 bg-red-50/50' : 'border-slate-300 bg-white'}`}
                     />
                     {errors.address && <span className="text-[11px] text-red-500 block">{errors.address}</span>}
@@ -649,7 +652,7 @@ export default function CustomerView({
 
                   {/* Status */}
                   <div className="md:col-span-2 lg:col-span-3 space-y-1.5 mt-2">
-                    <label className="text-sm font-bold text-slate-700 block">สถานะปัจจุบันของลูกค้าองค์กร</label>
+                    <label className="text-sm font-bold text-slate-700 block">Current Corporate Account Status</label>
                     <div className="flex items-center gap-6">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -660,7 +663,7 @@ export default function CustomerView({
                           onChange={(e) => setFormStatus(e.target.value as any)}
                           className="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer"
                         />
-                        <span className="text-sm font-medium text-slate-700">Active (ดำเนินธุรกิจปกติ)</span>
+                        <span className="text-sm font-medium text-slate-700">Active</span>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -671,7 +674,7 @@ export default function CustomerView({
                           onChange={(e) => setFormStatus(e.target.value as any)}
                           className="w-4 h-4 text-slate-400 focus:ring-blue-500 cursor-pointer"
                         />
-                        <span className="text-sm font-medium text-slate-700">Inactive (ระงับการติดต่อ)</span>
+                        <span className="text-sm font-medium text-slate-700">Inactive</span>
                       </label>
                     </div>
                   </div>
@@ -686,7 +689,7 @@ export default function CustomerView({
                 onClick={() => setIsFormOpen(false)}
                 className="px-6 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition-all focus:outline-none shadow-sm"
               >
-                ยกเลิก
+                Cancel
               </button>
               <button
                 form="customer-form"
@@ -695,7 +698,7 @@ export default function CustomerView({
                 className="px-8 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 border border-blue-700 rounded-lg transition-all shadow-md hover:shadow-lg focus:outline-none flex items-center gap-2"
               >
                 <CheckCircle className="w-5 h-5" />
-                บันทึกข้อมูลลูกค้า
+                Save Customer
               </button>
             </div>
           </div>
@@ -735,42 +738,42 @@ export default function CustomerView({
                 onClick={() => setDetailTab('info')}
                 className={`px-4 py-3 text-center transition-colors border-b-2 focus:outline-none shrink-0 ${detailTab === 'info' ? 'border-blue-600 text-blue-600 font-semibold' : 'border-transparent hover:text-slate-800'}`}
               >
-                ข้อมูลบริษัท
+                Company Info
               </button>
               <button 
                 id="tab-customer-contacts"
                 onClick={() => setDetailTab('contacts')}
                 className={`px-4 py-3 text-center transition-colors border-b-2 focus:outline-none shrink-0 ${detailTab === 'contacts' ? 'border-blue-600 text-blue-600 font-semibold' : 'border-transparent hover:text-slate-800'}`}
               >
-                ผู้ติดต่อ ({viewingCustomer.contacts.length})
+                Contacts ({viewingCustomer.contacts.length})
               </button>
               <button 
                 id="tab-customer-opportunities"
                 onClick={() => setDetailTab('opportunities')}
                 className={`px-4 py-3 text-center transition-colors border-b-2 focus:outline-none shrink-0 ${detailTab === 'opportunities' ? 'border-blue-600 text-blue-600 font-semibold' : 'border-transparent hover:text-slate-800'}`}
               >
-                ดีลงาน ({opportunities.filter(o => o.customer_id === viewingCustomer.id).length})
+                Opportunities ({opportunities.filter(o => o.customer_id === viewingCustomer.id).length})
               </button>
               <button 
                 id="tab-customer-activities"
                 onClick={() => setDetailTab('activities')}
                 className={`px-4 py-3 text-center transition-colors border-b-2 focus:outline-none shrink-0 ${detailTab === 'activities' ? 'border-blue-600 text-blue-600 font-semibold' : 'border-transparent hover:text-slate-800'}`}
               >
-                ไทม์ไลน์ ({customerActivities.length})
+                Timeline ({customerActivities.length})
               </button>
               <button 
                 id="tab-customer-attachments"
                 onClick={() => setDetailTab('attachments')}
                 className={`px-4 py-3 text-center transition-colors border-b-2 focus:outline-none shrink-0 ${detailTab === 'attachments' ? 'border-blue-600 text-blue-600 font-semibold' : 'border-transparent hover:text-slate-800'}`}
               >
-                ไฟล์แนบ ({customerAttachments.length})
+                Attachments ({customerAttachments.length})
               </button>
               <button 
                 id="tab-customer-audit"
                 onClick={() => setDetailTab('audit')}
                 className={`px-4 py-3 text-center transition-colors border-b-2 focus:outline-none shrink-0 ${detailTab === 'audit' ? 'border-blue-600 text-blue-600 font-semibold' : 'border-transparent hover:text-slate-800'}`}
               >
-                แทร็คออดิท ({customerAuditLogs.length})
+                Audit Trail ({customerAuditLogs.length})
               </button>
             </div>
 
@@ -780,7 +783,7 @@ export default function CustomerView({
               {loadingDetails && (
                 <div className="flex items-center justify-center gap-2.5 py-8 text-neutral-500 text-xs">
                   <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span>กำลังเรียกสรุปกิจกรรมและประวัติลูกค้า...</span>
+                  <span>Loading activities and customer history...</span>
                 </div>
               )}
 
@@ -790,19 +793,19 @@ export default function CustomerView({
                   {/* Performance KPI Cards */}
                   <div className="grid grid-cols-2 gap-3 pb-2 select-none">
                     <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl relative overflow-hidden">
-                      <span className="text-[10px] font-bold text-slate-400 block tracking-tight">จำนวนดีลทั้งหมด (Total)</span>
-                      <span className="font-mono text-lg font-black text-blue-700 block mt-1">{customerStats.count} โครงการ</span>
+                      <span className="text-[10px] font-bold text-slate-400 block tracking-tight">Total Opportunities</span>
+                      <span className="font-mono text-lg font-black text-blue-700 block mt-1">{customerStats.count} deals</span>
                       <Target className="w-8 h-8 opacity-10 absolute right-2 bottom-1 text-blue-600" />
                     </div>
                     
                     <div className="p-3 bg-emerald-50/50 border border-emerald-100 rounded-xl relative overflow-hidden">
-                      <span className="text-[10px] font-bold text-slate-400 block tracking-tight">คัดกรองWonสถิติยอดสำเร็จ (Won Rate)</span>
+                      <span className="text-[10px] font-bold text-slate-400 block tracking-tight">Win Rate</span>
                       <span className="font-mono text-lg font-black text-emerald-700 block mt-1">{customerStats.winRate}% ({customerStats.wonCount})</span>
                       <TrendingUp className="w-8 h-8 opacity-10 absolute right-2 bottom-1 text-emerald-600" />
                     </div>
 
                     <div className="p-3 bg-violet-50/50 border border-violet-100 rounded-xl relative overflow-hidden col-span-2">
-                      <span className="text-[10px] font-bold text-slate-400 block">มูลค่างบประมาณรวมสะสม (Total Pipeline Accumulate)</span>
+                      <span className="text-[10px] font-bold text-slate-400 block">Total Pipeline Value</span>
                       <span className="font-mono text-base font-black text-violet-700 block mt-1">
                         {new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(customerStats.weightedValue)}
                       </span>
@@ -812,11 +815,11 @@ export default function CustomerView({
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
                     <div className="grid grid-cols-2 gap-3 text-slate-700">
                       <div>
-                        <span className="text-xs text-slate-400 block">กลุ่มอุตสาหกรรม</span>
+                        <span className="text-xs text-slate-400 block">Industry Segment</span>
                         <span className="font-semibold">{viewingCustomer.industry_type}</span>
                       </div>
                       <div>
-                        <span className="text-xs text-slate-400 block font-sans">เลขผู้เสียภาษี (Tax ID)</span>
+                        <span className="text-xs text-slate-400 block font-sans">Tax ID</span>
                         <span className="font-semibold font-mono">{viewingCustomer.tax_id}</span>
                       </div>
                     </div>
@@ -826,7 +829,7 @@ export default function CustomerView({
                     <div className="flex gap-3">
                       <MapPin className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
                       <div>
-                        <span className="text-xs text-slate-400 block">ที่อยู่สัญญาสถานประกอบการ</span>
+                        <span className="text-xs text-slate-400 block">Registered Address</span>
                         <span className="text-slate-800">{viewingCustomer.address}</span>
                       </div>
                     </div>
@@ -834,7 +837,7 @@ export default function CustomerView({
                     <div className="flex gap-3">
                       <Phone className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
                       <div>
-                        <span className="text-xs text-slate-400 block">เบอร์โทรศัพท์ติดต่อกลาง</span>
+                        <span className="text-xs text-slate-400 block">Office Phone</span>
                         <span className="font-mono text-slate-800">{viewingCustomer.phone}</span>
                       </div>
                     </div>
@@ -842,7 +845,7 @@ export default function CustomerView({
                     <div className="flex gap-3">
                       <Mail className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
                       <div>
-                        <span className="text-xs text-slate-400 block">อีเมลหลัก</span>
+                        <span className="text-xs text-slate-400 block">Primary Email</span>
                         <span className="font-mono text-slate-800">{viewingCustomer.email}</span>
                       </div>
                     </div>
@@ -862,14 +865,14 @@ export default function CustomerView({
               {detailTab === 'contacts' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-slate-400">รายชื่อบุคคลติดต่อตัวแทนของทางบริษัท</span>
+                    <span className="text-xs text-slate-400">Company Representative Contacts</span>
                     <button
                       id="btn-add-contact"
                       onClick={() => handleOpenContactForm()}
                       className="text-xs font-semibold text-blue-600 flex items-center gap-1 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded transition-colors focus:outline-none"
                     >
                       <UserPlus className="w-3.5 h-3.5" />
-                      เพิ่มผู้ติดต่อ
+                      Add Contact
                     </button>
                   </div>
 
@@ -884,7 +887,7 @@ export default function CustomerView({
                                 {contact.contact_name}
                               </div>
                               <div className="text-xs text-slate-500 font-sans mt-0.5 pl-5.5">
-                                ตำแหน่ง: <span className="font-medium text-slate-700">{contact.position || '-'}</span>
+                                Position: <span className="font-medium text-slate-700">{contact.position || '-'}</span>
                               </div>
                             </div>
                             <div className="flex items-center gap-1 opacity-80 sm:opacity-0 group-hover:opacity-100 transition-opacity">
@@ -918,12 +921,12 @@ export default function CustomerView({
                     </div>
                   ) : (
                     <div className="text-center py-10 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
-                      <p className="text-xs text-slate-400">ยังไม่มีข้อมูลบุคคลสำหรับผู้ติดต่อนอกบริษัท</p>
+                      <p className="text-xs text-slate-400">No representative contact details found for this company</p>
                       <button
                         onClick={() => handleOpenContactForm()}
                         className="mt-3 text-xs font-semibold text-blue-600 hover:underline inline-block focus:outline-none"
                       >
-                        ต้องการกรอกข้อมูลคนแรกในทันที?
+                        Add first contact now?
                       </button>
                     </div>
                   )}
@@ -933,7 +936,7 @@ export default function CustomerView({
               {/* TAB 3: OPPORTUNITIES */}
               {detailTab === 'opportunities' && (
                 <div className="space-y-4">
-                  <span className="text-xs text-slate-400 block mb-1">สถิติและรายการดีลทั้งหมดของลูกค้ารายนี้</span>
+                  <span className="text-xs text-slate-400 block mb-1">Statistics and deals for this customer</span>
                   {opportunities.filter(o => o.customer_id === viewingCustomer.id).length > 0 ? (
                     opportunities.filter(o => o.customer_id === viewingCustomer.id).map(opp => (
                       <div key={opp.id} className="p-4 bg-slate-50 border border-slate-150 rounded-xl hover:bg-slate-100/50 hover:border-slate-300 transition duration-150 text-xs">
@@ -951,14 +954,14 @@ export default function CustomerView({
                           </span>
                         </div>
                         <div className="mt-3 pt-2.5 border-t border-slate-200/50 flex justify-between text-slate-500 font-mono">
-                          <div>งบประมาณ: <span className="font-bold text-slate-800">{new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(opp.estimated_value)}</span></div>
-                          <div>โอกาสสำเร็จ: <span className="font-bold text-slate-800">{opp.success_probability}%</span></div>
+                          <div>Budget: <span className="font-bold text-slate-800">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(opp.estimated_value)}</span></div>
+                          <div>Probability: <span className="font-bold text-slate-800">{opp.success_probability}%</span></div>
                         </div>
                       </div>
                     ))
                   ) : (
                     <div className="text-center py-10 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
-                      <p className="text-xs text-slate-400">ยังไม่มีประวัติการได้รับดีลหรือสร้างแผนลีดให้ลูกค้ารายนี้</p>
+                      <p className="text-xs text-slate-400">No pipeline or deal history found for this customer</p>
                     </div>
                   )}
                 </div>
@@ -969,12 +972,12 @@ export default function CustomerView({
                 <div className="space-y-4">
                   {/* Quick form toggle */}
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs text-slate-400">ประวัติบันทึกการติดตามและสื่อสาร (Activities History)</span>
+                    <span className="text-xs text-slate-400">Interaction & Follow-up History (Activities History)</span>
                     <button 
                       onClick={() => setShowActivityForm(!showActivityForm)}
                       className="text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded font-bold transition focus:outline-none"
                     >
-                      {showActivityForm ? 'ปิดหน้าฟอร์ม' : 'บันทึกประวัติใหม่'}
+                      {showActivityForm ? 'Close Form' : 'Add Activity'}
                     </button>
                   </div>
 
@@ -983,11 +986,11 @@ export default function CustomerView({
                       e.preventDefault();
                       const custOpps = opportunities.filter(o => o.customer_id === viewingCustomer.id);
                       if (custOpps.length === 0) {
-                        alert('กรุณาสร้างโอกาสทางการขาย (Opportunity) ของลูกค้ารายนี้อย่างน้อย 1 รายการก่อนระบุบันทึกติดตามสิทธิ์');
+                        alert('Please create at least one Opportunity for this customer before logging contact history.');
                         return;
                       }
                       if (!newActSubject.trim() || !newActDesc.trim()) {
-                        alert('กรุณากรอกหัวข้อและคำชี้แจงในการติดตามงาน');
+                        alert('Please enter a subject and notes for the activity follow-up.');
                         return;
                       }
                       try {
@@ -1003,60 +1006,60 @@ export default function CustomerView({
                         setNewActSubject('');
                         setNewActDesc('');
                         setShowActivityForm(false);
-                        onToast('บันทึกความคืบหน้าติดตามสำเร็จ', 'success');
+                        onToast('Activity follow-up logged successfully', 'success');
                         
                         await CRMService.insertAuditLog({
                           action_by: currentUserId || '00000000-0000-0000-0000-000000000000',
                           role: currentRole || 'Sales',
-                          action: 'เพิ่มบันทึกกิจกรรมลูกค้า',
+                          action: 'Add Customer Activity Log',
                           target_type: 'customer',
                           target_id: viewingCustomer.id,
-                          details: `บันทึกกิจกรรม: ${newActType} - ${newActSubject}`
+                          details: `Logged Activity: ${newActType} - ${newActSubject}`
                         }, currentUserId || '00000000-0000-0000-0000-000000000000');
                       } catch {
-                        onToast('ไม่สามารถบันทึกกิจกรรมได้', 'err');
+                        onToast('Unable to log activity', 'err');
                       }
                     }} className="bg-slate-50 p-4 rounded-xl border border-slate-200/60 text-xs space-y-3">
-                      <h5 className="font-bold text-slate-800">กรอกประวัติบันทึกกิจกรรมล่าสุด</h5>
+                      <h5 className="font-bold text-slate-800">Log Latest Activity Follow-up</h5>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-slate-400 block mb-0.5">ประเภทกิจกรรม</label>
+                          <label className="text-slate-400 block mb-0.5">Activity Type</label>
                           <select 
                             value={newActType} 
                             onChange={(e: any) => setNewActType(e.target.value)}
                             className="w-full bg-white border border-slate-200 p-1.5 rounded focus:outline-none"
                           >
-                            <option value="Phone Call">Phone Call (โทรศัพท์)</option>
-                            <option value="Meeting">Meeting (ประชุม)</option>
-                            <option value="Email">Email (อีเมล)</option>
-                            <option value="Site Visit">Site Visit (เข้าพบ)</option>
-                            <option value="Other">Other (อื่นๆ)</option>
+                            <option value="Phone Call">Phone Call</option>
+                            <option value="Meeting">Meeting</option>
+                            <option value="Email">Email</option>
+                            <option value="Site Visit">Site Visit</option>
+                            <option value="Other">Other</option>
                           </select>
                         </div>
                         <div>
-                          <label className="text-slate-400 block mb-0.5">หัวข้อประสานดีล</label>
+                          <label className="text-slate-400 block mb-0.5">Activity Subject</label>
                           <input 
                             type="text" 
                             value={newActSubject} 
-                            placeholder="ส่งเอกสาร / โทรเสนอโปรเจกต์"
+                            placeholder="e.g., Send quotation / follow-up call"
                             onChange={(e) => setNewActSubject(e.target.value)}
                             className="w-full bg-white border border-slate-200 p-1.5 rounded focus:outline-none"
                           />
                         </div>
                       </div>
                       <div>
-                        <label className="text-slate-400 block mb-0.5 font-sans">รายละเอียดการคุยประสานสิทธิ์</label>
+                        <label className="text-slate-400 block mb-0.5 font-sans">Detailed Conversation Notes</label>
                         <textarea 
                           rows={2} 
                           value={newActDesc} 
-                          placeholder="ระบุข้อความประกอบบทสนทนา..."
+                          placeholder="Type conversation details here..."
                           onChange={(e) => setNewActDesc(e.target.value)}
                           className="w-full bg-white border border-slate-200 p-1.5 rounded focus:outline-none resize-none"
                         />
                       </div>
                       <div className="flex justify-end gap-1.5">
-                        <button type="button" onClick={() => setShowActivityForm(false)} className="px-2 py-1 bg-slate-250 text-slate-700 rounded">ยกเลิก</button>
-                        <button type="submit" className="px-3 py-1 bg-blue-600 text-white rounded font-bold">บันทึกประวัติ</button>
+                        <button type="button" onClick={() => setShowActivityForm(false)} className="px-2 py-1 bg-slate-250 text-slate-700 rounded">Cancel</button>
+                        <button type="submit" className="px-3 py-1 bg-blue-600 text-white rounded font-bold">Save Activity</button>
                       </div>
                     </form>
                   )}
@@ -1074,7 +1077,7 @@ export default function CustomerView({
                     </div>
                   ) : (
                     <div className="text-center py-10 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
-                      <p className="text-xs text-slate-400">ยังไม่มีประวัติสัมพันธภาพหรือการพบปะพูดคุยที่อัปเดตลงโปรเจกต์ของลูกค้าแห่งนี้</p>
+                      <p className="text-xs text-slate-400">No interaction or activity logs found for this customer</p>
                     </div>
                   )}
                 </div>
@@ -1084,12 +1087,12 @@ export default function CustomerView({
               {detailTab === 'attachments' && (
                 <div className="space-y-4">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs text-slate-400">คลังสัญญากลางและอกสารสำคัญผู้เสียภาษี (Customer Files)</span>
+                    <span className="text-xs text-slate-400">Customer Documents & Tax Files (Customer Files)</span>
                     <button 
                       onClick={async () => {
                         const custOpps = opportunities.filter(o => o.customer_id === viewingCustomer.id);
                         if (custOpps.length === 0) {
-                          alert('กรุณาสร้างโอการทางการขาย (Opportunity) ของลูกค้ารายนี้อย่างน้อย 1 รายการก่อนระบุกิจกรรมแนบเอกสาร');
+                          alert('Please create at least one Opportunity for this customer before attaching documents.');
                           return;
                         }
                         const mockFiles = [
@@ -1098,7 +1101,7 @@ export default function CustomerView({
                           'BoQ_Engineering_Estimation.xlsx',
                           'Power_of_Attorney_Form14.pdf'
                         ];
-                        const fName = prompt('จำลองการเลือกอัปโหลดเอกสาร - พิมพ์ชื่อเอกสารที่คุณต้องการ:', mockFiles[Math.floor(Math.random() * mockFiles.length)]);
+                        const fName = prompt('Select document to upload - Enter document name:', mockFiles[Math.floor(Math.random() * mockFiles.length)]);
                         if (fName) {
                           try {
                             const res = await CRMService.insertAttachment({
@@ -1110,25 +1113,25 @@ export default function CustomerView({
                               file_url: '#'
                             });
                             setCustomerAttachments([res, ...customerAttachments]);
-                            onToast('จำลองการเก็บเอกสารสัญญาสมบูรณ์', 'success');
+                            onToast('Mock document uploaded successfully', 'success');
                             
                             await CRMService.insertAuditLog({
                               action_by: currentUserId || '00000000-0000-0000-0000-000000000000',
                               role: currentRole || 'Sales',
-                              action: 'อัปโหลดสัญญากลางลูกค้า',
+                              action: 'Upload Customer Document',
                               target_type: 'customer',
                               target_id: viewingCustomer.id,
-                              details: `อัปโหลดไฟล์แนบ: ${fName} (ขนาด: ${res.file_size} KB)`
+                              details: `Uploaded attachment: ${fName} (Size: ${res.file_size} KB)`
                             }, currentUserId || '00000000-0000-0000-0000-000000000000');
                           } catch {
-                            onToast('ไม่สามารถจัดเก็บข้อมูลไฟล์แนบได้', 'err');
+                            onToast('Unable to upload attachment', 'err');
                           }
                         }
                       }}
                       className="text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded font-bold transition focus:outline-none flex items-center gap-1"
                     >
                       <Plus className="w-3.5 h-3.5" />
-                       แนบเอกสารใหม่
+                       Attach New File
                     </button>
                   </div>
 
@@ -1140,18 +1143,18 @@ export default function CustomerView({
                             <Paperclip className="w-4 h-4 text-slate-400 shrink-0" />
                             <div className="truncate">
                               <span className="font-bold text-slate-700 block truncate" title={at.file_name}>{at.file_name}</span>
-                              <span className="text-[10px] text-slate-400 font-mono">ขนาด: {at.file_size} KB | โดย: {at.uploaded_by}</span>
+                              <span className="text-[10px] text-slate-400 font-mono">Size: {at.file_size} KB | By: {at.uploaded_by}</span>
                             </div>
                           </div>
                           <button 
                             onClick={async () => {
-                              if (confirm('ยืนยันลบเอกสารไฟล์แนบล้างระบบ?')) {
+                              if (confirm('Confirm deleting this attached document?')) {
                                 try {
                                   await CRMService.deleteAttachment(at.id);
                                   setCustomerAttachments(customerAttachments.filter(x => x.id !== at.id));
-                                  onToast('นำสัญญออกจากระบบสมบูรณ์', 'success');
+                                  onToast('Document removed successfully', 'success');
                                 } catch {
-                                  onToast('เกิดข้อผิดพลาดในการรัดสิทธิ์เอกสาร', 'err');
+                                  onToast('Failed to remove document', 'err');
                                 }
                               }
                             }}
@@ -1164,7 +1167,7 @@ export default function CustomerView({
                     </div>
                   ) : (
                     <div className="text-center py-10 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
-                      <p className="text-xs text-slate-400">ยังไม่มีหนังสือสำคัญ ทะเบียนภพ.20 หรือเอกสารสัญญาสงเคราะห์เก็บแบบดิจิทัล</p>
+                      <p className="text-xs text-slate-400">No VAT certificates, PP.20 registrations, or corporate contract documents stored digitally yet.</p>
                     </div>
                   )}
                 </div>
@@ -1173,13 +1176,13 @@ export default function CustomerView({
               {/* TAB 6: AUDIT TRAIL */}
               {detailTab === 'audit' && (
                 <div className="space-y-3">
-                  <span className="text-xs text-slate-400 block mb-1 font-sans">ประวัติการปฏิบัติกรรมเปลี่ยนโครงสร้างสิทธิ์ (Audit Trail Logging)</span>
+                  <span className="text-xs text-slate-400 block mb-1 font-sans">Audit Trail Logging & History</span>
                   {customerAuditLogs.length > 0 ? (
                     <div className="space-y-2">
                       {customerAuditLogs.map(log => (
                         <div key={log.id} className="p-3 bg-slate-50/70 rounded-lg border border-slate-200 text-xs flex flex-col gap-1">
                           <div className="flex justify-between items-center text-[10px] text-slate-400 font-mono border-b border-dashed pb-1">
-                            <span>ผู้แก้ไข: {log.action_by} ({log.role})</span>
+                            <span>Actor: {log.action_by} ({log.role})</span>
                             <span>{log.created_at.split('T')[0]} {log.created_at.split('T')[1]?.slice(0, 5) || ''}</span>
                           </div>
                           <div className="font-bold text-slate-800 text-[13px] mt-0.5">{log.action}</div>
@@ -1189,7 +1192,7 @@ export default function CustomerView({
                     </div>
                   ) : (
                     <div className="text-center py-10 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
-                      <p className="text-xs text-slate-400">ไม่พบบันทึกการดัดแปลงข้อมูลประวัติหรือรอยนิ้วมือการอัปโหลดเกี่ยวกับลูกค้ารายนี้</p>
+                      <p className="text-xs text-slate-400">No audit trail records or upload logs found for this customer.</p>
                     </div>
                   )}
                 </div>
@@ -1206,7 +1209,7 @@ export default function CustomerView({
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-scale-up">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
               <h4 className="text-sm font-bold text-slate-800">
-                {editingContactIndex !== null ? 'แก้ไขผู้ติดต่อประสานงาน' : 'เพิ่มบุคคลผู้ติดต่อใหม่'}
+                {editingContactIndex !== null ? 'Edit Representative Contact' : 'Add New Representative Contact'}
               </h4>
               <button 
                 onClick={() => setIsContactFormOpen(false)}
@@ -1219,54 +1222,54 @@ export default function CustomerView({
             <form onSubmit={handleSaveContact} className="p-6 space-y-4">
               {/* Contact Name */}
               <div className="space-y-1 text-sm">
-                <label className="text-xs font-semibold text-slate-500 block">ชื่อ-นามสกุล <span className="text-red-500">*</span></label>
+                <label className="text-xs font-semibold text-slate-500 block">Full Name <span className="text-red-500">*</span></label>
                 <input
                   id="form-contact-name"
                   type="text"
                   required
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
-                  placeholder="คุณกิตติศักดิ์ ใจดี"
+                  placeholder="e.g., Jane Doe"
                   className="w-full p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               {/* Position */}
               <div className="space-y-1 text-sm">
-                <label className="text-xs font-semibold text-slate-500 block">ตำแหน่งงาน</label>
+                <label className="text-xs font-semibold text-slate-500 block">Position</label>
                 <input
                   id="form-contact-position"
                   type="text"
                   value={contactPosition}
                   onChange={(e) => setContactPosition(e.target.value)}
-                  placeholder="จัดซื้อและพัสดุ / หัวหน้าฝ่ายวิศวกรรม"
+                  placeholder="e.g., Procurement Manager / Lead Engineer"
                   className="w-full p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               {/* Phone */}
               <div className="space-y-1 text-sm">
-                <label className="text-xs font-semibold text-slate-500 block">เบอร์มือถือ <span className="text-red-500">*</span></label>
+                <label className="text-xs font-semibold text-slate-500 block">Mobile Phone <span className="text-red-500">*</span></label>
                 <input
                   id="form-contact-phone"
                   type="text"
                   required
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  placeholder="081-xxxxxxx"
+                  placeholder="e.g., +66 81 234 5678"
                   className="w-full p-2.5 border border-slate-200 rounded-lg font-mono focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               {/* Email */}
               <div className="space-y-1 text-sm">
-                <label className="text-xs font-semibold text-slate-500 block">อีเมลติดต่อตรง</label>
+                <label className="text-xs font-semibold text-slate-500 block">Direct Email</label>
                 <input
                   id="form-contact-email"
                   type="email"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
-                  placeholder="kittisak@company.com"
+                  placeholder="e.g., jane.doe@company.com"
                   className="w-full p-2.5 border border-slate-200 rounded-lg font-mono focus:outline-none focus:border-blue-500"
                 />
               </div>
@@ -1278,14 +1281,14 @@ export default function CustomerView({
                   onClick={() => setIsContactFormOpen(false)}
                   className="px-4 py-2 text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors focus:outline-none"
                 >
-                  ยกเลิก
+                  Cancel
                 </button>
                 <button
                   id="btn-submit-contact"
                   type="submit"
                   className="px-4 py-2 text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm focus:outline-none"
                 >
-                  บันทึกผู้ติดต่อ
+                  Save Contact
                 </button>
               </div>
             </form>

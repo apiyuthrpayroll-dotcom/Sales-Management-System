@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sales Master CRM - รายการโอกาสงานขาย (Opportunity Tracker)</title>
+  <title>Sales Master CRM - Sales Opportunities Pipeline (Opportunity Tracker)</title>
 
   <!-- Google Font: Source Sans Pro & Kanit (Thailand UI support) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&display=swap">
@@ -29,19 +29,19 @@
       <div class="container-fluid mb-3 pt-2">
         <div class="row align-items-center">
           <div class="col-sm-6">
-            <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase"><i class="fas fa-handshake text-primary"></i> รายการดีล / โอกาสทางการขาย (Opportunities)</h1>
-            <p class="text-muted small m-0">บริหารความก้าวหน้าโครงการขาย วิเคราะห์ความน่าจะเป็น ประมาณยอดรายเดือน และระบุผู้รับผิดชอบดูแล</p>
+            <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase"><i class="fas fa-handshake text-primary"></i> Deals & Sales Opportunities (Opportunities)</h1>
+            <p class="text-muted small m-0">Manage sales pipeline progression, analyze win probabilities, estimate monthly revenues, and assign responsible sales owners.</p>
           </div>
           <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
             <div class="btn-group shadow-sm">
               <button class="btn btn-outline-secondary btn-sm" onclick="exportTableToExcel('opportunity-table', 'Opportunities_Pipeline_Report')">
-                <i class="fa fa-file-excel text-success me-1"></i>ส่งออก Excel
+                <i class="fa fa-file-excel text-success me-1"></i>Export Excel
               </button>
               <button class="btn btn-outline-secondary btn-sm" onclick="exportTableToPDF('opportunity-table', 'Opportunities Pipeline Report')">
-                <i class="fa fa-file-pdf text-danger me-1"></i>ส่งออก PDF
+                <i class="fa fa-file-pdf text-danger me-1"></i>Export PDF
               </button>
               <button class="btn btn-success btn-sm" onclick="openOpportunityModal()">
-                <i class="fa fa-plus-circle me-1"></i>เพิ่มรายการโอกาสขาย
+                <i class="fa fa-plus-circle me-1"></i>Add Sales Opportunity
               </button>
             </div>
           </div>
@@ -56,14 +56,14 @@
           <div class="col-12">
             <div class="bg-white p-2 rounded shadow-sm border border-light-subtle d-flex flex-wrap gap-1.5 align-items-center justify-content-between">
               <div class="d-flex flex-wrap gap-1 align-items-center" id="status-filter-pills-row">
-                <span class="small fw-bold text-muted me-2 ms-1"><i class="fa fa-filter"></i> ตัวกรองด่วน:</span>
-                <button class="btn btn-sm btn-primary active opp-status-pill-filter px-2.5 py-1" data-status="ALL">ทั้งหมด</button>
+                <span class="small fw-bold text-muted me-2 ms-1"><i class="fa fa-filter"></i> Quick Filters:</span>
+                <button class="btn btn-sm btn-primary active opp-status-pill-filter px-2.5 py-1" data-status="ALL">All</button>
                 <button class="btn btn-sm btn-outline-secondary opp-status-pill-filter px-2.5 py-1" data-status="Lead">Lead</button>
                 <button class="btn btn-sm btn-outline-secondary opp-status-pill-filter px-2.5 py-1" data-status="Qualified">Qualified</button>
                 <button class="btn btn-sm btn-outline-secondary opp-status-pill-filter px-2.5 py-1" data-status="Proposal">Proposal</button>
                 <button class="btn btn-sm btn-outline-secondary opp-status-pill-filter px-2.5 py-1" data-status="Negotiation">Negotiation</button>
-                <button class="btn btn-sm btn-outline-secondary opp-status-pill-filter px-2.5 py-1" data-status="Won">Won (สิทธิ์ขายสำเร็จ)</button>
-                <button class="btn btn-sm btn-outline-secondary opp-status-pill-filter px-2.5 py-1" data-status="Lost">Lost (พลาดดีล)</button>
+                <button class="btn btn-sm btn-outline-secondary opp-status-pill-filter px-2.5 py-1" data-status="Won">Won (Deal Closed Won)</button>
+                <button class="btn btn-sm btn-outline-secondary opp-status-pill-filter px-2.5 py-1" data-status="Lost">Lost (Deal Closed Lost)</button>
                 <button class="btn btn-sm btn-outline-secondary opp-status-pill-filter px-2.5 py-1" data-status="Cancelled">Cancelled</button>
               </div>
               <span class="badge bg-light text-dark font-monospace border small me-1">Phase 1 Complete</span>
@@ -78,11 +78,11 @@
               <div class="col-12 col-md-5">
                 <div class="input-group">
                   <span class="input-group-text bg-light text-muted"><i class="fa fa-search"></i></span>
-                  <input type="text" class="form-control" id="opportunity-search-input" placeholder="ค้นหาตามรหัสดีล, ชื่อโครงการ, ชื่อหน่วยงานลูกค้า...">
+                  <input type="text" class="form-control" id="opportunity-search-input" placeholder="Search by Deal ID, Project Name, Customer Name...">
                 </div>
               </div>
               <div class="col-12 col-md-auto text-muted small">
-                <i class="fa fa-info-circle text-info"></i> ปรับแต่งสถานะเป็น <strong class="text-success">Won</strong> หรือ <strong class="text-danger">Lost</strong> ได้ไวผ่านแผงลัดในคอลัมน์ขวาสุด
+                <i class="fa fa-info-circle text-info"></i> Fast-track status to <strong class="text-success">Won</strong> or <strong class="text-danger">Lost</strong> directly via the quick action panel in the rightmost column.
               </div>
             </div>
           </div>
@@ -91,10 +91,10 @@
         <!-- Grid DataTable -->
         <div class="card-admin card-primary shadow-sm">
           <div class="card-admin-header">
-            <h3 class="card-admin-title"><i class="fas fa-chart-bar text-primary"></i> ตารางวิเคราะห์โอกาสงานขายและการปิดดีล (Opportunities Tracker)</h3>
+            <h3 class="card-admin-title"><i class="fas fa-chart-bar text-primary"></i> Sales Opportunities Analysis & Win Rates Tracker (Opportunities Tracker)</h3>
             <div class="card-tools">
               <!-- Helper button -->
-              <a href="opportunity-kanban.html" class="btn btn-xs btn-outline-primary"><i class="fa fa-columns me-1"></i>ดู Pipeline Board (Kanban)</a>
+              <a href="opportunity-kanban.html" class="btn btn-xs btn-outline-primary"><i class="fa fa-columns me-1"></i>View Pipeline Board (Kanban)</a>
             </div>
           </div>
           <div class="card-admin-body p-0">
@@ -102,15 +102,15 @@
               <table class="google-sheet-table table-hover mb-0" id="opportunity-table">
                 <thead class="table-light border-bottom text-uppercase small font-bold">
                   <tr>
-                    <th style="width: 120px;">เลขที่ดีล</th>
-                    <th style="min-width: 250px;">รายละเอียดโครงการ & นิติบุคคลลูกค้า (Deal details)</th>
-                    <th>ประเภทบริการ</th>
-                    <th style="width: 170px;">มูลค่างานประมาณการ (฿)</th>
-                    <th style="width: 160px;">มูลค่าถ่วงน้ำหนัก (฿)</th>
-                    <th style="width: 130px;">คาดว่าจะปิด</th>
-                    <th style="width: 150px;">ทีมขายผู้ดูแล</th>
-                    <th class="text-center" style="width: 110px;">สถานะขั้นตอน</th>
-                    <th class="text-center" style="width: 160px;">ควบคุม / ชนะคะแนน</th>
+                    <th style="width: 120px;">Deal ID</th>
+                    <th style="min-width: 250px;">Project Details & Corporate Customer (Deal details)</th>
+                    <th>Service Type</th>
+                    <th style="width: 170px;">Estimated Value (฿)</th>
+                    <th style="width: 160px;">Weighted Pipeline Value (฿)</th>
+                    <th style="width: 130px;">Expected Close Date</th>
+                    <th style="width: 150px;">Sales Owner</th>
+                    <th class="text-center" style="width: 110px;">Pipeline Stage</th>
+                    <th class="text-center" style="width: 160px;">Actions / Quick Won-Lost</th>
                   </tr>
                 </thead>
                 <tbody id="opportunity-table-body">
@@ -118,7 +118,7 @@
                   <tr>
                     <td colspan="9" class="text-center p-5">
                       <div class="spinner-border text-primary" role="status"></div>
-                      <p class="mt-2 text-muted m-0">กำลังเชื่อมฐานข้อมูลสัญญากับ Supabase...</p>
+                      <p class="mt-2 text-muted m-0">Connecting and synchronizing database records...</p>
                     </td>
                   </tr>
                 </tbody>
@@ -135,7 +135,7 @@
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <form id="opportunityDetailForm" onsubmit="event.preventDefault(); saveOpportunityAction();" class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
         <div class="modal-header bg-primary text-white border-0 py-3">
-          <h5 class="modal-title fw-bold" id="opportunityModalLabel"><i class="fa fa-handshake me-2"></i> บันทึกข้อมูลโอกาสขาย (Opportunity Details)</h5>
+          <h5 class="modal-title fw-bold" id="opportunityModalLabel"><i class="fa fa-handshake me-2"></i> Save Sales Opportunity (Opportunity Details)</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body px-4 py-4 bg-light overflow-y-auto">
@@ -143,94 +143,94 @@
             
             <div class="row g-4">
               <div class="col-md-6">
-                <label for="opp-customer" class="form-label small fw-bold text-dark mb-1">เลือกบัญชีลีด / ลูกค้าองค์กร <span class="text-danger">*</span></label>
+                <label for="opp-customer" class="form-label small fw-bold text-dark mb-1">Select Lead / Corporate Customer Account <span class="text-danger">*</span></label>
                 <select class="form-select shadow-sm py-2" id="opp-customer" required>
-                  <option value="" disabled selected>-- กรุณาเลือกบัญชีลูกค้าผู้รับผิดชอบ --</option>
+                  <option value="" disabled selected>-- Please select customer account --</option>
                 </select>
               </div>
 
               <div class="col-md-6">
-                <label for="opp-project-name" class="form-label small fw-bold text-dark mb-1">ชื่อโครงการ / วัตถุประสงค์เจรจา <span class="text-danger">*</span></label>
-                <input type="text" class="form-control shadow-sm py-2" id="opp-project-name" placeholder="เช่น โครงการทดสอบซ่อมบำรุงประจำปีโรงงาน" required>
+                <label for="opp-project-name" class="form-label small fw-bold text-dark mb-1">Project Name / Deal Objective <span class="text-danger">*</span></label>
+                <input type="text" class="form-control shadow-sm py-2" id="opp-project-name" placeholder="e.g. Annual Factory Maintenance Testing Project" required>
               </div>
 
               <div class="col-md-4">
-                <label for="opp-service-type" class="form-label small fw-bold text-dark mb-1">ประเภทขอบเขตงานบริการ <span class="text-danger">*</span></label>
+                <label for="opp-service-type" class="form-label small fw-bold text-dark mb-1">Scope of Service Category <span class="text-danger">*</span></label>
                 <select class="form-select shadow-sm py-2" id="opp-service-type" required>
-                  <option value="Testing Service">Testing Service (ทดสอบและวิเคราะห์เคมี)</option>
-                  <option value="Equipment Rental">Equipment Rental (เช่าเครื่องจักรและอุปกรณ์ซ่อม)</option>
-                  <option value="Manpower Supply">Manpower Supply (ส่งพนักงานเทคนิคซ่อมหน้างาน)</option>
-                  <option value="Engineering Service">Engineering Service (วิศวกรรมโครงสร้างและการออกแบบ)</option>
-                  <option value="Fabrication">Fabrication (ตัด ประกอบ ขึ้นรูปถังความดัน)</option>
-                  <option value="Machining">Machining (กลึง มิลลิ่ง ซ่อมบำรุงชิ้นส่วนโลหะ)</option>
-                  <option value="Integrity Assessment">Integrity Assessment (ประเมินความปลอดภัยโรงงาน)</option>
+                  <option value="Testing Service">Testing Service (Chemical Testing & Analysis)</option>
+                  <option value="Equipment Rental">Equipment Rental (Heavy Equipment & Tools)</option>
+                  <option value="Manpower Supply">Manpower Supply (Technical Staff On-site)</option>
+                  <option value="Engineering Service">Engineering Service (Structural & Design Engineering)</option>
+                  <option value="Fabrication">Fabrication (Pressure Vessel Fabrication)</option>
+                  <option value="Machining">Machining (Metal Part Repair & Maintenance)</option>
+                  <option value="Integrity Assessment">Integrity Assessment (Safety Assessment)</option>
                 </select>
               </div>
 
               <div class="col-md-4">
-                <label for="opp-lead-source" class="form-label small fw-bold text-dark mb-1">แหล่งที่มาของโอกาสขาย <span class="text-danger">*</span></label>
+                <label for="opp-lead-source" class="form-label small fw-bold text-dark mb-1">Lead & Opportunity Source <span class="text-danger">*</span></label>
                 <select class="form-select shadow-sm py-2" id="opp-lead-source" required>
-                  <option value="Website" selected>Website (เว็บบอร์ด / ลงชื่อออนไลน์)</option>
-                  <option value="Connection">Connection (คนรู้จักภายใน คอร์สอบรม)</option>
-                  <option value="Existing Customer">Existing Customer (ลูกค้าประจำต่ออายุสัญญา)</option>
-                  <option value="Tender">Tender (ยื่นประกวดราคากลางทางราชการ)</option>
-                  <option value="Cold Call">Cold Call (ฝ่ายขายสำรวจเป้าหมายหน้าใหม่)</option>
-                  <option value="Referral">Referral (ลูกค้าเก่าแนะนำส่งมอบต่อปีก)</option>
-                  <option value="Walk In">Walk In (เดินติดต่อสอบถามทางหน้าประตู)</option>
+                  <option value="Website" selected>Website (Online Lead Form)</option>
+                  <option value="Connection">Connection (Professional Network)</option>
+                  <option value="Existing Customer">Existing Customer (Recurring Contract)</option>
+                  <option value="Tender">Tender (Government Bidding)</option>
+                  <option value="Cold Call">Cold Call (Sales Prospecting)</option>
+                  <option value="Referral">Referral (Customer Recommendation)</option>
+                  <option value="Walk In">Walk-in (Unsolicited Visitor)</option>
                 </select>
               </div>
 
               <div class="col-md-4">
-                <label for="opp-location" class="form-label small fw-bold text-dark mb-1">พื้นที่ดำเนินโครงการ <span class="text-danger">*</span></label>
+                <label for="opp-location" class="form-label small fw-bold text-dark mb-1">Project Site / Region <span class="text-danger">*</span></label>
                 <select class="form-select shadow-sm py-2" id="opp-location" required>
-                  <option value="Chonburi" selected>ระนอง-ชลบุรี (Eastern Seaboard)</option>
-                  <option value="Rayong">ระยอง (Map Ta Phut Industrial)</option>
-                  <option value="Bangkok">กรุงเทพมหานครและปริมณฑล</option>
-                  <option value="Songkhla">สงขลา (Offshore / ภาคใต้)</option>
-                  <option value="Kanchanaburi">กาญจนบุรีและปริมณฑลตะวันตก</option>
-                  <option value="Other">พื้นที่จังหวัดต่าง ๆ / ต่างประเทศ</option>
+                  <option value="Chonburi" selected>Chonburi & East (Eastern Seaboard)</option>
+                  <option value="Rayong">Rayong (Map Ta Phut Industrial)</option>
+                  <option value="Bangkok">Bangkok Metropolitan Area</option>
+                  <option value="Songkhla">Songkhla (Offshore / South)</option>
+                  <option value="Kanchanaburi">Kanchanaburi & West Region</option>
+                  <option value="Other">Other Provinces / Overseas</option>
                 </select>
               </div>
 
               <div class="col-md-6">
-                <label for="opp-estimated-value" class="form-label small fw-bold text-dark mb-1">มูลค่างานขายโดยประมาณการ (Estimated Value) <span class="text-danger">*</span></label>
+                <label for="opp-estimated-value" class="form-label small fw-bold text-dark mb-1">Estimated Contract Value <span class="text-danger">*</span></label>
                 <div class="input-group shadow-sm">
                   <span class="input-group-text bg-white border-end-0 fw-bold">฿</span>
-                  <input type="number" step="100.00" class="form-control border-start-0 py-2 ps-0" id="opp-estimated-value" placeholder="ระบุมูลค่าเงินก่อนภาษีมูลค่าเพิ่ม" required>
+                  <input type="number" step="100.00" class="form-control border-start-0 py-2 ps-0" id="opp-estimated-value" placeholder="Enter value before VAT (THB)" required>
                 </div>
               </div>
 
               <div class="col-md-6">
-                <label for="opp-expected-date" class="form-label small fw-bold text-dark mb-1">คาดหมายวันครบกำหนดปิดยอดดีล <span class="text-danger">*</span></label>
+                <label for="opp-expected-date" class="form-label small fw-bold text-dark mb-1">Expected Close / Target Date <span class="text-danger">*</span></label>
                 <input type="date" class="form-control shadow-sm py-2" id="opp-expected-date" required>
               </div>
 
               <div class="col-12 col-md-6">
-                <label for="opp-salesperson" class="form-label small fw-bold text-dark mb-1">ผู้ดูแลสัญญา / พนักงานขาย <span class="text-danger">*</span></label>
+                <label for="opp-salesperson" class="form-label small fw-bold text-dark mb-1">Assigned Sales Owner <span class="text-danger">*</span></label>
                 <select class="form-select shadow-sm py-2" id="opp-salesperson" required>
-                  <option value="เอกชัย วงศ์ดี (S01)">เอกชัย วงศ์ดี (S01)</option>
-                  <option value="สุชาดา เลิศวิริยะ (S02)">สุชาดา เลิศวิริยะ (S02)</option>
-                  <option value="ธนพล คำดี (S03)">ธนพล คำดี (S03)</option>
+                  <option value="Ekachai Wongdee (S01)">Ekachai Wongdee (S01)</option>
+                  <option value="Suchada Lertviriya (S02)">Suchada Lertviriya (S02)</option>
+                  <option value="Thanapol Khamdee (S03)">Thanapol Khamdee (S03)</option>
                 </select>
               </div>
 
               <div class="col-12 col-md-6">
-                <label for="opp-status" class="form-label small fw-bold text-dark mb-1">สถานะความคืบหน้าโครงการ <span class="text-danger">*</span></label>
+                <label for="opp-status" class="form-label small fw-bold text-dark mb-1">Current Opportunity Stage <span class="text-danger">*</span></label>
                 <select class="form-select shadow-sm py-2" id="opp-status" required>
-                  <option value="Lead" selected>Lead (เริ่มต้นติดต่อเก็บข้อมูล)</option>
-                  <option value="Qualified">Qualified (วิเคราะห์ผ่านเกณฑ์โครงการ)</option>
-                  <option value="Proposal">Proposal (ยื่นใบเสนอราคาประเมิน)</option>
-                  <option value="Negotiation">Negotiation (เจรจาต่อรองค่าใช้จ่าย)</option>
-                  <option value="Won">Won (สิทธิ์ขายสำเร็จ / ชนะดีล)</option>
-                  <option value="Lost">Lost (พลาดดีล / แพ้ประกวดราคา)</option>
-                  <option value="Cancelled">Cancelled (ลูกค้ายกเลิกความต้องการ)</option>
+                  <option value="Lead" selected>Lead (Initial Contact / Lead Profiling)</option>
+                  <option value="Qualified">Qualified (BANT Criteria Met)</option>
+                  <option value="Proposal">Proposal (Quotation Submitted)</option>
+                  <option value="Negotiation">Negotiation (Active Negotiation)</option>
+                  <option value="Won">Won (Deal Closed Won)</option>
+                  <option value="Lost">Lost (Deal Closed Lost)</option>
+                  <option value="Cancelled">Cancelled (Buyer Interest Suspended)</option>
                 </select>
               </div>
 
               <div class="col-12">
                 <div class="bg-white p-3 rounded-3 border border-light-subtle shadow-sm mt-2">
                   <div class="d-flex justify-content-between align-items-center mb-1">
-                    <label for="opp-probability" class="form-label small fw-bold m-0 text-dark"><i class="fa fa-percentage me-1"></i> ความน่าจะเป็นที่จะปิดการขายสำเร็จ</label>
+                    <label for="opp-probability" class="form-label small fw-bold m-0 text-dark"><i class="fa fa-percentage me-1"></i> Probability of Closing Deal Success (%)</label>
                     <span class="badge bg-primary px-3 py-1 font-monospace fs-6 fw-bold text-white rounded-pill shadow-sm" id="opp-prob-bubble">50%</span>
                   </div>
                   <input type="range" class="form-range mt-2" id="opp-probability" min="0" max="100" step="5" value="50">
@@ -238,14 +238,14 @@
               </div>
 
               <div class="col-12 mt-3">
-                <label for="opp-remarks" class="form-label small fw-bold text-dark mb-1">บันทึกเพิ่มเติม (Remarks)</label>
-                <textarea class="form-control shadow-sm py-2" id="opp-remarks" rows="3" placeholder="ระบุรายละเอียดเพิ่มเติมภายนอก..."></textarea>
+                <label for="opp-remarks" class="form-label small fw-bold text-dark mb-1">Opportunity Remarks & Field Notes</label>
+                <textarea class="form-control shadow-sm py-2" id="opp-remarks" rows="3" placeholder="Enter additional background information..."></textarea>
               </div>
             </div>
           </div>
           <div class="modal-footer bg-white border-top py-3 px-4 d-flex justify-content-end gap-2 position-sticky bottom-0 z-1" style="box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);">
-            <button type="button" class="btn btn-light border fw-semibold px-4 py-2 rounded-3 shadow-sm" data-bs-dismiss="modal">ยกเลิก</button>
-            <button type="submit" class="btn btn-primary fw-bold px-5 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2"><i class="fa fa-save"></i> บันทึกข้อมูลโอกาสขาย</button>
+            <button type="button" class="btn btn-light border fw-semibold px-4 py-2 rounded-3 shadow-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary fw-bold px-5 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2"><i class="fa fa-save"></i> Save Opportunity Profile</button>
           </div>
         </form>
     </div>

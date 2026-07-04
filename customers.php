@@ -185,83 +185,89 @@ try {
       <form method="POST" action="">
         <input type="hidden" name="action_type" value="create_customer">
         <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title fw-bold" id="addCustomerModalLabel"><i class="fa fa-plus-circle me-1.5"></i>ลงทะเบียนลูกค้าภาคธุรกิจองค์กรใหม่</h5>
+          <h5 class="modal-title fw-bold" id="addCustomerModalLabel"><i class="fa fa-plus-circle me-1.5"></i>Register New Corporate Customer Account</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-shadow="none" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body p-4 text-dark">
           <div class="row g-3">
             <!-- Company Info Section -->
             <div class="col-12 border-bottom pb-2 mb-1">
-              <h6 class="fw-bold text-primary mb-0"><i class="fa fa-building me-1"></i> รายละเอียดองค์กร (Corporate Details)</h6>
+              <h6 class="fw-bold text-primary mb-0"><i class="fa fa-building me-1"></i> Corporate Details</h6>
             </div>
             <div class="col-12 col-md-8">
-              <label class="form-label small fw-bold">ชื่อบริษัทลูกค้าองค์กร *</label>
-              <input type="text" class="form-control" name="customer_name" required placeholder="เช่น บริษัท ปตท. จำกัด (มหาชน)">
+              <label class="form-label small fw-bold">Company / Corporate Name *</label>
+              <input type="text" class="form-control" name="customer_name" required placeholder="e.g., PTT Public Company Limited">
             </div>
             <div class="col-12 col-md-4">
-              <label class="form-label small fw-bold">เลขทะเบียนนิติบุคคล / ผู้เสียภาษี</label>
-              <input type="text" class="form-control" name="tax_id" placeholder="เลขประจำตัว 13 หลัก">
+              <label class="form-label small fw-bold">Tax Identification Number (Tax ID)</label>
+              <input type="text" class="form-control" name="tax_id" placeholder="13-digit identification number">
             </div>
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold">ประเภทอุตสาหกรรม (Industry Segment)</label>
+              <label class="form-label small fw-bold">Business Industry Segment</label>
               <select class="form-select" name="industry_type">
-                <option value="Energy & Utilities">Energy & Utilities (พลังงาน)</option>
-                <option value="Manufacturing">Manufacturing (ภาคผลิต)</option>
-                <option value="Retail">Retail (ภาคค้าปลีก)</option>
-                <option value="Telecommunication">Telecommunication (โทรคมนาคม)</option>
-                <option value="Food & Beverage">Food & Beverage (อาหาร/เครื่องดื่ม)</option>
-                <option value="Construction">Construction (ก่อสร้าง)</option>
-                <option value="Other">Other (อุตสาหกรรมอื่นๆ)</option>
+                <option value="Oil & Gas">Oil & Gas</option>
+                <option value="Petrochemical">Petrochemical</option>
+                <option value="Refinery & Chemical">Refinery & Chemical</option>
+                <option value="Power Generation">Power Generation</option>
+                <option value="Renewable Energy">Renewable Energy</option>
+                <option value="Offshore & Marine">Offshore & Marine</option>
+                <option value="EPC Contractor">EPC Contractor</option>
+                <option value="Fabrication Yard">Fabrication Yard</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="Food & Beverage">Food & Beverage</option>
+                <option value="Mining, Cement & Utilities">Mining, Cement & Utilities</option>
+                <option value="Government / State Enterprise">Government / State Enterprise</option>
+                <option value="Others">Others</option>
               </select>
             </div>
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold">เงื่อนไขการชำระเงิน (Credit Payment Terms)</label>
+              <label class="form-label small fw-bold">Credit Payment Terms</label>
               <select class="form-select" name="payment_term">
-                <option value="30">30 วัน (Net 30)</option>
-                <option value="45">45 วัน (Net 45)</option>
-                <option value="60">60 วัน (Net 60)</option>
-                <option value="15">15 วัน (Net 15)</option>
-                <option value="0">ชำระสดทันที (Cash on Delivery)</option>
+                <option value="30">30 Days (Net 30)</option>
+                <option value="45">45 Days (Net 45)</option>
+                <option value="60">60 Days (Net 60)</option>
+                <option value="15">15 Days (Net 15)</option>
+                <option value="0">Cash on Delivery</option>
               </select>
             </div>
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold">เบอร์โทรศัพท์ติดต่อองค์กร</label>
-              <input type="text" class="form-control" name="phone" placeholder="เช่น 02-537-XXXX">
+              <label class="form-label small fw-bold">Office Phone Number</label>
+              <input type="text" class="form-control" name="phone" placeholder="e.g., +66 2 537 XXXX">
             </div>
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold">อีเมลติดต่อกลาง</label>
-              <input type="email" class="form-control" name="email" placeholder="เช่น contact@pttplc.com">
+              <label class="form-label small fw-bold">Corporate Email</label>
+              <input type="email" class="form-control" name="email" placeholder="e.g., procurement@company.com">
             </div>
             <div class="col-12">
-              <label class="form-label small fw-bold">ที่อยู่จัดส่งเอกสารและที่ตั้งสำนักงาน</label>
-              <textarea class="form-control" name="address" rows="2" placeholder="ระบุเลขที่ ถนน แขวง เขต จังหวัด รหัสไปรษณีย์..."></textarea>
+              <label class="form-label small fw-bold">Office Address & Billing Location</label>
+              <textarea class="form-control" name="address" rows="2" placeholder="Building, Street, District, Province..."></textarea>
             </div>
 
             <!-- Primary Contact Section -->
             <div class="col-12 border-bottom pb-2 mt-4 mb-1">
-              <h6 class="fw-bold text-indigo mb-0"><i class="fa fa-user-circle me-1"></i> ผู้ติดต่อประสานงานหลัก (Primary Contact Person)</h6>
+              <h6 class="fw-bold text-indigo mb-0"><i class="fa fa-user-circle me-1"></i> Primary Contact Person Details</h6>
             </div>
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold">ชื่อ-นามสกุล ผู้ติดต่อหลัก</label>
-              <input type="text" class="form-control" name="contact_name" placeholder="ระบุชื่อผู้ประสานงานหลัก">
+              <label class="form-label small fw-bold">Contact Person Full Name</label>
+              <input type="text" class="form-control" name="contact_name" placeholder="e.g., Somsak Mankong">
             </div>
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold">ตำแหน่งงาน (Position)</label>
-              <input type="text" class="form-control" name="contact_position" placeholder="เช่น Procurement Manager / Engineer">
+              <label class="form-label small fw-bold">Job Title / Position</label>
+              <input type="text" class="form-control" name="contact_position" placeholder="Procurement Specialist">
             </div>
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold">เบอร์โทรศัพท์ผู้ติดต่อ</label>
-              <input type="text" class="form-control" name="contact_phone" placeholder="เช่น 08X-XXX-XXXX">
+              <label class="form-label small fw-bold">Mobile Phone Number</label>
+              <input type="text" class="form-control" name="contact_phone" placeholder="e.g., 08X-XXX-XXXX">
             </div>
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold">อีเมลผู้ติดต่อตรง</label>
-              <input type="email" class="form-control" name="contact_email" placeholder="เช่น test@pttplc.com">
+              <label class="form-label small fw-bold">Direct Email Address</label>
+              <input type="email" class="form-control" name="contact_email" placeholder="e.g., somsak@company.com">
             </div>
           </div>
         </div>
         <div class="modal-footer bg-light">
-          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">ยกเลิก</button>
-          <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-save me-1"></i>บันทึกข้อมูลลูกค้า</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-save me-1"></i>Save Customer Account</button>
         </div>
       </form>
     </div>

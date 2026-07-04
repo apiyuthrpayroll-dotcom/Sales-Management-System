@@ -24,28 +24,28 @@ async function loadDashboardData() {
     // Dynamically synthesize activities for Opportunities and Customers from live Supabase to ensure they display on Netlify / new devices
     const synthesized = [];
     allOpportunities.forEach(opp => {
-      const exists = allActivities.some(a => a.target_id === opp.id && (a.action === 'จดทะเบียนโอกาสขายใหม่' || a.action === 'แก้ไขโครงการขาย'));
+      const exists = allActivities.some(a => a.target_id === opp.id && (a.action === 'Register New Opportunity' || a.action === 'Edit Sales Opportunity'));
       if (!exists) {
         synthesized.push({
           id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2),
-          action: 'จดทะเบียนโอกาสขายใหม่',
+          action: 'Register New Opportunity',
           target_type: 'Opportunity',
           target_id: opp.id,
-          details: `ระบุเป้าหมายดีลงานใหม่สำหรับ "${opp.project_name || 'TST'}"`,
+          details: `Specified new target deal for "${opp.project_name || 'TST'}"`,
           created_at: opp.created_at || new Date().toISOString()
         });
       }
     });
 
     allCustomers.forEach(cust => {
-      const exists = allActivities.some(a => a.target_id === cust.id && (a.action === 'เพิ่มทะเบียนลูกค้าใหม่' || a.action === 'แก้ไขทะเบียนลูกค้า'));
+      const exists = allActivities.some(a => a.target_id === cust.id && (a.action === 'Register New Customer' || a.action === 'Edit Customer Account'));
       if (!exists) {
         synthesized.push({
           id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2),
-          action: 'เพิ่มทะเบียนลูกค้าใหม่',
+          action: 'Register New Customer',
           target_type: 'Customer',
           target_id: cust.id,
-          details: `ลงทะเบียนลูกค้าใหม่: ${cust.customer_name} ในหมวดหมู่อุตสาหกรรม ${cust.industry_type || ''}`,
+          details: `Registered new customer: ${cust.customer_name} in industry segment ${cust.industry_type || ''}`,
           created_at: cust.created_at || new Date().toISOString()
         });
       }
@@ -73,7 +73,7 @@ async function loadDashboardData() {
 
   } catch (error) {
     console.error("Failed to compile dashboard metrics", error);
-    showToastAlert('การสรุปผลแดชบอร์ดล้มเหลว กรุณาตรวจสอบการเชื่อมต่อ', 'danger');
+    showToastAlert('Failed to load dashboard metrics. Please check network connection.', 'danger');
   } finally {
     toggleGlobalLoader(false);
   }
@@ -86,13 +86,13 @@ function initializeRealtimeClock() {
   if (clockEl) {
     setInterval(() => {
       const now = new Date();
-      clockEl.innerHTML = `<i class="fa fa-clock me-1 text-warning"></i> ${now.toLocaleTimeString('th-TH')}`;
+      clockEl.innerHTML = `<i class="fa fa-clock me-1 text-warning"></i> ${now.toLocaleTimeString('en-US')}`;
     }, 1000);
   }
   
   if (dateEl) {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    dateEl.innerText = new Date().toLocaleDateString('th-TH', options);
+    dateEl.innerText = new Date().toLocaleDateString('en-US', options);
   }
 }
 
@@ -158,58 +158,37 @@ function resetDashboardFilters() {
   if (probSelect) probSelect.value = 'ALL';
 
   onFilterChange();
-  showToastAlert('เคลียร์ฟิลเตอร์กรองข้อมูลแดชบอร์ดแล้ว', 'info');
+  showToastAlert('Dashboard filters cleared.', 'info');
 }
 
 function generateAISmartInsight(opps) {
   const element = document.getElementById('ai-insight-line');
   if (!element) return;
 
-  const currentLang = localStorage.getItem('crm_lang') || 'EN';
   const negotiationOpps = opps.filter(o => o.status === 'Negotiation');
   const proposalOpps = opps.filter(o => o.status === 'Proposal');
   const wonOpps = opps.filter(o => o.status === 'Won');
   
   let insightText = '';
-  if (currentLang === 'EN') {
-    if (negotiationOpps.length > 0) {
-      const totalNegValue = negotiationOpps.reduce((sum, item) => sum + (parseFloat(item.estimated_value) || 0), 0);
-      const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalNegValue).replace('$', '฿');
-      insightText = `Found ${negotiationOpps.length} high-value Negotiation deal(s) totaling ${formatter}. Recommended to close today!`;
-    } else if (proposalOpps.length > 0) {
-      insightText = `There are ${proposalOpps.length} active Quotation proposals awaiting client feedback. Schedule follow-up calls this week.`;
-    } else if (wonOpps.length > 0) {
-      insightText = `Congratulations! Large sales deals recently Won. The quarterly revenue projections are positive.`;
-    } else {
-      insightText = `Sales pipeline is balanced. Create new prospective leads to sustain momentum for next quarter.`;
-    }
-    
-    element.innerHTML = `
-      <i class="fa fa-lightbulb text-warning animate__bounce animate__animated animate__infinite"></i>
-      <span class="fw-semibold">Today's Strategy Tip:</span> ${insightText}
-    `;
+  if (negotiationOpps.length > 0) {
+    const totalNegValue = negotiationOpps.reduce((sum, item) => sum + (parseFloat(item.estimated_value) || 0), 0);
+    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalNegValue).replace('$', '฿');
+    insightText = `Found ${negotiationOpps.length} high-value Negotiation deal(s) totaling ${formatter}. Recommended to close today!`;
+  } else if (proposalOpps.length > 0) {
+    insightText = `There are ${proposalOpps.length} active Quotation proposals awaiting client feedback. Schedule follow-up calls this week.`;
+  } else if (wonOpps.length > 0) {
+    insightText = `Congratulations! Large sales deals recently Won. The quarterly revenue projections are positive.`;
   } else {
-    if (negotiationOpps.length > 0) {
-      const totalNegValue = negotiationOpps.reduce((sum, item) => sum + (parseFloat(item.estimated_value) || 0), 0);
-      const formatter = new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 });
-      insightText = `พบดีลสถานะ เจรจาต่อรอง (Negotiation) รวม ${negotiationOpps.length} ดีลล้ำค่า ยอดสะสมรวม ${formatter.format(totalNegValue)} แนะนำส่งทีมปิดด่วนวันนี้!`;
-    } else if (proposalOpps.length > 0) {
-      insightText = `มีโครงการเสนอราคา ${proposalOpps.length} ชุดที่รออนุมัติ เสนอจัดเซสชันโทรติดตามผลเพื่อรับรู้ feedback สัปดาห์นี้`;
-    } else if (wonOpps.length > 0) {
-      insightText = `ยินดีด้วย! คุณปิดการขายดีลใหญ่ (Won) สำเร็จ ยอดผลิตมูลค่ารวมดีลชนะเลิศกระเพื่อมเป็นบวกอย่างยอดเยี่ยม`;
-    } else {
-      insightText = `ภาพรวมแดชบอร์ดสมดุลดีเยี่ยม แนะนำสร้างลูกค้าเป้าหมายเพื่อป้องกัน Pipeline แห้งในรอบไตรมาสถัดไป`;
-    }
-    
-    element.innerHTML = `
-      <i class="fa fa-lightbulb text-warning animate__bounce animate__animated animate__infinite"></i>
-      <span class="fw-semibold">คำแนะนำกลยุทธ์วันนี้:</span> ${insightText}
-    `;
+    insightText = `Sales pipeline is balanced. Create new prospective leads to sustain momentum for next quarter.`;
   }
+  
+  element.innerHTML = `
+    <i class="fa fa-lightbulb text-warning animate__bounce animate__animated animate__infinite"></i>
+    <span class="fw-semibold">Today's Strategy Tip:</span> ${insightText}
+  `;
 }
 
 function calculateKPIs(customers, opportunities) {
-  const currentLang = localStorage.getItem('crm_lang') || 'EN';
   // Total Active Opportunities Value
   const activeOpps = opportunities.filter(o => o.status !== 'Lost' && o.status !== 'Cancelled');
   const totalValue = activeOpps.reduce((sum, item) => sum + (parseFloat(item.estimated_value) || 0), 0);
@@ -235,11 +214,7 @@ function calculateKPIs(customers, opportunities) {
   document.getElementById('kpi-weighted-val').innerText = formatter.format(weightedPipeline);
   document.getElementById('kpi-won-val').innerText = formatter.format(wonValue);
   
-  if (currentLang === 'EN') {
-    document.getElementById('kpi-customers-count').innerText = `${activeCustomers} Accounts`;
-  } else {
-    document.getElementById('kpi-customers-count').innerText = `${activeCustomers} ราย`;
-  }
+  document.getElementById('kpi-customers-count').innerText = `${activeCustomers} Accounts`;
 
   // Weighted logic progress bar sync
   const weightedPct = totalValue > 0 ? Math.round((weightedPipeline / totalValue) * 100) : 0;
@@ -249,11 +224,7 @@ function calculateKPIs(customers, opportunities) {
     weightedBar.style.width = `${weightedPct}%`;
   }
   if (weightedPctText) {
-    if (currentLang === 'EN') {
-      weightedPctText.innerText = `${weightedPct}% of total pipeline`;
-    } else {
-      weightedPctText.innerText = `${weightedPct}% ของยอดพอร์ตรวม`;
-    }
+    weightedPctText.innerText = `${weightedPct}% of total pipeline`;
   }
 
   // Won progress bar sync against arbitrary target e.g. 5,000,000 THB
@@ -265,27 +236,18 @@ function calculateKPIs(customers, opportunities) {
     wonBar.style.width = `${wonPct}%`;
   }
   if (wonPctText) {
-    if (currentLang === 'EN') {
-      wonPctText.innerText = `${wonPct}% of ฿5M target`;
-    } else {
-      wonPctText.innerText = `${wonPct}% ของเป้า ฿5M`;
-    }
+    wonPctText.innerText = `${wonPct}% of ฿5M target`;
   }
 
   // Mini progress calculation percentage
   const winPercent = opportunities.length > 0 ? Math.round((wonOpps.length / opportunities.length) * 100) : 0;
-  if (currentLang === 'EN') {
-    document.getElementById('kpi-win-ratio-desc').innerText = `Sales Win Ratio: ${winPercent}% (${wonOpps.length} won from ${opportunities.length} total opportunities)`;
-  } else {
-    document.getElementById('kpi-win-ratio-desc').innerText = `อัตรางานขายที่สำเร็จ: ${winPercent}% (สำเร็จ ${wonOpps.length} จากดีลรวม ${opportunities.length} รายการ)`;
-  }
+  document.getElementById('kpi-win-ratio-desc').innerText = `Sales Win Ratio: ${winPercent}% (${wonOpps.length} won from ${opportunities.length} total opportunities)`;
 }
 
 function renderStatusDistributionChart(opportunities) {
   const ctx = document.getElementById('statusChart');
   if (!ctx) return;
 
-  const currentLang = localStorage.getItem('crm_lang') || 'EN';
   const statuses = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost', 'Cancelled'];
   const statusCounts = statuses.map(st => opportunities.filter(o => o.status === st).length);
 
@@ -293,15 +255,14 @@ function renderStatusDistributionChart(opportunities) {
     statusChartInstance.destroy();
   }
 
-  const thLabels = ['Lead (เบื้องต้น)', 'Qualified (ลูกค้าจริง)', 'Proposal (เสนอราคา)', 'Negotiation (ต่อรอง)', 'Won (สำเร็จ)', 'Lost (เสียดีล)', 'Cancelled (ยกเลิก)'];
   const enLabels = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost', 'Cancelled'];
-  const chartLabel = currentLang === 'EN' ? 'Number of Deals by Status' : 'จำนวนโอกาสดีลตามสถานะ';
+  const chartLabel = 'Number of Deals by Status';
 
   const canvasCtx = ctx.getContext('2d');
   statusChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: currentLang === 'EN' ? enLabels : thLabels,
+      labels: enLabels,
       datasets: [{
         label: chartLabel,
         data: statusCounts,
@@ -349,8 +310,6 @@ function renderPipelineTimelineChart(opportunities) {
   const ctx = document.getElementById('pipelineChart');
   if (!ctx) return;
 
-  const currentLang = localStorage.getItem('crm_lang') || 'EN';
-
   // Group active opportunities values by Expected Close Month-Year e.g. "2026-07"
   const grouped = {};
   opportunities.forEach(opp => {
@@ -365,15 +324,14 @@ function renderPipelineTimelineChart(opportunities) {
   const sortedMonths = Object.keys(grouped).sort();
   const sortedValues = sortedMonths.map(m => grouped[m]);
 
-  // Translate labels to user-friendly list "ม.ค. 26", "ก.พ. 26" / "Jan 26", "Feb 26"
-  const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+  // Translate labels to user-friendly list "Jan 26", "Feb 26"
   const engMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   
   const formattedLabels = sortedMonths.map(m => {
     const parts = m.split('-');
     const monthIdx = parseInt(parts[1], 10) - 1;
     const shortYr = parts[0].substring(2);
-    const mName = currentLang === 'EN' ? engMonths[monthIdx] : thaiMonths[monthIdx];
+    const mName = engMonths[monthIdx];
     return `${mName} ${shortYr}`;
   });
 
@@ -387,8 +345,8 @@ function renderPipelineTimelineChart(opportunities) {
   gradientFill.addColorStop(0, 'rgba(25, 135, 84, 0.28)');
   gradientFill.addColorStop(1, 'rgba(25, 135, 84, 0.00)');
 
-  const emptyText = currentLang === 'EN' ? "No Deal Data" : "ไม่มีข้อมูลดีล";
-  const datasetLabel = currentLang === 'EN' ? 'Forecasted Cumulative Won Revenue (THB)' : 'คาดการณ์ยอดปิดการขายมูลค่าสะสม (บาท)';
+  const emptyText = "No Deal Data";
+  const datasetLabel = 'Forecasted Cumulative Won Revenue (THB)';
 
   pipelineChartInstance = new Chart(ctx, {
     type: 'line',
@@ -454,10 +412,8 @@ function renderRecentTimeline(activities, customers, opportunities) {
   const container = document.getElementById('recent-timeline');
   if (!container) return;
 
-  const currentLang = localStorage.getItem('crm_lang') || 'EN';
-
   if (activities.length === 0) {
-    const noActText = currentLang === 'EN' ? "No activities found matching current pipeline" : "ไม่พบประวัติกิจกรรมสอดคล้องกับดีลปัจจุบัน";
+    const noActText = "No activities found matching current pipeline";
     container.innerHTML = `
       <div class="text-center p-5 text-muted small">
         <i class="fas fa-history d-block fs-2 mb-3 opacity-25"></i>
@@ -484,11 +440,11 @@ function renderRecentTimeline(activities, customers, opportunities) {
       iconHTML = '<div class="timeline-circle bg-warning text-dark rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;"><i class="fa fa-handshake small"></i></div>';
     }
 
-    const timeLoc = currentLang === 'EN' ? 'en-US' : 'th-TH';
+    const timeLoc = 'en-US';
     const dateObj = new Date(act.created_at);
     const formattedDate = dateObj.toLocaleDateString(timeLoc, { day: 'numeric', month: 'short' });
     const timestamp = dateObj.toLocaleTimeString(timeLoc, { hour: '2-digit', minute: '2-digit' });
-    const timeSuffix = currentLang === 'EN' ? '' : ' น.';
+    const timeSuffix = '';
     const displayTime = `${formattedDate} ${timestamp}${timeSuffix}`;
     const actionLabel = act.action;
     
@@ -496,9 +452,9 @@ function renderRecentTimeline(activities, customers, opportunities) {
     const storedUsers = localStorage.getItem('crm_users_list');
     const systemUsers = storedUsers ? JSON.parse(storedUsers) : [
       { id: "d1ef4942-83b3-4f9e-bbb4-7a0df47ab001", username: "apiyut", fullname: "Apiyut (Admin)", role: "Admin", email: "Apiyut.noeikhiaw@th.ikm.com" },
-      { id: "d2ef4942-83b3-4f9e-bbb4-7a0df47ab002", username: "pimjai", fullname: "พิมพ์ใจ กิตติคุณ", role: "Sales Manager", email: "pimjai.k@ikm-testing.co.th" },
-      { id: "d3ef4942-83b3-4f9e-bbb4-7a0df47ab003", username: "wiriya", fullname: "วิริยะ สว่างงาม", role: "Sales Rep", email: "wiriya.s@ikm-testing.co.th" },
-      { id: "d4ef4942-83b3-4f9e-bbb4-7a0df47ab004", username: "somsri", fullname: "สมศรี จิตรประสงค์", role: "Auditor", email: "somsri.j@ikm-testing.co.th" },
+      { id: "d2ef4942-83b3-4f9e-bbb4-7a0df47ab002", username: "pimjai", fullname: "Pimjai Kittikun", role: "Sales Manager", email: "pimjai.k@ikm-testing.co.th" },
+      { id: "d3ef4942-83b3-4f9e-bbb4-7a0df47ab003", username: "wiriya", fullname: "Wiriya Sawangngam", role: "Sales Rep", email: "wiriya.s@ikm-testing.co.th" },
+      { id: "d4ef4942-83b3-4f9e-bbb4-7a0df47ab004", username: "somsri", fullname: "Somsri Jitprasong", role: "Auditor", email: "somsri.j@ikm-testing.co.th" },
       { id: "657229df-fb36-4978-bf94-4a52e04f7ae0", username: "art", fullname: "ART KIT", role: "Admin", email: "artkummool@gmail.com" }
     ];
 

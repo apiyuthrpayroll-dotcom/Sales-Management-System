@@ -16,7 +16,7 @@ async function loadCustomerTable() {
     renderCustomerRows(allCustomersCached);
   } catch (err) {
     console.error("Load customers failed", err);
-    showToastAlert('โหลดข้อมูลลูกค้าล้มเหลว', 'danger');
+    showToastAlert('Failed to load customer records', 'danger');
   } finally {
     toggleGlobalLoader(false);
   }
@@ -31,7 +31,7 @@ function renderCustomerRows(customers) {
       <tr>
         <td colspan="8" class="text-center text-muted p-4">
           <i class="fas fa-building d-block fs-3 mb-2 opacity-50"></i>
-          ไม่พบข้อมูลผู้ติดต่อลูกค้าในระบบ
+          No customer contact data found in the system.
         </td>
       </tr>
     `;
@@ -44,7 +44,7 @@ function renderCustomerRows(customers) {
     // Contacts preview
     const contactsHtml = (cust.contacts || []).map(con => 
       `<div class="small lh-sm text-dark"><i class="fa fa-user opacity-70"></i> <strong>${con.contact_name}</strong> <span class="text-xs text-muted">(${con.position})</span><br><a href="tel:${con.phone}" class="text-xs text-decoration-none text-muted">${con.phone}</a></div>`
-    ).join('<hr class="my-1 border-light">') || '<span class="text-muted small">ไม่มีผู้ติดต่อหลัก</span>';
+    ).join('<hr class="my-1 border-light">') || '<span class="text-muted small">No primary contacts</span>';
 
     // Status label
     const statusClass = cust.status === 'Active' ? 'badge-status badge-status-approved' : 'badge-status badge-status-draft';
@@ -64,7 +64,7 @@ function renderCustomerRows(customers) {
       <tr class="align-middle">
         <td><span class="font-monospace fw-bold text-primary">${codeText}</span></td>
         <td>
-          <div class="fw-bold fs-6 text-primary" style="cursor: pointer; text-decoration: underline dotted;" onclick="viewCustomerDetail('${cust.id}')" title="คลิกเพื่อเรียกดูประวัติงานสั่งจ้างและใบเสนอราคา">
+          <div class="fw-bold fs-6 text-primary" style="cursor: pointer; text-decoration: underline dotted;" onclick="viewCustomerDetail('${cust.id}')" title="Click to view service history and quotations">
             <i class="fas fa-search-plus text-secondary me-1" style="font-size: 0.85rem;"></i>${nameText}
           </div>
           <div class="small text-muted py-0.5"><i class="fa fa-info-circle"></i> Tax ID: ${cust.tax_id || '-'}</div>
@@ -76,22 +76,22 @@ function renderCustomerRows(customers) {
         </td>
         <td>${contactsHtml}</td>
         <td>
-          <span class="${statusClass}">${cust.status === 'Active' ? 'พร้อมติดต่อ (Active)' : 'ระงับ (Inactive)'}</span>
+          <span class="${statusClass}">${cust.status === 'Active' ? 'Active' : 'Inactive'}</span>
         </td>
         <td>
           <div class="d-flex gap-2 justify-content-center">
-            <button class="btn btn-outline-primary btn-sm rounded shadow-sm d-flex align-items-center gap-1 fw-semibold px-2 py-1" style="font-size: 0.8rem;" onclick="viewCustomerDetail('${cust.id}')" title="ดูประวัติการสั่งจ้าง & ใบเสนอราคา">
-              <i class="fas fa-folder-open"></i> ดูข้อมูล
+            <button class="btn btn-outline-primary btn-sm rounded shadow-sm d-flex align-items-center gap-1 fw-semibold px-2 py-1" style="font-size: 0.8rem;" onclick="viewCustomerDetail('${cust.id}')" title="View Service History & Quotations">
+              <i class="fas fa-folder-open"></i> View Insights
             </button>
-            <button class="btn btn-outline-warning text-dark border-warning btn-sm rounded shadow-sm d-flex align-items-center gap-1 fw-semibold px-2 py-1" style="font-size: 0.8rem;" onclick="editCustomerModal('${cust.id}')" title="แก้ไขข้อมูล">
-              <i class="fas fa-edit"></i> แก้ไข
+            <button class="btn btn-outline-warning text-dark border-warning btn-sm rounded shadow-sm d-flex align-items-center gap-1 fw-semibold px-2 py-1" style="font-size: 0.8rem;" onclick="editCustomerModal('${cust.id}')" title="Edit Customer Details">
+              <i class="fas fa-edit"></i> Edit
             </button>
             ${SupabaseDB.isAdmin() ? `
-              <button class="btn btn-outline-danger btn-sm rounded shadow-sm d-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.8rem;" onclick="deleteCustomerConfirm('${cust.id}', '${cust.customer_name.replace(/'/g, "\\'")}')" title="ลบลูกค้า">
+              <button class="btn btn-outline-danger btn-sm rounded shadow-sm d-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.8rem;" onclick="deleteCustomerConfirm('${cust.id}', '${cust.customer_name.replace(/'/g, "\\'")}')" title="Delete Customer">
                 <i class="fas fa-trash-alt"></i>
               </button>
             ` : `
-              <button class="btn btn-outline-secondary btn-sm opacity-50 rounded shadow-sm d-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.8rem;" disabled title="จำกัดสิทธิ์เฉพาะ Admin เท่านั้น">
+              <button class="btn btn-outline-secondary btn-sm opacity-50 rounded shadow-sm d-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.8rem;" disabled title="Requires Admin role">
                 <i class="fas fa-lock"></i>
               </button>
             `}
@@ -146,16 +146,16 @@ function appendContactInputRow(contact = {}) {
   const rowHtml = `
     <div class="row g-2 align-items-center mb-0 contact-input-form-row pb-2" id="row-${rowId}">
       <div class="col-md-3">
-        <input type="text" class="form-control py-2 shadow-sm con-name" placeholder="ชื่อผู้ติดต่อ (เช่น สมเกียรติ)" value="${contact.contact_name || ''}" required>
+        <input type="text" class="form-control py-2 shadow-sm con-name" placeholder="Contact Name (e.g., John)" value="${contact.contact_name || ''}" required>
       </div>
       <div class="col-md-3">
-        <input type="text" class="form-control py-2 shadow-sm con-pos" placeholder="ตำแหน่งงาน (เช่น จัดซื้อ)" value="${contact.position || ''}" required>
+        <input type="text" class="form-control py-2 shadow-sm con-pos" placeholder="Position (e.g., Procurement)" value="${contact.position || ''}" required>
       </div>
       <div class="col-md-3">
-        <input type="tel" class="form-control py-2 shadow-sm con-phone" placeholder="เบอร์โทรติดต่อ" value="${contact.phone || ''}" required>
+        <input type="tel" class="form-control py-2 shadow-sm con-phone" placeholder="Phone" value="${contact.phone || ''}" required>
       </div>
       <div class="col-md-2">
-        <input type="email" class="form-control py-2 shadow-sm con-email" placeholder="อีเมลติดต่อ" value="${contact.email || ''}">
+        <input type="email" class="form-control py-2 shadow-sm con-email" placeholder="Email" value="${contact.email || ''}">
       </div>
       <div class="col-md-1 text-center">
         <button type="button" class="btn btn-outline-danger shadow-sm py-2 px-3" onclick="document.getElementById('row-${rowId}').remove()"><i class="fas fa-trash"></i></button>
@@ -169,10 +169,10 @@ function appendContactInputRow(contact = {}) {
 function showAddCustomerModal() {
   // Clear modal contents
   document.getElementById('customer-form-id').value = '';
-  document.getElementById('customer-modal-title').innerText = 'เพิ่มทะเบียนลูกค้ารายใหม่';
+  document.getElementById('customer-modal-title').innerText = 'Register New Customer Account';
   document.getElementById('cust-name').value = '';
   document.getElementById('cust-tax').value = '';
-  document.getElementById('cust-industry').value = 'Manufacturing';
+  document.getElementById('cust-industry').value = 'Oil & Gas';
   document.getElementById('cust-phone').value = '';
   document.getElementById('cust-email').value = '';
   document.getElementById('cust-address').value = '';
@@ -192,7 +192,7 @@ async function editCustomerModal(id) {
   if (!customer) return;
 
   document.getElementById('customer-form-id').value = customer.id;
-  document.getElementById('customer-modal-title').innerText = `แก้ไขข้อมูลลูกค้า: ${customer.customer_code}`;
+  document.getElementById('customer-modal-title').innerText = `Edit Customer: ${customer.customer_code}`;
   document.getElementById('cust-name').value = customer.customer_name;
   document.getElementById('cust-tax').value = customer.tax_id || '';
   document.getElementById('cust-industry').value = customer.industry_type;
@@ -263,13 +263,13 @@ async function submitCustomerForm() {
     if (id) {
       // Edit
       await SupabaseDB.updateCustomer(id, payload);
-      await SupabaseDB.addActivity('แก้ไขทะเบียนลูกค้า', 'Customer', id, `อัปเดตข้อมูลและรายชื่อผู้ติดต่อของลูกค้า: ${payload.customer_name}`);
-      showToastAlert('อัปเดตข้อมูลลูกค้าเรียบร้อยแล้ว', 'success');
+      await SupabaseDB.addActivity('Edit Customer Account', 'Customer', id, `Updated customer profile and contacts for: ${payload.customer_name}`);
+      showToastAlert('Customer account details updated successfully', 'success');
     } else {
       // Insert
       const res = await SupabaseDB.addCustomer(payload);
-      await SupabaseDB.addActivity('เพิ่มทะเบียนลูกค้าใหม่', 'Customer', res.id || 'new', `ลงทะเบียนลูกค้าใหม่: ${payload.customer_name} ในภาคอุตสาหกรรมทางการตลาด ${payload.industry_type}`);
-      showToastAlert('เพิ่มลูกค้าใหม่เข้าสู่ระบบสำเร็จ', 'success');
+      await SupabaseDB.addActivity('Register New Customer', 'Customer', res.id || 'new', `Registered new customer: ${payload.customer_name} under segment: ${payload.industry_type}`);
+      showToastAlert('Registered new customer successfully', 'success');
     }
 
     // Hide Modal and refresh
@@ -281,7 +281,7 @@ async function submitCustomerForm() {
 
   } catch (error) {
     console.error("Save Customer operation failed", error);
-    showToastAlert('ไม่สามารถบันทึกประวัติลูกค้า ข้อผิดพลาด: ' + error.message, 'danger');
+    showToastAlert('Failed to save customer account. Error: ' + error.message, 'danger');
   } finally {
     toggleGlobalLoader(false);
   }
@@ -290,29 +290,29 @@ async function submitCustomerForm() {
 // Delete account action
 function deleteCustomerConfirm(id, name) {
   if (!SupabaseDB.isAdmin()) {
-    showToastAlert('เฉพาะผู้ดูแลระบบ (Admin) เท่านั้นที่สามารถลบข้อมูลลูกค้าได้', 'danger');
+    showToastAlert('Only system Administrators are authorized to delete customer records.', 'danger');
     return;
   }
   Swal.fire({
-    title: 'ยืนยันการลบลูกค้า?',
-    text: `ประวัติโอกาสการขาย โครงงาน ใบสั่งงาน รวมทั้งรายละเอียดผู้ติดต่อทั้งหมดของบริษัท ${name} จะมีผลกระทบลบออกจากระบบทันที!`,
+    title: 'Confirm Deletion?',
+    text: `The sales opportunities, projects, invoices, and key contact profiles of ${name} will be permanently deleted from the system!`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#dc3545',
     cancelButtonColor: '#6c757d',
-    confirmButtonText: 'ยืนยัน, ลบออกจากระบบ!',
-    cancelButtonText: 'ยกเลิก'
+    confirmButtonText: 'Yes, delete from system!',
+    cancelButtonText: 'Cancel'
   }).then(async (result) => {
     if (result.isConfirmed) {
       toggleGlobalLoader(true);
       try {
         await SupabaseDB.deleteCustomer(id);
-        await SupabaseDB.addActivity('ลบข้อมูลลูกค้า', 'Customer', id, `ทำการลบข้อมูลถาวรของลูกค้า: ${name}`);
-        showToastAlert('ลบรายชื่อลูกค้าสำเร็จเรียบร้อย', 'success');
+        await SupabaseDB.addActivity('Delete Customer Profile', 'Customer', id, `Permanently deleted customer profile: ${name}`);
+        showToastAlert('Customer profile deleted successfully', 'success');
         loadCustomerTable();
       } catch (err) {
         console.error("Delete customer error", err);
-        showToastAlert('การลบข้อมูลล้มเหลว', 'danger');
+        showToastAlert('Deletion failed', 'danger');
       } finally {
         toggleGlobalLoader(false);
       }
@@ -324,7 +324,7 @@ function deleteCustomerConfirm(id, name) {
 async function viewCustomerDetail(id) {
   const customer = allCustomersCached.find(c => c.id === id);
   if (!customer) {
-    showToastAlert('ไม่พบข้อมูลลูกค้ารายนี้ในระบบข้อมูล', 'warning');
+    showToastAlert('Customer record not found.', 'warning');
     return;
   }
 
@@ -342,10 +342,10 @@ async function viewCustomerDetail(id) {
     document.getElementById('detail-cust-code').innerText = customer.customer_code || 'CUST-TEMP';
     document.getElementById('detail-cust-name').innerText = customer.customer_name || '-';
     document.getElementById('detail-cust-industry').innerText = customer.industry_type || '-';
-    document.getElementById('detail-cust-tax').innerText = customer.tax_id || 'ไม่ระบุ';
+    document.getElementById('detail-cust-tax').innerText = customer.tax_id || 'Not Specified';
     document.getElementById('detail-cust-term').innerText = customer.payment_term || '0';
-    document.getElementById('detail-cust-phone').innerText = customer.phone || 'ไม่มีเบอร์โทรศัพทสำนักงานหลัก';
-    document.getElementById('detail-cust-email').innerText = customer.email || 'ไม่มีอีเมลองค์กรผู้ติดต่อ';
+    document.getElementById('detail-cust-phone').innerText = customer.phone || 'No primary office phone';
+    document.getElementById('detail-cust-email').innerText = customer.email || 'No corporate contact email';
 
     // 4. Summarize and aggregate values for KPIs
     const invoiceItems = [];
@@ -372,7 +372,7 @@ async function viewCustomerDetail(id) {
     });
 
     // Populate KPI Elements
-    document.getElementById('detail-kpi-items-count').innerHTML = `${invoiceItems.length} <span class="fs-6 fw-normal text-muted">รายการสินค้า/บริการ</span>`;
+    document.getElementById('detail-kpi-items-count').innerHTML = `${invoiceItems.length} <span class="fs-6 fw-normal text-muted">Items/Services</span>`;
     document.getElementById('detail-kpi-total-paid').innerText = '฿' + paidTotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
     document.getElementById('detail-kpi-total-unpaid').innerText = '฿' + unpaidTotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
 
@@ -388,7 +388,7 @@ async function viewCustomerDetail(id) {
         <tr>
           <td colspan="6" class="text-center py-4 text-muted">
             <i class="fas fa-cubes d-block fs-3 mb-2 opacity-50"></i>
-            ไม่พบบันทึกสรุปรายการการบริการหรือสินค้าที่ใช้บริการสั่งซื้อของลูกค้ารายนี้
+            No service deployment or purchased product history found for this customer.
           </td>
         </tr>
       `;
@@ -402,8 +402,8 @@ async function viewCustomerDetail(id) {
         return `
           <tr>
             <td>
-              <div class="fw-bold text-dark">${item.description || 'ไม่มีรายละเอียดงาน'}</div>
-              ${item.unit ? `<small class="text-muted"><i class="fas fa-tag"></i> หน่วย: ${item.unit}</small>` : ''}
+              <div class="fw-bold text-dark">${item.description || 'No work description'}</div>
+              ${item.unit ? `<small class="text-muted"><i class="fas fa-tag"></i> Unit: ${item.unit}</small>` : ''}
             </td>
             <td class="text-center font-monospace">${qty.toFixed(2)}</td>
             <td class="text-end font-monospace">${rate.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
@@ -426,7 +426,7 @@ async function viewCustomerDetail(id) {
         <tr>
           <td colspan="5" class="text-center py-4 text-muted">
             <i class="fas fa-file-contract d-block fs-3 mb-2 opacity-50"></i>
-            ไม่พบประวัติการจัดทำและยืนเสนอขออนุมัติใบเสนอราคากับลูกค้ารายนี้
+            No quotations or proposal records found for this customer.
           </td>
         </tr>
       `;
@@ -447,11 +447,11 @@ async function viewCustomerDetail(id) {
           <tr>
             <td><span class="font-monospace fw-bold text-primary">${quote.quotation_no}</span></td>
             <td>
-              <div class="fw-bold text-dark">${quote.project_name || quote.title || 'โครงการบริการจัดทำสัญญา'}</div>
+              <div class="fw-bold text-dark">${quote.project_name || quote.title || 'Contract Service Project'}</div>
               <div class="text-muted font-monospace mt-0.5" style="font-size: 11px; line-height: 1.3;">
-                <span class="d-block"><i class="fas fa-user-tie text-secondary" style="font-size: 9px;"></i> ผู้ดูแล: ${(window.SupabaseDB && window.SupabaseDB.getUsernameOrDisplayName) ? window.SupabaseDB.getUsernameOrDisplayName(quote.sales_person) : (quote.sales_person || '-')}</span>
-                <span class="d-block"><i class="fa fa-plus-circle text-secondary" style="font-size: 9px;"></i> สร้างโดย: ${quote.created_by ? window.SupabaseDB.getUsernameOrDisplayName(quote.created_by) : '@apiyut'}</span>
-                ${quote.status === 'Approved' ? `<span class="d-block text-success"><i class="fa fa-check-circle" style="font-size: 9px;"></i> อนุมัติโดย: @pimjai</span>` : ''}
+                <span class="d-block"><i class="fas fa-user-tie text-secondary" style="font-size: 9px;"></i> Handler: ${(window.SupabaseDB && window.SupabaseDB.getUsernameOrDisplayName) ? window.SupabaseDB.getUsernameOrDisplayName(quote.sales_person) : (quote.sales_person || '-')}</span>
+                <span class="d-block"><i class="fa fa-plus-circle text-secondary" style="font-size: 9px;"></i> Created by: ${quote.created_by ? window.SupabaseDB.getUsernameOrDisplayName(quote.created_by) : '@apiyut'}</span>
+                ${quote.status === 'Approved' ? `<span class="d-block text-success"><i class="fa fa-check-circle" style="font-size: 9px;"></i> Approved by: @pimjai</span>` : ''}
               </div>
             </td>
             <td class="small text-muted font-monospace">${quote.quotation_date || '-'}</td>
@@ -469,7 +469,7 @@ async function viewCustomerDetail(id) {
         <tr>
           <td colspan="6" class="text-center py-4 text-muted">
             <i class="fas fa-file-invoice-dollar d-block fs-3 mb-2 opacity-50"></i>
-            ไม่พบประวัติการบันทึกจัดส่งใบแจ้งหนี้เพื่อเรียกเก็บหนี้สำหรับลูกค้ารายนี้
+            No billing or invoice dispatch history found for this customer.
           </td>
         </tr>
       `;
@@ -487,7 +487,7 @@ async function viewCustomerDetail(id) {
           <tr>
             <td><span class="font-monospace fw-bold text-dark">${inv.invoice_no}</span></td>
             <td>
-              <div class="fw-bold text-dark-emphasis">${inv.project_name || 'ใบแจ้งหนี้ทั่วไป'}</div>
+              <div class="fw-bold text-dark-emphasis">${inv.project_name || 'General Invoice'}</div>
               ${inv.remarks ? `<small class="text-muted d-block"><i class="fas fa-comment shadow-xs"></i> ${inv.remarks}</small>` : ''}
             </td>
             <td class="small text-muted font-monospace">${inv.invoice_date || '-'}</td>
@@ -505,7 +505,7 @@ async function viewCustomerDetail(id) {
 
   } catch (error) {
     console.error("View Customer detail failed", error);
-    showToastAlert('เรียกดูข้อมูลเชิงลึกล้มเหลว ข้อผิดพลาด: ' + error.message, 'danger');
+    showToastAlert('Failed to load customer insights. Error: ' + error.message, 'danger');
   } finally {
     toggleGlobalLoader(false);
   }

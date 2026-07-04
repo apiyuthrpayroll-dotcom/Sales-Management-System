@@ -49,10 +49,10 @@ function injectSharedShell() {
               <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-md-inline-block">
-              <a href="index.html" class="nav-link" data-i18n="home"><i class="fa fa-home"></i> หน้าแรก</a>
+              <a href="index.html" class="nav-link" data-i18n="home"><i class="fa fa-home"></i> Home</a>
             </li>
             <li class="nav-item d-none d-md-inline-block">
-              <a href="#" class="nav-link" onclick="seedDatabaseFallback()" data-i18n="re_seed"><i class="fa fa-seedling"></i> รีเซ็ตตัวอย่าง</a>
+              <a href="#" class="nav-link" onclick="seedDatabaseFallback()" data-i18n="re_seed"><i class="fa fa-seedling"></i> Reset Sandbox</a>
             </li>
           </ul>
 
@@ -66,15 +66,11 @@ function injectSharedShell() {
               </div>
             </li>
 
-            <!-- Language Switcher Dropdown -->
-            <li class="nav-item dropdown px-2 text-dark">
-              <button class="btn btn-link nav-link p-1 dropdown-toggle d-flex align-items-center gap-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="langDropdown" style="border:none; background:none;">
-                <i class="fa fa-globe fs-5"></i> <span id="current-lang-lbl" class="small fw-bold">TH</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="min-width: 130px; z-index:9999;">
-                <li><a class="dropdown-item d-flex align-items-center gap-2 text-dark" href="#" onclick="switchSystemLanguage('TH')">🇹🇭 ไทย (TH)</a></li>
-                <li><a class="dropdown-item d-flex align-items-center gap-2 text-dark" href="#" onclick="switchSystemLanguage('EN')">🇺🇸 English (EN)</a></li>
-              </ul>
+            <!-- Language Indicator (Forced English) -->
+            <li class="nav-item px-2 text-dark">
+              <div class="btn btn-link nav-link p-1 d-flex align-items-center gap-1 text-muted" style="border:none; background:none; cursor:default;">
+                <i class="fa fa-globe fs-5"></i> <span id="current-lang-lbl" class="small fw-bold">EN</span>
+              </div>
             </li>
 
             <!-- Dark Mode Switcher -->
@@ -91,9 +87,9 @@ function injectSharedShell() {
                 <span class="d-none d-sm-inline" id="user-role-span">${localStorage.getItem('crm_user_fullname') || 'User'} (${localStorage.getItem('crm_user_role') || 'Admin'})</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userProfileDropdown" style="z-index: 10000;">
-                <li><a class="dropdown-item py-2 text-dark" href="users.html"><i class="fas fa-user-shield me-2 text-indigo"></i>ข้อมูลผู้ใช้งาน</a></li>
+                <li><a class="dropdown-item py-2 text-dark" href="users.html"><i class="fas fa-user-shield me-2 text-indigo"></i>User Settings</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item py-2 text-danger" href="#" onclick="handleGlobalSignOut(event)"><i class="fas fa-sign-out-alt me-2"></i>ออกจากระบบ</a></li>
+                <li><a class="dropdown-item py-2 text-danger" href="#" onclick="handleGlobalSignOut(event)"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
               </ul>
             </li>
           </ul>
@@ -106,31 +102,18 @@ function injectSharedShell() {
   // Sidebar inject
   const existingSidebar = document.querySelector('.app-sidebar');
   if (!existingSidebar) {
-    const currentLang = localStorage.getItem('crm_lang') || 'EN';
+    const currentLang = 'EN';
     const menuTitles = {
-      TH: {
-        dashboard: "แดชบอร์ด",
-        customers: "ข้อมูลลูกค้า",
-        opportunities: "โอกาสงานขาย",
-        quotations: "ใบเสนอราคา",
-        sales_orders: "ใบสั่งขาย",
-        invoices: "ใบแจ้งหนี้",
-        support_desk: "ตั๋วบริการ",
-        reports: "รายงาน",
-        users: "สิทธิ์พนักงาน"
-      },
-      EN: {
-        dashboard: "Dashboard",
-        customers: "Customer Accounts",
-        opportunities: "Sales Opportunities",
-        quotations: "Quotations",
-        sales_orders: "Sales Orders",
-        invoices: "Invoices & Billings",
-        support_desk: "Service Tickets",
-        reports: "BI Reports",
-        users: "Users & Permissions"
-      }
-    }[currentLang];
+      dashboard: "Dashboard",
+      customers: "Customer Accounts",
+      opportunities: "Sales Opportunities",
+      quotations: "Quotations",
+      sales_orders: "Sales Orders",
+      invoices: "Invoices & Billings",
+      support_desk: "Service Tickets",
+      reports: "BI Reports",
+      users: "Users & Permissions"
+    };
 
     const sidebarHtml = `
       <aside class="app-sidebar bg-dark text-white shadow" data-bs-theme="dark" style="height: 100vh; position: fixed; top: 0; left: 0; width: 250px; display: flex; flex-direction: column;">
@@ -147,7 +130,7 @@ function injectSharedShell() {
           <nav class="mt-2">
             <ul class="nav flex-column gap-1" role="menu">
 
-              <!-- 🏠 แดชบอร์ด -->
+              <!-- Dashboard -->
               <li class="nav-item">
                 <a href="index.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-chart-pie text-primary" style="font-size:0.92rem; width: 18px;"></i>
@@ -155,7 +138,7 @@ function injectSharedShell() {
                 </a>
               </li>
 
-              <!-- 👥 ข้อมูลลูกค้า -->
+              <!-- Customers -->
               <li class="nav-item">
                 <a href="customers.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-users text-info" style="font-size:0.92rem; width: 18px;"></i>
@@ -163,7 +146,7 @@ function injectSharedShell() {
                 </a>
               </li>
 
-              <!-- 🎯 โอกาสงานขาย -->
+              <!-- Opportunities -->
               <li class="nav-item">
                 <a href="opportunities.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-handshake text-warning" style="font-size:0.92rem; width: 18px;"></i>
@@ -171,7 +154,7 @@ function injectSharedShell() {
                 </a>
               </li>
 
-              <!-- 📄 ใบเสนอราคา -->
+              <!-- Quotations -->
               <li class="nav-item">
                 <a href="quotations.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-file-contract text-warning" style="font-size:0.92rem; width: 18px;"></i>
@@ -179,7 +162,7 @@ function injectSharedShell() {
                 </a>
               </li>
 
-              <!-- 🛒 ใบสั่งขาย -->
+              <!-- Sales Orders -->
               <li class="nav-item">
                 <a href="sales-orders.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-list-check text-primary" style="font-size:0.92rem; width: 18px;"></i>
@@ -187,7 +170,7 @@ function injectSharedShell() {
                 </a>
               </li>
 
-              <!-- 💰 ใบแจ้งหนี้ -->
+              <!-- Invoices -->
               <li class="nav-item">
                 <a href="invoices.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-file-invoice text-indigo" style="font-size:0.92rem; width: 18px;"></i>
@@ -195,7 +178,7 @@ function injectSharedShell() {
                 </a>
               </li>
 
-              <!-- 🔧 ตั๋วบริการ -->
+              <!-- Service Tickets -->
               <li class="nav-item">
                 <a href="support-desk.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-tools text-success" style="font-size:0.92rem; width: 18px;"></i>
@@ -203,7 +186,7 @@ function injectSharedShell() {
                 </a>
               </li>
 
-              <!-- 📊 รายงาน -->
+              <!-- Reports -->
               <li class="nav-item">
                 <a href="reports-bi.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-chart-line text-info" style="font-size:0.92rem; width: 18px;"></i>
@@ -211,7 +194,7 @@ function injectSharedShell() {
                 </a>
               </li>
 
-              <!-- 👤 สิทธิ์พนักงาน -->
+              <!-- Users -->
               <li class="nav-item">
                 <a href="users.html" class="nav-link px-3 py-1.8 d-flex align-items-center gap-2 rounded text-decoration-none text-white-50 hover-bg-light transition-all">
                   <i class="fas fa-user-shield text-muted" style="font-size:0.92rem; width: 18px;"></i>
@@ -248,23 +231,23 @@ function injectSharedShell() {
       <div class="mobile-bottom-nav d-flex d-md-none bg-dark border-top position-fixed bottom-0 start-0 w-100 no-print" style="height: 60px; z-index: 5000; align-items: center; justify-content: space-around; box-shadow: 0 -3px 10px rgba(0,0,0,0.15);">
         <a href="index.html" class="mobile-nav-item" id="m-nav-dashboard" style="display: flex; flex-direction: column; align-items: center; text-decoration: none; font-size: 10px; color: rgba(255,255,255,0.6);" onclick="localStorage.setItem('active_m_tab', 'dashboard')">
           <i class="fas fa-chart-pie mb-1" style="font-size: 16px;"></i>
-          <span>แดชบอร์ด</span>
+          <span>Dashboard</span>
         </a>
         <a href="customers.html" class="mobile-nav-item" id="m-nav-customers" style="display: flex; flex-direction: column; align-items: center; text-decoration: none; font-size: 10px; color: rgba(255,255,255,0.6);" onclick="localStorage.setItem('active_m_tab', 'customers')">
           <i class="fas fa-building mb-1" style="font-size: 16px;"></i>
-          <span>ลูกค้า</span>
+          <span>Customers</span>
         </a>
         <a href="search.html" class="mobile-nav-item" id="m-nav-search" style="display: flex; flex-direction: column; align-items: center; text-decoration: none; font-size: 10px; color: rgba(255,255,255,0.6);" onclick="localStorage.setItem('active_m_tab', 'search')">
           <i class="fas fa-search mb-1" style="font-size: 16px;"></i>
-          <span>ค้นหา</span>
+          <span>Search</span>
         </a>
         <a href="invoices.html" class="mobile-nav-item" id="m-nav-invoices" style="display: flex; flex-direction: column; align-items: center; text-decoration: none; font-size: 10px; color: rgba(255,255,255,0.6);" onclick="localStorage.setItem('active_m_tab', 'invoices')">
           <i class="fas fa-file-invoice-dollar mb-1" style="font-size: 16px;"></i>
-          <span>บิลเงิน</span>
+          <span>Billing</span>
         </a>
         <a href="#" class="mobile-nav-item" style="display: flex; flex-direction: column; align-items: center; text-decoration: none; font-size: 10px; color: rgba(255,255,255,0.6);" data-bs-toggle="modal" data-bs-target="#mobileMoreMenuModal">
           <i class="fas fa-grid mb-1" style="font-size: 16px; background-color:#3b82f6; color:#fff; padding:6px; border-radius:50%; margin-top:-15px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 6px rgba(59,130,246,0.3);"></i>
-          <span>เมนูอื่น</span>
+          <span>More</span>
         </a>
       </div>
 
@@ -273,7 +256,7 @@ function injectSharedShell() {
         <div class="modal-dialog modal-dialog-centered pb-5">
           <div class="modal-content border-0 shadow-lg text-dark" style="border-radius: 20px;">
             <div class="modal-header border-0 pb-1">
-              <h5 class="modal-title fw-bold"><i class="fas fa-grid-2 text-primary"></i> บริหารจัดการ 12 แผนกงาน</h5>
+              <h5 class="modal-title fw-bold"><i class="fas fa-grid-2 text-primary"></i> 12 Departments Management</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-3">
@@ -284,7 +267,7 @@ function injectSharedShell() {
                     <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-chart-pie fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">แดชบอร์ด</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Dashboard</span>
                   </a>
                 </div>
                 <!-- item 2 -->
@@ -293,7 +276,7 @@ function injectSharedShell() {
                     <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-building fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">ลูกค้า Master</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Customer Master</span>
                   </a>
                 </div>
                 <!-- item 3 -->
@@ -302,7 +285,7 @@ function injectSharedShell() {
                     <div class="bg-warning bg-opacity-10 text-warning-emphasis rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-chart-line fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">โอกาสขาย</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Opportunities</span>
                   </a>
                 </div>
                 <!-- item 4 -->
@@ -311,7 +294,7 @@ function injectSharedShell() {
                     <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-file-contract fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">ใบเสนอราคา</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Quotations</span>
                   </a>
                 </div>
                 <!-- item 5 -->
@@ -320,7 +303,7 @@ function injectSharedShell() {
                     <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-list-check fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">ใบตั้งคำสั่งซื้อ (SO)</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Sales Orders (SO)</span>
                   </a>
                 </div>
                 <!-- item 6 -->
@@ -329,7 +312,7 @@ function injectSharedShell() {
                     <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-headset fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">จัดการใบงาน</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Service Tickets</span>
                   </a>
                 </div>
                 <!-- item 7 -->
@@ -338,7 +321,7 @@ function injectSharedShell() {
                     <div class="bg-indigo bg-opacity-10 text-indigo rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-file-invoice fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">ใบแจ้งหนี้</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Invoices</span>
                   </a>
                 </div>
                 <!-- item 8 -->
@@ -347,7 +330,7 @@ function injectSharedShell() {
                     <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-receipt fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">ใบเสร็จรับเงิน</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Receipts</span>
                   </a>
                 </div>
                 <!-- item 9 -->
@@ -356,7 +339,7 @@ function injectSharedShell() {
                     <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-brain fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">สถิติ BI</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">BI Stats</span>
                   </a>
                 </div>
                 <!-- item 10 -->
@@ -365,7 +348,7 @@ function injectSharedShell() {
                     <div class="bg-warning bg-opacity-10 text-warning-emphasis rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-search fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">ค้นหาศูนย์กลาง</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Global Search</span>
                   </a>
                 </div>
                 <!-- item 11 -->
@@ -374,7 +357,7 @@ function injectSharedShell() {
                     <div class="bg-dark bg-opacity-10 text-dark rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-map-marked-alt fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">SWOT & ดีล</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">SWOT & Deals</span>
                   </a>
                 </div>
                 <!-- item 12 -->
@@ -383,7 +366,7 @@ function injectSharedShell() {
                     <div class="bg-indigo bg-opacity-10 text-indigo rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 44px; height: 44px;">
                       <i class="fas fa-user-shield fs-5"></i>
                     </div>
-                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">ผู้ใช้และสิทธิ์</span>
+                    <span class="text-dark small d-block" style="font-size: 10px; font-weight: 500;">Users & Permissions</span>
                   </a>
                 </div>
               </div>
@@ -404,8 +387,8 @@ function injectSharedShell() {
           <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
             <span class="visually-hidden">Loading...</span>
           </div>
-          <h5 class="mt-3 text-dark fw-bold m-0">กำลังประสานฐานข้อมูล...</h5>
-          <p class="text-muted small mt-1 mb-0 font-sans">กรุณารอสักครู่ ระบบกำลังสื่อสารกับฐานข้อมูล Supabase</p>
+          <h5 class="mt-3 text-dark fw-bold m-0">Synchronizing database...</h5>
+          <p class="text-muted small mt-1 mb-0 font-sans">Please wait, communicating with Supabase database cluster...</p>
         </div>
       </div>
     `;
@@ -695,7 +678,7 @@ function syncDatabaseConnectivityIndicator() {
       
       // Toast notification for user feedback
       showToastAlert(
-        mode ? 'เชื่อมต่อระบบคลายและซิงค์ข้อมูลกับ Supabase Storage' : 'เปลี่ยนเป็นระบบโลคอลแรนโบว์ (Offline Mode)',
+        mode ? 'Connected and synchronized with Supabase cloud storage.' : 'Switched to local database sandbox mode.',
         mode ? 'success' : 'warning'
       );
 
@@ -741,7 +724,7 @@ function showToastAlert(message, type = 'success') {
   toast.innerHTML = `
     <div style="flex-shrink:0;">${icon}</div>
     <div style="flex:1;">
-      <span class="fw-bold d-block" style="font-size:0.85rem;">การแจ้งเตือนระบบ</span>
+      <span class="fw-bold d-block" style="font-size:0.85rem;">System Notification</span>
       <p class="m-0" style="font-size:0.77rem; color:inherit; opacity:0.85;">${message}</p>
     </div>
     <button class="btn-close ms-auto btn-sm" onclick="this.parentElement.remove()" style="font-size: 0.65rem;" aria-label="Close"></button>
@@ -763,17 +746,17 @@ function showToastAlert(message, type = 'success') {
 function exportTableToExcel(tableId, filename = 'CRM_Export_Report') {
   const table = document.getElementById(tableId);
   if (!table) {
-    showToastAlert('ไม่พบตารางข้อมูลสำหรับการส่งออก', 'danger');
+    showToastAlert('No table data found for export.', 'danger');
     return;
   }
   
   try {
     const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
     XLSX.writeFile(wb, `${filename}_${new Date().toISOString().slice(0,10)}.xlsx`);
-    showToastAlert('ส่งออกรายงาน Excel สำเร็จแล้ว', 'success');
+    showToastAlert('Excel report exported successfully.', 'success');
   } catch (err) {
     console.error("XLSX export failed", err);
-    showToastAlert('การล้อออก Excel ล้มเหลว โปรดเช็คการพึ่งพาตัวไลบรารี', 'danger');
+    showToastAlert('Excel export failed. Please check dependencies.', 'danger');
   }
 }
 
@@ -781,11 +764,11 @@ function exportTableToExcel(tableId, filename = 'CRM_Export_Report') {
 function exportTableToPDF(tableId, titleText = 'CRM Report Summary') {
   const { jsPDF } = window.jspdf || {};
   if (!jsPDF) {
-    showToastAlert('ระบบโปรแกรมสากดึงไม่พบไฟล์ PDF library รองรับ', 'danger');
+    showToastAlert('PDF library not found or supported.', 'danger');
     return;
   }
 
-  showToastAlert('กำลังสังเคราะห์และจัดรูปแบบ PDF...', 'success');
+  showToastAlert('Generating and formatting PDF document...', 'success');
 
   try {
     const doc = new jsPDF('p', 'pt', 'a4');
@@ -805,24 +788,24 @@ function exportTableToPDF(tableId, titleText = 'CRM Report Summary') {
     });
 
     doc.save(`${titleText.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`);
-    showToastAlert('ดาวน์โหลดไฟล์เอกสาร PDF สำเร็จแล้ว', 'success');
+    showToastAlert('PDF document downloaded successfully.', 'success');
   } catch (error) {
     console.error("PDF generation failed", error);
-    showToastAlert('การส่งออกเอกสาร PDF ล้มเหลว', 'danger');
+    showToastAlert('PDF export operation failed.', 'danger');
   }
 }
 
 // Database Seeder Fallback helper
 function seedDatabaseFallback() {
   Swal.fire({
-    title: 'คุณมั่นใจหรือไม่?',
-    text: "สิทธิ์การเขียนและอัดข้อมูลทับใน Local Storage และคลาวด์จะทับประวัติตามค่าดั้งเดิม เริ่มต้นใหม่ทันที!",
+    title: 'Are you sure?',
+    text: "Your current local and cloud sandbox database data will be overwritten and restored to default seed values!",
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
-    confirmButtonText: 'ใช่, รีเซ็ตข้อมูลเดี๋ยวนี้!',
-    cancelButtonText: 'ยกเลิก'
+    confirmButtonText: 'Yes, reset data now!',
+    cancelButtonText: 'Cancel'
   }).then((result) => {
     if (result.isConfirmed) {
       localStorage.removeItem('crm_customers');
@@ -832,7 +815,7 @@ function seedDatabaseFallback() {
       localStorage.removeItem('crm_invoices');
       localStorage.removeItem('crm_activities');
       
-      showToastAlert('รีเซ็ตข้อมูลเริ่มต้นเสร็จสิ้น กำลังรีโหลดหน้าจอ...', 'success');
+      showToastAlert('Database reset completed. Reloading workspace...', 'success');
       setTimeout(() => {
         window.location.reload();
       }, 1500);
@@ -850,66 +833,66 @@ window.seedDatabaseFallback = seedDatabaseFallback;
 // Localized Translation Dictionary (TH/EN)
 const I18N_DICTIONARY = {
   TH: {
-    "home": " หน้าแรก",
-    "re_seed": " รีเซ็ตตัวอย่าง",
-    "dashboard_main": "แดชบอร์ดหลัก",
-    "dashboard_bi": "วิเคราะห์ BI (Analytics)",
-    "sidebar_menu_analytical": "เมนูระบบหลัก & วิเคราะห์",
-    "sidebar_menu_customers": "ลูกค้ารายใหม่ & เกรดรีด",
-    "sidebar_menu_opps": "สถานะโอกาส & บอร์ดประมูล",
-    "sidebar_menu_documents": "เอกสารการค้า & ข้อตกลง",
-    "sidebar_menu_support": "หลังการขาย & กลยุทธ์องค์กร",
-    "customer_master": "ทะเบียนลูกค้า Master",
-    "leads_list": "รายชื่อผู้สนใจ (Leads)",
-    "all_opps": "รายการโอกาสขายทั้งหมด",
-    "pipeline_board": "กระดาน Pipeline Board",
-    "quotations": "ใบเสนอราคา (Quotations)",
-    "invoices": "ใบแจ้งหนี้ / ใบเสร็จ / คำสั่งซื้อ",
-    "support_desk": "ฝ่ายริเริ่ม & Support Desk",
-    "strategic_swot": "กลยุทธ์ SWOT & แคมเปญ",
-    "dashboard_title": "Sales Master CRM - แดชบอร์ดสรุปยอดขาย",
-    "welcome_hi": "สวัสดีครับ, ",
-    "welcome_subtitle": "ยินดีต้อนรับสู่แดชบอร์ดติดตามยอดขาย IKM Testing. วันนี้มีโอกาสขยายยอดผ่านปั๊มไฮโดรเทสและอุปกรณ์เช่า",
-    "ai_tip": "คำแนะนำกลยุทธ์วันนี้:",
-    "local_time": "เวลาสารสนเทศระบบ (Local Time)",
-    "filter_placeholder": "ค้นหาตามชื่อโครงการ / ลูกค้านิติบุคคล...",
-    "all_services": "ประเภทบริการทั้งหมด (ALL)",
-    "service_testing": "Testing Service (งานตรวจสอบ)",
-    "service_rental": "Equipment Rental (อุปกรณ์เช่า)",
-    "service_eng": "Engineering Service (วิศวกรรม)",
-    "service_manpower": "Manpower Supply (กำลังคน)",
-    "all_probs": "ความน่าจะเป็นทั้งหมด (ALL)",
-    "prob_high": "โอกาสสำเร็จสูง (>= 70%)",
-    "prob_mid": "โอกาสสำเร็จปานกลาง (40% - 69%)",
-    "prob_low": "กำลังเสนอตัวแรกเริ่ม (< 40%)",
-    "clear_filters": "ล้างตัวกรอง",
-    "total_pipeline": "Total Pipeline (พอร์ตรวม)",
+    "home": " Home",
+    "re_seed": " Re-seed Sandbox",
+    "dashboard_main": "Main Dashboard",
+    "dashboard_bi": "BI Analytics Panel",
+    "sidebar_menu_analytical": "CORE & ANALYTICAL MENU",
+    "sidebar_menu_customers": "CUSTOMER & PROSPECTS METRICS",
+    "sidebar_menu_opps": "OPPORTUNITIES & PIPELINE",
+    "sidebar_menu_documents": "TRADE DOCUMENTS & BILLING",
+    "sidebar_menu_support": "AFTER-SALES & STRATEGIC",
+    "customer_master": "Customer Master",
+    "leads_list": "Prospect Leads (Leads)",
+    "all_opps": "All Sales Opportunities",
+    "pipeline_board": "Kanban Pipeline Board",
+    "quotations": "Quotations (Quotes)",
+    "invoices": "Invoices / Bills / Orders",
+    "support_desk": "Initiation & Support Desk",
+    "strategic_swot": "Strategic SWOT & Campaign",
+    "dashboard_title": "Sales Master CRM - Sales Summary Dashboard",
+    "welcome_hi": "Welcome, ",
+    "welcome_subtitle": "Welcome to IKM Testing Sales Tracking Dashboard. Today is a great day to pursue new hydrotest and equipment rental deals.",
+    "ai_tip": "Today's Strategic Tip:",
+    "local_time": "Local System Time",
+    "filter_placeholder": "Search by project name / corporate customer...",
+    "all_services": "All Service Types (ALL)",
+    "service_testing": "Testing Service",
+    "service_rental": "Equipment Rental",
+    "service_eng": "Engineering Service",
+    "service_manpower": "Manpower Supply",
+    "all_probs": "All Probabilities (ALL)",
+    "prob_high": "High Probability (>= 70%)",
+    "prob_mid": "Medium Probability (40% - 69%)",
+    "prob_low": "Initial Proposal (< 40%)",
+    "clear_filters": "Clear Filters",
+    "total_pipeline": "Total Pipeline",
     "active_deals": "Active Deals",
-    "quarterly_goal": "เป้าขับเคลื่อนไตรมาส",
-    "weighted_pipeline": "Weighted Pipeline (ถ่วงน้ำหนัก)",
-    "average_success": "อัตราส่วนความสำเร็จเฉลี่ย",
-    "total_won_deals": "Total Won Deals (ยอดปิดแล้ว)",
-    "vs_quarterly_target": "เทียบกับเป้าหมายไตรมาส",
-    "active_customers": "Active Customers (ลูกค้าหลัก)",
-    "retained_customers": "ลูกค้ารักษาสัญญารวม",
-    "update_data": " อัปเดตข้อมูล",
-    "new_deal": " บันทึกดีลประมูลใหม่",
-    "deals_won_ratio": "อัตรางานขายที่สำเร็จ: ",
-    "deals_ratio_sub": "คำนวณจากตัวเลขความสำเร็จดีลทิ้งขาดชนะประมูล (Deals Won / Total Opportunities Ratio)",
-    "opp_by_status": "ผลสรุปดีลแบ่งตามสถานะ (Opportunity by Status)",
-    "realtime_update": "อัปเดตแบบเรียลไทม์",
-    "recent_activities": "ประวัติกิจกรรมขายล่าสุด (Recent Activities)",
-    "pipeline_timeline_title": "ส่วนวิเคราะห์แนวโน้มยอดเงินแต่ละช่วงเดือน (Sales Pipeline Timeline)",
-    "forecast_intl": "คาดการณ์สากล",
-    "menu_dashboard": "แดชบอร์ด",
-    "menu_customers": "ข้อมูลลูกค้า",
-    "menu_opportunities": "โอกาสงานขาย",
-    "menu_quotations": "ใบเสนอราคา",
-    "menu_sales_orders": "ใบสั่งขาย",
-    "menu_invoices": "ใบแจ้งหนี้",
-    "menu_support_desk": "ตั๋วบริการ",
-    "menu_reports": "รายงาน",
-    "menu_users": "สิทธิ์พนักงาน"
+    "quarterly_goal": "Quarterly Target",
+    "weighted_pipeline": "Weighted Pipeline Value",
+    "average_success": "Average Success Rate",
+    "total_won_deals": "Total Won Deals",
+    "vs_quarterly_target": "Compared to Quarterly Target",
+    "active_customers": "Active Customers",
+    "retained_customers": "Total Active Accounts",
+    "update_data": " Refresh Data",
+    "new_deal": " New Auction Deal",
+    "deals_won_ratio": "Win Ratio Analysis: ",
+    "deals_ratio_sub": "Calculated as won bids over total sales opportunities.",
+    "opp_by_status": "Deals Breakdown by Status (Opportunity by Status)",
+    "realtime_update": "Live Sync Feed",
+    "recent_activities": "Recent Sales Activities Feed (Recent Activities)",
+    "pipeline_timeline_title": "Sales Pipeline Forecast Timeline (Monthly Trend)",
+    "forecast_intl": "Forecast",
+    "menu_dashboard": "Dashboard",
+    "menu_customers": "Customer Accounts",
+    "menu_opportunities": "Sales Opportunities",
+    "menu_quotations": "Quotations",
+    "menu_sales_orders": "Sales Orders",
+    "menu_invoices": "Invoices & Billings",
+    "menu_support_desk": "Service Tickets",
+    "menu_reports": "BI Reports",
+    "menu_users": "Users & Permissions"
   },
   EN: {
     "home": " Home",
@@ -976,7 +959,8 @@ const I18N_DICTIONARY = {
 };
 
 function initSystemLanguage() {
-  const currentLang = localStorage.getItem('crm_lang') || 'EN';
+  const currentLang = 'EN';
+  localStorage.setItem('crm_lang', 'EN');
   const labelEl = document.getElementById('current-lang-lbl');
   if (labelEl) {
     labelEl.innerText = currentLang;
@@ -985,13 +969,13 @@ function initSystemLanguage() {
 }
 
 function switchSystemLanguage(lang) {
-  localStorage.setItem('crm_lang', lang);
+  localStorage.setItem('crm_lang', 'EN');
   const labelEl = document.getElementById('current-lang-lbl');
   if (labelEl) {
-    labelEl.innerText = lang;
+    labelEl.innerText = 'EN';
   }
-  applyLanguageTranslations(lang);
-  showToastAlert(lang === 'TH' ? 'เปลี่ยนภาษาของระบบเป็น ภาษาไทย แล้ว' : 'System language changed to English successfully', 'success');
+  applyLanguageTranslations('EN');
+  showToastAlert('System language changed to English successfully', 'success');
   
   // Custom hook to trigger dashboard refresh if present
   if (typeof onFilterChange === 'function') {
@@ -1000,7 +984,7 @@ function switchSystemLanguage(lang) {
 }
 
 function applyLanguageTranslations(lang) {
-  const dict = I18N_DICTIONARY[lang] || I18N_DICTIONARY.TH;
+  const dict = I18N_DICTIONARY.EN;
   
   // Set window/page title if applicable
   if (dict["dashboard_title"] && window.location.pathname.endsWith('index.html')) {
@@ -1106,15 +1090,15 @@ async function checkAndShowSystemNotifications() {
       if (expiringQuotations.length > 0 || overdueInvoices.length > 0) {
         let toastMsg = "";
         if (expiringQuotations.length > 0 && overdueInvoices.length > 0) {
-          toastMsg = `⚠️ ตรวจพบใบเสนอราคาใกล้หมดอายุ ${expiringQuotations.length} รายการ และใบแจ้งหนี้ค้างชำระ ${overdueInvoices.length} รายการ เกินกำหนดชำระ!`;
+          toastMsg = `⚠️ Detected ${expiringQuotations.length} expiring quotations and ${overdueInvoices.length} overdue unpaid invoices!`;
         } else if (expiringQuotations.length > 0) {
-          toastMsg = `⏳ ตรวจพบใบเสนอราคาใกล้หมดอายุหรือหมดอายุแล้ว ${expiringQuotations.length} รายการ กรุณาติดตามลูกค้า`;
+          toastMsg = `⏳ Detected ${expiringQuotations.length} expiring/expired quotations. Please follow up with client.`;
         } else if (overdueInvoices.length > 0) {
-          toastMsg = `🚨 ตรวจพบใบแจ้งหนี้ค้างเงินสะสมเกินกำหนดชำระ ${overdueInvoices.length} รายการ กรุณาดำเนินการทวงถามหนี้`;
+          toastMsg = `🚨 Detected ${overdueInvoices.length} overdue invoices requiring follow up.`;
         }
         showToastAlert(toastMsg, 'danger');
       } else {
-        showToastAlert('ระบบพร้อมใช้งาน: ไม่พบใบค้างจ่ายหรือใบเสนอราคาหมดอายุในวันนี้', 'success');
+        showToastAlert('System active: No outstanding overdue items found today.', 'success');
       }
       sessionStorage.setItem('sys_notif_toast_shown', 'true');
     }
@@ -1144,8 +1128,8 @@ function renderDashboardNotificationsList(expiringQuotes, overdueInvoices) {
               <i class="fas fa-check-circle fs-5"></i>
             </div>
             <div>
-              <h6 class="m-0 fw-bold text-success" style="font-size: 0.95rem;">ระบบตรวจสอบแจ้งเตือน (Smart Notification Core)</h6>
-              <span class="text-xs text-muted-flat" style="font-size: 0.8rem; color: #15803d;">ยอดเยี่ยม! ไม่มีเรื่องค้างชำระหรือใบเสนอราคาใกล้หมดอายุที่ต้องดูแลเป็นพิเศษในระบบวันนี้</span>
+              <h6 class="m-0 fw-bold text-success" style="font-size: 0.95rem;">Smart Notification Hub</h6>
+              <span class="text-xs text-muted-flat" style="font-size: 0.8rem; color: #15803d;">All clear! No overdue payments or expiring quotations require urgent attention today.</span>
             </div>
           </div>
         </div>
@@ -1162,17 +1146,17 @@ function renderDashboardNotificationsList(expiringQuotes, overdueInvoices) {
       <div class="col-12 col-md-6">
         <div class="p-3 bg-warning bg-opacity-10 rounded-4 h-100" style="border: 1px solid rgba(255, 193, 7, 0.44);">
           <div class="d-flex align-items-center gap-2 mb-3">
-            <span class="badge bg-warning text-dark px-2 py-1"><i class="fa fa-clock text-dark me-1"></i> ใกล้หมดอายุ</span>
-            <h6 class="m-0 fw-bold text-warning-emphasis" style="font-size: 0.9rem;">ใบเสนอราคาใกล้หมดอายุ (${expiringQuotes.length} รายการ)</h6>
+            <span class="badge bg-warning text-dark px-2 py-1"><i class="fa fa-clock text-dark me-1"></i> Expiring Soon</span>
+            <h6 class="m-0 fw-bold text-warning-emphasis" style="font-size: 0.9rem;">Expiring Quotations (${expiringQuotes.length} items)</h6>
           </div>
           <div class="d-flex flex-column gap-2 overflow-y-auto pr-1" style="max-height: 250px;">
             ${expiringQuotes.map(q => {
-              const customerName = q.customer ? q.customer.customer_name : 'ไม่พบข้อมูลลูกค้า';
+              const customerName = q.customer ? q.customer.customer_name : 'No Customer Record';
               const daysText = q.days_left < 0 
-                ? `<span class="badge bg-danger rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">หมดอายุมาแล้ว ${Math.abs(q.days_left)} วัน</span>` 
+                ? `<span class="badge bg-danger rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Expired ${Math.abs(q.days_left)} days ago</span>` 
                 : (q.days_left === 0 
-                  ? `<span class="badge bg-danger rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">หมดอายุวันนี้!</span>` 
-                  : `<span class="badge bg-warning text-dark rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">ด่วน! เหลืออีก ${q.days_left} วัน</span>`);
+                  ? `<span class="badge bg-danger rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Expires Today!</span>` 
+                  : `<span class="badge bg-warning text-dark rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Expires in ${q.days_left} days</span>`);
               return `
                 <div class="d-flex justify-content-between align-items-center p-3 bg-white rounded-3 shadow-xs border-light border">
                   <div style="flex: 1; min-width: 0;" class="pe-2">
@@ -1181,11 +1165,11 @@ function renderDashboardNotificationsList(expiringQuotes, overdueInvoices) {
                       <span class="badge bg-secondary-subtle text-secondary small" style="font-size:0.67rem; font-weight:500;">Status: ${q.status}</span>
                     </div>
                     <span class="d-block text-slate-800 text-truncate mt-1.5 fw-semibold" style="font-size: 0.82rem;" title="${q.title}">${q.title}</span>
-                    <span class="text-xs text-muted d-block mt-0.5 text-truncate" style="font-size: 0.75rem;">ลูกค้า: ${customerName}</span>
+                    <span class="text-xs text-muted d-block mt-0.5 text-truncate" style="font-size: 0.75rem;">Customer: ${customerName}</span>
                   </div>
                   <div class="text-end" style="flex-shrink: 0;">
                     <div class="mb-2 d-flex justify-content-end">${daysText}</div>
-                    <a href="quotations.html?search=${q.quotation_no}" class="btn btn-xs btn-outline-warning py-1 px-2.5 rounded-pill text-warning border-warning border hover-bg-warning hover-text-white transition-all fw-medium" style="font-size:0.7rem; display:inline-flex; align-items:center; gap:3px;"><i class="fa fa-eye"></i> ตรวจสอบ</a>
+                    <a href="quotations.html?search=${q.quotation_no}" class="btn btn-xs btn-outline-warning py-1 px-2.5 rounded-pill text-warning border-warning border hover-bg-warning hover-text-white transition-all fw-medium" style="font-size:0.7rem; display:inline-flex; align-items:center; gap:3px;"><i class="fa fa-eye"></i> Audit</a>
                   </div>
                 </div>
               `;
@@ -1199,8 +1183,8 @@ function renderDashboardNotificationsList(expiringQuotes, overdueInvoices) {
       <div class="col-12 col-md-6">
         <div class="p-4 bg-light rounded-4 h-100 d-flex flex-column align-items-center justify-content-center text-center py-5 border">
           <i class="fa-regular fa-clipboard text-muted mb-2" style="font-size: 2rem; opacity: 0.45;"></i>
-          <h6 class="m-0 fw-bold text-secondary" style="font-size: 0.88rem;">ไม่มีใบเสนอราคาค้างคาที่ใกล้หมดอายุ</h6>
-          <span class="text-xs text-muted mt-1" style="font-size: 0.75rem;">ใบเสนอราคาในระบบทั้งหมดมีอายุการใช้งานปกติ</span>
+          <h6 class="m-0 fw-bold text-secondary" style="font-size: 0.88rem;">No Expiring Quotations Found</h6>
+          <span class="text-xs text-muted mt-1" style="font-size: 0.75rem;">All stored quotations are within healthy validity periods.</span>
         </div>
       </div>
     `;
@@ -1212,12 +1196,12 @@ function renderDashboardNotificationsList(expiringQuotes, overdueInvoices) {
       <div class="col-12 col-md-6">
         <div class="p-3 bg-danger bg-opacity-10 rounded-4 h-100" style="border: 1px solid rgba(220, 53, 69, 0.44);">
           <div class="d-flex align-items-center gap-2 mb-3">
-            <span class="badge bg-danger px-2 py-1"><i class="fa fa-ban text-white me-1"></i> เกินกำหนดชำระ</span>
-            <h6 class="m-0 fw-bold text-danger-emphasis" style="font-size: 0.9rem;">ใบแจ้งหนี้ค้างชำระเกินกำหนดชำระ (${overdueInvoices.length} รายการ)</h6>
+            <span class="badge bg-danger px-2 py-1"><i class="fa fa-ban text-white me-1"></i> Overdue</span>
+            <h6 class="m-0 fw-bold text-danger-emphasis" style="font-size: 0.9rem;">Outstanding Overdue Invoices (${overdueInvoices.length} items)</h6>
           </div>
           <div class="d-flex flex-column gap-2 overflow-y-auto pr-1" style="max-height: 250px;">
             ${overdueInvoices.map(i => {
-              const customerName = i.customer ? i.customer.customer_name : 'ไม่ระบุชื่อบริษัทลูกค้า';
+              const customerName = i.customer ? i.customer.customer_name : 'Customer Organization Not Specified';
               const invoiceTotal = parseFloat(i.grand_total || i.total_value || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
               return `
                 <div class="d-flex justify-content-between align-items-center p-3 bg-white rounded-3 shadow-xs border-light border">
@@ -1227,12 +1211,12 @@ function renderDashboardNotificationsList(expiringQuotes, overdueInvoices) {
                       <span class="badge bg-danger-subtle text-danger small" style="font-size:0.67rem; font-weight:500;">Status: Overdue</span>
                     </div>
                     <span class="d-block text-slate-800 text-truncate mt-1.5 fw-semibold" style="font-size: 0.82rem;" title="${i.project_name}">${i.project_name}</span>
-                    <span class="text-xs text-muted d-block mt-0.5 text-truncate" style="font-size: 0.75rem;">ลูกค้า: ${customerName}</span>
-                    <span class="text-xs d-block font-sans fw-bold text-danger mt-1" style="font-size: 0.78rem;">ยอดค้างชำระ: ฿${invoiceTotal}</span>
+                    <span class="text-xs text-muted d-block mt-0.5 text-truncate" style="font-size: 0.75rem;">Customer: ${customerName}</span>
+                    <span class="text-xs d-block font-sans fw-bold text-danger mt-1" style="font-size: 0.78rem;">Overdue Balance: ฿${invoiceTotal}</span>
                   </div>
                   <div class="text-end" style="flex-shrink: 0;">
-                    <div class="mb-2"><span class="badge bg-danger rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">เกินกำหนดมาแล้ว ${i.days_overdue} วัน</span></div>
-                    <a href="invoices.html?search=${i.invoice_no}" class="btn btn-xs btn-outline-danger py-1 px-2.5 rounded-pill text-danger border-danger border hover-bg-danger hover-text-white transition-all fw-medium" style="font-size:0.7rem; display:inline-flex; align-items:center; gap:3px;"><i class="fa fa-file-invoice"></i> ตรวจสอบ</a>
+                    <div class="mb-2"><span class="badge bg-danger rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Overdue by ${i.days_overdue} Days</span></div>
+                    <a href="invoices.html?search=${i.invoice_no}" class="btn btn-xs btn-outline-danger py-1 px-2.5 rounded-pill text-danger border-danger border hover-bg-danger hover-text-white transition-all fw-medium" style="font-size:0.7rem; display:inline-flex; align-items:center; gap:3px;"><i class="fa fa-file-invoice"></i> Audit</a>
                   </div>
                 </div>
               `;
@@ -1246,8 +1230,8 @@ function renderDashboardNotificationsList(expiringQuotes, overdueInvoices) {
       <div class="col-12 col-md-6">
         <div class="p-4 bg-light rounded-4 h-100 d-flex flex-column align-items-center justify-content-center text-center py-5 border">
           <i class="fa-regular fa-file-invoice text-muted mb-2" style="font-size: 2rem; opacity: 0.45;"></i>
-          <h6 class="m-0 fw-bold text-secondary" style="font-size: 0.88rem;">ไม่มีใบแจ้งหนี้ตกค้างเกินกำหนดชำระ</h6>
-          <span class="text-xs text-muted mt-1" style="font-size: 0.75rem;">ใบแจ้งหนี้ทั้งหมดได้รับการชำระเสร็จสิ้นหรือยังไม่พ้นกำหนด</span>
+          <h6 class="m-0 fw-bold text-secondary" style="font-size: 0.88rem;">No Overdue Invoices Found</h6>
+          <span class="text-xs text-muted mt-1" style="font-size: 0.75rem;">All generated invoices have been cleared or are within safe payment terms.</span>
         </div>
       </div>
     `;
@@ -1262,11 +1246,11 @@ function renderDashboardNotificationsList(expiringQuotes, overdueInvoices) {
             <i class="fa fa-bell text-dark" style="font-size: 0.85rem;"></i>
           </div>
           <div>
-            <h6 class="m-0 fw-bold" style="font-size: 0.95rem; letter-spacing: -0.2px;">ระบบศูนย์กลางสัญญาณเตือนและแจ้งข่าวสาร (SMART CRM ALERTS HUB)</h6>
-            <span class="text-xs text-light" style="font-size: 0.72rem; opacity: 0.75;">ตรวจสอบคัดกรองสัญญาณเตือนใบเสนอราคา และใบแจ้งหนี้ค้างชำระระดับผู้บริหาร</span>
+            <h6 class="m-0 fw-bold" style="font-size: 0.95rem; letter-spacing: -0.2px;">SMART CRM ALERTS HUB</h6>
+            <span class="text-xs text-light" style="font-size: 0.72rem; opacity: 0.75;">Real-time automated auditing and alert aggregation for quotations and overdue invoices.</span>
           </div>
         </div>
-        <span class="badge bg-danger rounded-pill px-3 py-1.5 fw-bold" style="font-size:0.72rem; letter-spacing:0.3px;"><i class="fa fa-circle-exclamation me-1"></i> ตรวจพบความเสี่ยง ${expiringQuotes.length + overdueInvoices.length} จุด</span>
+        <span class="badge bg-danger rounded-pill px-3 py-1.5 fw-bold" style="font-size:0.72rem; letter-spacing:0.3px;"><i class="fa fa-circle-exclamation me-1"></i> ${expiringQuotes.length + overdueInvoices.length} Alerts Found</span>
       </div>
       <!-- List Blocks -->
       <div class="card-body p-4 bg-body-tertiary">

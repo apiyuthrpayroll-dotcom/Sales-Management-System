@@ -39,11 +39,14 @@ interface OpportunityViewProps {
 }
 
 const SERVICE_TYPES = [
+  'Industrial Cleaning',
+  'Mechanical Service',
   'Testing Service',
+  'Inspection Service',
   'Equipment Rental',
-  'Manpower Supply',
-  'Engineering Service',
-  'Other'
+  'Manpower Service',
+  'Maintenance & Repair',
+  'Project Support'
 ];
 
 const LEAD_SOURCES = [
@@ -60,13 +63,13 @@ const LEAD_SOURCES = [
 ];
 
 const OPPORTUNITY_STATUSES: { value: OpportunityStatus; label: string; colorClass: string }[] = [
-  { value: 'Lead', label: 'Lead (มีลีด)', colorClass: 'bg-slate-100 text-slate-700 border-slate-300' },
-  { value: 'Qualified', label: 'Qualified (ผ่านการคัดกรอง)', colorClass: 'bg-blue-50 text-blue-700 border-blue-200' },
-  { value: 'Proposal', label: 'Proposal (เสนอราคา)', colorClass: 'bg-orange-50 text-orange-700 border-orange-200' },
-  { value: 'Negotiation', label: 'Negotiation (เจรจาต่อรอง)', colorClass: 'bg-purple-50 text-purple-700 border-purple-200' },
-  { value: 'Won', label: 'Won (ปิดการขายสำเร็จ)', colorClass: 'bg-green-50 text-green-700 border-green-200' },
-  { value: 'Lost', label: 'Lost (พ่ายแพ้)', colorClass: 'bg-red-50 text-red-700 border-red-200' },
-  { value: 'Cancelled', label: 'Cancelled (ยกเลิก)', colorClass: 'bg-zinc-800 text-white border-zinc-700' },
+  { value: 'Lead', label: 'Lead', colorClass: 'bg-slate-100 text-slate-700 border-slate-300' },
+  { value: 'Qualified', label: 'Qualified', colorClass: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { value: 'Proposal', label: 'Proposal', colorClass: 'bg-orange-50 text-orange-700 border-orange-200' },
+  { value: 'Negotiation', label: 'Negotiation', colorClass: 'bg-purple-50 text-purple-700 border-purple-200' },
+  { value: 'Won', label: 'Won', colorClass: 'bg-green-50 text-green-700 border-green-200' },
+  { value: 'Lost', label: 'Lost', colorClass: 'bg-red-50 text-red-700 border-red-200' },
+  { value: 'Cancelled', label: 'Cancelled', colorClass: 'bg-zinc-800 text-white border-zinc-700' },
 ];
 
 export default function OpportunityView({ 
@@ -302,12 +305,12 @@ export default function OpportunityView({
 
   const validateForm = () => {
     const errs: { [key: string]: string } = {};
-    if (!formCustomerId) errs.customer = 'กรุณาเลือกชื่อลูกค้า';
-    if (!formProjectName.trim()) errs.projectName = 'กรุณาระบุมูลค่างานและชื่อโครงการ';
+    if (!formCustomerId) errs.customer = 'Please select a customer account';
+    if (!formProjectName.trim()) errs.projectName = 'Please specify the project name';
     if (!formEstimatedValue.trim() || Number(formEstimatedValue) <= 0) {
-      errs.value = 'กรุณากรอกงบประมาณโครงการให้ถูกต้อง (มากกว่า 0)';
+      errs.value = 'Please enter a valid estimated budget (greater than 0)';
     }
-    if (!formExpectedCloseDate) errs.closeDate = 'กรุณาระบุวันปิดงานที่คาดหวัง';
+    if (!formExpectedCloseDate) errs.closeDate = 'Please select the expected close date';
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -316,11 +319,11 @@ export default function OpportunityView({
   const handleSaveOpportunity = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canModifyOpportunity) {
-      onToast('สิทธิ์ความปลอดภัย (View Only): พนักงานบทบาทผู้บริหารไม่ได้รับเอกสิทธิ์ในการเขียนหรือแก้ไขแผ่นสัญญางาน', 'err');
+      onToast('Security Privilege (View Only): Executive users are not authorized to create or edit sales opportunities', 'err');
       return;
     }
     if (editingOpp && isSales && editingOpp.sales_person_id !== currentUserId) {
-      onToast('ปฏิเสธระบบส่วนกลาง: พนักงานฝ่ายขายทั่วไป (Sales) มีสิทธิ์แก้ไขดีลเฉพาะโครงการที่ดูแลโดยตนเองเท่านั้น', 'err');
+      onToast('Access Denied: Sales representatives can only edit their own assigned opportunities', 'err');
       return;
     }
     if (!validateForm()) return;
@@ -341,36 +344,36 @@ export default function OpportunityView({
     try {
       if (editingOpp) {
         await onUpdate(editingOpp.id, payload);
-        onToast('อัปเดตข้อมูลโอกาสทางการขายสำเร็จ', 'success');
+        onToast('Opportunity updated successfully', 'success');
         if (viewingOpp && viewingOpp.id === editingOpp.id) {
           const loadedCust = customers.find(c => c.id === formCustomerId);
           setViewingOpp({ ...viewingOpp, ...payload, customer: loadedCust });
         }
       } else {
         await onAdd(payload);
-        onToast('เพิ่มข้อมูลโอกาสขายใหม่สำเร็จ', 'success');
+        onToast('New opportunity created successfully', 'success');
       }
       setIsFormOpen(false);
     } catch (err) {
-      onToast('เกิดข้อผิดพลาดในการบันทึกโอกาสขาย', 'err');
+      onToast('Error saving opportunity', 'err');
     }
   };
 
   const handleDeleteOpportunity = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!canDeleteOpportunity) {
-      onToast('จำกัดบทบาทระบบ: สิทธิ์ลบแผ่นบันทึกโอกาสขายสงวนไว้สำหรับผู้ดูแลระบบ (Admin) เท่านั้น', 'err');
+      onToast('Role Restricted: Only Administrators are authorized to delete opportunities', 'err');
       return;
     }
-    if (confirm('ยืนยันลบโอกาสทางการขายนี้ออกจากระบบ? รายการสถิติกระดานคัมบังจะยุติลง')) {
+    if (confirm('Are you sure you want to delete this opportunity? This action cannot be undone.')) {
       try {
         await onDelete(id);
-        onToast('ลบโอกาสทางการขายเรียบร้อย', 'success');
+        onToast('Opportunity deleted successfully', 'success');
         if (viewingOpp && viewingOpp.id === id) {
           setViewingOpp(null);
         }
       } catch {
-        onToast('ลบไม่สำเร็จ', 'err');
+        onToast('Failed to delete opportunity', 'err');
       }
     }
   };
@@ -427,7 +430,7 @@ export default function OpportunityView({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    onToast('ส่งออกไฟล์ Excel/CSV บรรจุข้อมูลสำเร็จ', 'success');
+    onToast('Excel/CSV exported successfully', 'success');
   };
 
   // Helper formats
@@ -450,8 +453,8 @@ export default function OpportunityView({
       {/* Upper Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm col-span-full">
         <div>
-          <h2 className="text-xl font-bold text-slate-800">จัดการโอกาสทางการขาย (Opportunities)</h2>
-          <p className="text-slate-400 text-xs mt-0.5">บันทึกขั้นตอน ประเมินความเป็นไปได้ และจัดเตรียมความพร้อมในการปิดการขาย</p>
+          <h2 className="text-xl font-bold text-slate-800">Sales Opportunities Pipeline (Opportunities)</h2>
+          <p className="text-slate-400 text-xs mt-0.5">Track opportunity stages, estimate success probability, and manage sales deals.</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -459,7 +462,7 @@ export default function OpportunityView({
             className="px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-xs flex items-center justify-center gap-1.5 focus:outline-none"
           >
             <Download className="w-4 h-4 text-slate-500" />
-            ดาวน์โหลด Excel
+            Export Excel
           </button>
           <button
             id="btn-add-opportunity"
@@ -467,7 +470,7 @@ export default function OpportunityView({
             className="px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-1.5 focus:outline-none"
           >
             <Plus className="w-4 h-4" />
-            สร้างโอกาสทางการขาย
+            Create Opportunity
           </button>
         </div>
       </div>
@@ -482,7 +485,7 @@ export default function OpportunityView({
             <input
               id="search-opportunity"
               type="text"
-              placeholder="ค้นหาเลขงาน, ชื่องาน, ลูกค้า..."
+              placeholder="Search Deal No, Project Name, Customer..."
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
               className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none text-slate-800 font-sans"
@@ -497,7 +500,7 @@ export default function OpportunityView({
               onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
               className="w-full text-sm border border-slate-200 bg-slate-50 p-2 rounded-lg focus:outline-none text-slate-700 font-sans cursor-pointer"
             >
-              <option value="All">ทุกสถานะขั้นตอน</option>
+              <option value="All">All Stages / Status</option>
               {OPPORTUNITY_STATUSES.map(s => (
                 <option key={s.value} value={s.value}>{s.label}</option>
               ))}
@@ -512,7 +515,7 @@ export default function OpportunityView({
               onChange={(e) => { setServiceFilter(e.target.value); setCurrentPage(1); }}
               className="w-full text-sm border border-slate-200 bg-slate-50 p-2 rounded-lg focus:outline-none text-slate-700 font-sans cursor-pointer"
             >
-              <option value="All">ทุกอุตสาหกรรม/บริการ</option>
+              <option value="All">All Service Segments</option>
               {SERVICE_TYPES.map(t => (
                 <option key={t} value={t}>{t}</option>
               ))}
@@ -527,7 +530,7 @@ export default function OpportunityView({
               onChange={(e) => { setSalesFilter(e.target.value); setCurrentPage(1); }}
               className="w-full text-sm border border-slate-200 bg-slate-50 p-2 rounded-lg focus:outline-none text-slate-700 font-sans cursor-pointer"
             >
-              <option value="All">พนักงานขายทั้งหมด</option>
+              <option value="All">All Sales Representatives</option>
               {allSalesPersons.map(s => (
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
@@ -578,18 +581,18 @@ export default function OpportunityView({
                   className="border border-slate-200 px-3 py-2 text-slate-700 w-32 cursor-pointer hover:bg-slate-100 transition-colors"
                 >
                   <div className="flex items-center gap-1">
-                    เลขที่บันทึก
+                    Opportunity No
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
-                <th className="border border-slate-200 px-3 py-2 text-slate-700 w-1/4">บริษัทลูกค้า</th>
-                <th className="border border-slate-200 px-3 py-2 text-slate-700 w-1/4">ชื่องานโครงการเสนอบริการ</th>
+                <th className="border border-slate-200 px-3 py-2 text-slate-700 w-1/4">Customer Account</th>
+                <th className="border border-slate-200 px-3 py-2 text-slate-700 w-1/4">Project Name & Service Category</th>
                 <th 
                   onClick={() => handleHeaderSort('estimated_value')}
                   className="border border-slate-200 px-3 py-2 text-right text-slate-700 w-40 cursor-pointer hover:bg-slate-100 transition-colors"
                 >
                   <div className="flex items-center justify-end gap-1">
-                    มูลค่างบประมาณ
+                    Estimated Value
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
@@ -598,7 +601,7 @@ export default function OpportunityView({
                   className="border border-slate-200 px-3 py-2 text-center text-slate-700 w-28 cursor-pointer hover:bg-slate-100 transition-colors"
                 >
                   <div className="flex items-center justify-center gap-1">
-                    โอกาสชนะ
+                    Probability (%)
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
@@ -607,13 +610,13 @@ export default function OpportunityView({
                   className="border border-slate-200 px-3 py-2 text-center text-slate-700 w-36 cursor-pointer hover:bg-slate-100 transition-colors"
                 >
                   <div className="flex items-center justify-center gap-1">
-                    วันคาดปิดดีล
+                    Expected Close Date
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
-                <th className="border border-slate-200 px-3 py-2 text-slate-700 w-44 font-sans">ผู้รับผิดชอบ (Sales)</th>
-                <th className="border border-slate-200 px-3 py-2 text-center text-slate-700 w-40">สถานะ</th>
-                <th className="border border-slate-200 px-3 py-2 text-right text-slate-700 w-32">เครื่องมือ</th>
+                <th className="border border-slate-200 px-3 py-2 text-slate-700 w-44 font-sans">Sales Owner</th>
+                <th className="border border-slate-200 px-3 py-2 text-center text-slate-700 w-40">Stage / Status</th>
+                <th className="border border-slate-200 px-3 py-2 text-right text-slate-700 w-32">Actions</th>
               </tr>
             </thead>
             <tbody className="text-xs text-slate-700">
@@ -632,7 +635,7 @@ export default function OpportunityView({
                       {opp.opportunity_no}
                     </td>
                     <td className="border border-slate-200 px-3 py-1.5 font-semibold text-slate-800 truncate" title={opp.customer?.customer_name}>
-                      {opp.customer?.customer_name || 'ลูกค้าไม่ถูกกำหนด'}
+                      {opp.customer?.customer_name || 'Customer not assigned'}
                     </td>
                     <td className="border border-slate-200 px-3 py-1.5">
                       <div className="truncate font-medium text-slate-700" title={opp.project_name}>
@@ -663,14 +666,14 @@ export default function OpportunityView({
                     <td className="border border-slate-200 px-3 py-1.5 text-right" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
                         <button
-                          title="ดูรายละเอียด"
+                          title="View Details"
                           onClick={() => setViewingOpp(opp)}
                           className="p-1 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded transition-colors"
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </button>
                         <button
-                          title="แก้ไขดีล"
+                          title="Edit Deal"
                           onClick={(e) => handleOpenEdit(opp, e)}
                           className="p-1 text-slate-500 hover:text-amber-600 hover:bg-slate-100 rounded transition-colors"
                         >
@@ -678,7 +681,7 @@ export default function OpportunityView({
                         </button>
                         {canDeleteOpportunity ? (
                           <button
-                            title="ลบดีล"
+                            title="Delete Deal"
                             onClick={(e) => handleDeleteOpportunity(opp.id, e)}
                             className="p-1 text-slate-500 hover:text-red-700 hover:bg-slate-100 rounded transition-colors"
                           >
@@ -687,7 +690,7 @@ export default function OpportunityView({
                         ) : (
                           <button
                             disabled
-                            title="จำกัดสิทธิ์เฉพาะ Admin เท่านั้น"
+                            title="Admin Permission Required"
                             className="p-1 text-slate-300 cursor-not-allowed rounded"
                           >
                             <Lock className="w-3.5 h-3.5" />
@@ -700,7 +703,7 @@ export default function OpportunityView({
               ) : (
                 <tr>
                   <td colSpan={10} className="p-8 text-center text-slate-400 font-sans border border-slate-200">
-                    ไม่พบข้อมูลประวัติโอกาสทางการขายในระบบตามคำกรองค้นหา
+                    No sales opportunities found matching the search filters.
                   </td>
                 </tr>
               )}
@@ -711,7 +714,7 @@ export default function OpportunityView({
         {/* Dynamic Pagination Panel */}
         <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/70 flex items-center justify-between text-slate-500 text-xs">
           <span>
-            แสดงหน้ารายการ {currentPage}/{totalPages} (คัดสรรลีดทั้งหมด {processedOpportunities.length} บันทึก)
+            Showing page {currentPage} of {totalPages} (Total {processedOpportunities.length} opportunities)
           </span>
           <div className="flex gap-1">
             <button
@@ -738,7 +741,7 @@ export default function OpportunityView({
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-scale-up flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50 shrink-0">
               <h3 className="text-base font-bold text-slate-800">
-                {editingOpp ? `แก้ไขโอกาสทางการขาย: ${editingOpp.opportunity_no}` : 'สร้างโอกาสทางการขายใหม่'}
+                {editingOpp ? `Edit Opportunity: ${editingOpp.opportunity_no}` : 'Create New Opportunity'}
               </h3>
               <button 
                 onClick={() => setIsFormOpen(false)}
@@ -754,7 +757,7 @@ export default function OpportunityView({
                   
                   {/* Customer Dropdown */}
                   <div className="sm:col-span-2 space-y-1 text-sm">
-                    <label className="text-xs font-semibold text-slate-500 block">ระบุบริษัทลูกค้าปลายทาง <span className="text-red-500">*</span></label>
+                    <label className="text-xs font-semibold text-slate-500 block">Select Customer Account <span className="text-red-500">*</span></label>
                     <select
                       id="form-customer-id"
                       value={formCustomerId}
@@ -769,13 +772,13 @@ export default function OpportunityView({
 
                   {/* Project Name */}
                   <div className="sm:col-span-2 space-y-1 text-sm">
-                    <label className="text-xs font-semibold text-slate-500 block">ชื่องานแผนธุรกิจหรือชื่อโครงการ <span className="text-red-500">*</span></label>
+                    <label className="text-xs font-semibold text-slate-500 block">Project Name or Business Initiative <span className="text-red-500">*</span></label>
                     <input
                       id="form-project-name"
                       type="text"
                       value={formProjectName}
                       onChange={(e) => setFormProjectName(e.target.value)}
-                      placeholder="โครงการเตรียมตรวจสอบหม้อน้ำแรงดันสูงเฟสสี่"
+                      placeholder="e.g. Boiler Pressure Inspection Phase 4"
                       className={`w-full p-2.5 border rounded-lg focus:outline-none focus:border-blue-500 shadow-sm ${errors.projectName ? 'border-red-400 bg-red-50/10' : 'border-slate-200'}`}
                     />
                     {errors.projectName && <span className="text-[11px] text-red-500 block">{errors.projectName}</span>}
@@ -783,7 +786,7 @@ export default function OpportunityView({
 
                   {/* Service Type */}
                   <div className="space-y-1 text-sm">
-                    <label className="text-xs font-semibold text-slate-500 block">ประเภทกลุ่มบริการเสนองาน</label>
+                    <label className="text-xs font-semibold text-slate-500 block">Service Segment / Work Scope</label>
                     <select
                       id="form-service-type"
                       value={formServiceType}
@@ -798,7 +801,7 @@ export default function OpportunityView({
 
                   {/* Lead Source */}
                   <div className="space-y-1 text-sm">
-                    <label className="text-xs font-semibold text-slate-500 block">ต้นตอและที่มาของงาน (Lead Source)</label>
+                    <label className="text-xs font-semibold text-slate-500 block">Lead Source</label>
                     <select
                       id="form-lead-source"
                       value={formLeadSource}
@@ -813,13 +816,13 @@ export default function OpportunityView({
 
                   {/* Estimated Budget */}
                   <div className="space-y-1 text-sm">
-                    <label className="text-xs font-semibold text-slate-500 block">มูลค่างบประมาณประเมินรวม (บาท) <span className="text-red-500">*</span></label>
+                    <label className="text-xs font-semibold text-slate-500 block">Estimated Budget (THB) <span className="text-red-500">*</span></label>
                     <input
                       id="form-estimated-value"
                       type="number"
                       value={formEstimatedValue}
                       onChange={(e) => setFormEstimatedValue(e.target.value)}
-                      placeholder="1500000"
+                      placeholder="e.g. 1500000"
                       className={`w-full p-2.5 border rounded-lg font-mono focus:outline-none focus:border-blue-500 shadow-sm ${errors.value ? 'border-red-400 bg-red-50/10' : 'border-slate-200'}`}
                     />
                     {errors.value && <span className="text-[11px] text-red-500 block">{errors.value}</span>}
@@ -827,7 +830,7 @@ export default function OpportunityView({
 
                   {/* Probability Success */}
                   <div className="space-y-1 text-sm">
-                    <label className="text-xs font-semibold text-slate-500 block">ความน่าเป็นสำเร็จทางการค้า % (0 - 100)</label>
+                    <label className="text-xs font-semibold text-slate-500 block">Win Probability % (0 - 100)</label>
                     <div className="flex items-center gap-3">
                       <input
                         id="form-probability"
@@ -847,7 +850,7 @@ export default function OpportunityView({
 
                   {/* Expected Close Date */}
                   <div className="space-y-1 text-sm">
-                    <label className="text-xs font-semibold text-slate-500 block">เป้าหมายวันที่ประเมินปิดงานได้ <span className="text-red-500">*</span></label>
+                    <label className="text-xs font-semibold text-slate-500 block">Expected Close Date <span className="text-red-500">*</span></label>
                     <input
                       id="form-close-date"
                       type="date"
@@ -860,7 +863,7 @@ export default function OpportunityView({
 
                   {/* Sales Person Responsible */}
                   <div className="space-y-1 text-sm">
-                    <label className="text-xs font-semibold text-slate-500 block">ผู้รับดูแลสัญญางาน (Sales Staff)</label>
+                    <label className="text-xs font-semibold text-slate-500 block">Sales Owner</label>
                     <select
                       id="form-sales-person"
                       value={formSalesPersonId}
@@ -876,7 +879,7 @@ export default function OpportunityView({
 
                   {/* Opportunity Status */}
                   <div className="space-y-1 text-sm">
-                    <label className="text-xs font-semibold text-slate-500 block">ขั้นตอนความคืบหน้า (Status)</label>
+                    <label className="text-xs font-semibold text-slate-500 block">Opportunity Stage (Status)</label>
                     <select
                       id="form-status"
                       value={formStatus}
@@ -891,13 +894,13 @@ export default function OpportunityView({
 
                   {/* Remarks */}
                   <div className="sm:col-span-2 space-y-1 text-sm">
-                    <label className="text-xs font-semibold text-slate-500 block font-sans">รายละเอียดเพิ่มเติมเกี่ยวกับการประสานดีล</label>
+                    <label className="text-xs font-semibold text-slate-500 block font-sans">Additional Remarks & Collaboration Details</label>
                     <textarea
                       id="form-remarks"
                       rows={3}
                       value={formRemarks}
                       onChange={(e) => setFormRemarks(e.target.value)}
-                      placeholder="ความต้องการส่วนเสริมเพิ่มเติม สัญญาณแวดล้อมเพื่อประกอบพิจารณา..."
+                      placeholder="Specify additional requirements, key context, scope details..."
                       className="w-full p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 shadow-sm"
                     />
                   </div>
@@ -913,7 +916,7 @@ export default function OpportunityView({
                 onClick={() => setIsFormOpen(false)}
                 className="px-6 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition-all focus:outline-none shadow-sm"
               >
-                ยกเลิก
+                Cancel
               </button>
               <button
                 form="opportunity-form"
@@ -922,7 +925,7 @@ export default function OpportunityView({
                 className="px-8 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 border border-blue-700 rounded-lg transition-all shadow-md hover:shadow-lg focus:outline-none flex items-center gap-2"
               >
                 <CheckCircle className="w-5 h-5" />
-                บันทึกสัญญาโอกาสขาย
+                Save Opportunity
               </button>
             </div>
           </div>
@@ -958,25 +961,25 @@ export default function OpportunityView({
                 onClick={() => setOppTab('details')}
                 className={`flex-1 py-3 text-center transition-colors border-b-2 focus:outline-none ${oppTab === 'details' ? 'border-blue-600 text-blue-600 font-extrabold' : 'border-transparent hover:text-slate-800'}`}
               >
-                รายละเอียดดีล
+                Details
               </button>
               <button 
                 onClick={() => setOppTab('activities')}
                 className={`flex-1 py-3 text-center transition-colors border-b-2 focus:outline-none ${oppTab === 'activities' ? 'border-blue-600 text-blue-600 font-extrabold' : 'border-transparent hover:text-slate-800'}`}
               >
-                กิจกรรม ({activities.length})
+                Activities ({activities.length})
               </button>
               <button 
                 onClick={() => setOppTab('tasks')}
                 className={`flex-1 py-3 text-center transition-colors border-b-2 focus:outline-none ${oppTab === 'tasks' ? 'border-blue-600 text-blue-600 font-extrabold' : 'border-transparent hover:text-slate-800'}`}
               >
-                ตรวจพอร์ตงาน ({tasks.length})
+                Tasks ({tasks.length})
               </button>
               <button 
                 onClick={() => setOppTab('attachments')}
                 className={`flex-1 py-3 text-center transition-colors border-b-2 focus:outline-none ${oppTab === 'attachments' ? 'border-blue-600 text-blue-600 font-extrabold' : 'border-transparent hover:text-slate-800'}`}
               >
-                ไฟล์ดีล ({attachments.length})
+                Files ({attachments.length})
               </button>
             </div>
 
@@ -986,7 +989,7 @@ export default function OpportunityView({
               {loadingRelated && (
                 <div className="flex items-center justify-center gap-2 py-4 text-xs text-neutral-400">
                   <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span>กำลังดึงข้อมูลคู่ค้าและงานที่มอบหมาย...</span>
+                  <span>Loading account and assigned tasks...</span>
                 </div>
               )}
 
@@ -998,16 +1001,16 @@ export default function OpportunityView({
                     <div className="bg-orange-50 border border-orange-200 p-4 rounded-xl flex items-start gap-3">
                       <FileCheck2 className="w-10 h-10 text-orange-600 shrink-0 mt-0.5" />
                       <div className="space-y-1">
-                        <span className="font-bold text-orange-855 block text-sm">กฎเกณฑ์ทางธุรกิจ (Business Rule Met)</span>
+                        <span className="font-bold text-orange-800 block text-sm">Business Rule Met</span>
                         <p className="text-xs text-orange-700 leading-relaxed">
-                          เนื่องจากโครงการอยู่ในสถานะเสนอราคา **Proposal** เรียบร้อย ท่านสามารถกดเริ่มออกใบเสนอราคาเพื่อดำเนินการสเต็ปถัดไปได้ทันที
+                          Since the opportunity stage is **Proposal**, you are authorized to issue a formal quotation for this project immediately.
                         </p>
                         <button
                           id="btn-create-quotation"
                           onClick={() => setIsQuotationModalOpen(true)}
                           className="mt-2 text-xs font-semibold bg-orange-600 text-white px-3 py-1.5 rounded hover:bg-orange-700 transition cursor-pointer"
                         >
-                          ออกใบเสนอราคา (Create Quotation)
+                          Create Quotation
                         </button>
                       </div>
                     </div>
@@ -1015,22 +1018,22 @@ export default function OpportunityView({
                     <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-start gap-3">
                       <FileClock className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
                       <p className="text-xs text-slate-500 leading-relaxed">
-                        *กฎเกณฑ์ทางธุรกิจ: การสร้างใบเสนอราคา (Create Quotation Code) จะเปิดใช้งานเฉพาะเมื่อสถานะโอกาสทางการขายได้รับการปรับเป็น **Proposal (เสนอราคา)** เท่านั้น
+                        *Business Rule: Quotation creation (Create Quotation) is only enabled when the opportunity stage is updated to **Proposal**.
                       </p>
                     </div>
                   )}
 
                   {/* Client Info Summary */}
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
-                    <span className="text-xs font-semibold text-slate-400 block">ข้อมูลบริษัทลูกค้า</span>
+                    <span className="text-xs font-semibold text-slate-400 block">Customer Account Info</span>
                     <span className="font-bold text-slate-800 text-base block">
-                      {viewingOpp.customer?.customer_name || 'ลูกค้าไม่ถูกระบุ'}
+                      {viewingOpp.customer?.customer_name || 'Customer not assigned'}
                     </span>
                     {viewingOpp.customer && (
                       <div className="text-xs text-slate-500 font-mono space-y-1.5 pt-1">
-                        <div>รหัสลูกค้าคู่ค้า: {viewingOpp.customer.customer_code}</div>
-                        <div>อีเมล: {viewingOpp.customer.email} | โทร: {viewingOpp.customer.phone}</div>
-                        <div>อุตสาหกรรมธุรกิจ: {viewingOpp.customer.industry_type}</div>
+                        <div>Customer Code: {viewingOpp.customer.customer_code}</div>
+                        <div>Email: {viewingOpp.customer.email} | Phone: {viewingOpp.customer.phone}</div>
+                        <div>Industry Type: {viewingOpp.customer.industry_type}</div>
                       </div>
                     )}
                   </div>
@@ -1038,11 +1041,11 @@ export default function OpportunityView({
                   {/* Project metrics */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
-                      <span className="text-xs text-slate-400 block">มูลค่าโครงการประมาณการ</span>
+                      <span className="text-xs text-slate-400 block">Estimated Project Value</span>
                       <span className="font-mono text-base font-bold text-blue-700">{formatTHB(viewingOpp.estimated_value)}</span>
                     </div>
                     <div className="p-3 bg-purple-50/50 border border-purple-100 rounded-xl">
-                      <span className="text-xs text-slate-400 block">วิเคราะห์โอกาสสำริดผล</span>
+                      <span className="text-xs text-slate-400 block">Win Probability</span>
                       <span className="font-mono text-base font-bold text-purple-700">{viewingOpp.success_probability}%</span>
                     </div>
                   </div>
@@ -1050,38 +1053,38 @@ export default function OpportunityView({
                   {/* Sub parameters */}
                   <div className="space-y-3.5 border-t border-slate-100 pt-4 text-slate-700">
                     <div className="flex justify-between">
-                      <span className="text-slate-400">กลุ่มหมวดหมู่เชิงปฏิบัติการ</span>
+                      <span className="text-slate-400">Service Segment</span>
                       <span className="font-medium text-slate-800">{viewingOpp.service_type}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">ช่องทางการติดต่อที่มาของลีด</span>
+                      <span className="text-slate-400">Lead Source</span>
                       <span className="font-medium text-slate-800">{viewingOpp.lead_source}</span>
                     </div>
                     <div className="flex justify-between font-mono text-xs">
-                      <span className="text-slate-400 font-sans text-sm">กำหนดวันปิดเป้าหมายการขาย</span>
+                      <span className="text-slate-400 font-sans text-sm">Expected Close Date</span>
                       <span className="font-medium text-slate-800 bg-slate-100 px-2 py-0.5 rounded flex items-center gap-1">
                         <Calendar className="w-3.5 h-3.5" />
                         {viewingOpp.expected_close_date || '-'}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">เจ้าหน้าที่รับดูแลดำเนินการ (AM)</span>
+                      <span className="text-slate-400">Sales Owner</span>
                       <span className="font-medium text-slate-800 flex items-center gap-1">
                         <User className="w-4 h-4 text-slate-400 shrink-0" />
                         {activeSalesPersonMap.get(viewingOpp.sales_person_id) || '-'}
                       </span>
                     </div>
                     <div className="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg">
-                      <span className="text-slate-405 text-xs">สถานะความคืบหน้าระบบปัจจุบัน</span>
+                      <span className="text-slate-400 text-xs">Current Pipeline Stage</span>
                       {getStatusBadge(viewingOpp.status)}
                     </div>
                   </div>
 
                   {/* Description remarks */}
                   <div className="space-y-2 border-t border-slate-100 pt-4">
-                    <span className="text-xs text-slate-400 block">หมายเหตุและรายละเอียดเชิงลึก</span>
+                    <span className="text-xs text-slate-400 block">Remarks & Deep Context</span>
                     <p className="bg-slate-50/50 p-3 rounded-lg text-slate-700 leading-relaxed text-xs border border-slate-100">
-                      {viewingOpp.remarks || 'ไม่ได้ระบุหมายเหตุทางประวัติและขอบเขตชี้แจงงานเพิ่มเติม'}
+                      {viewingOpp.remarks || 'No remarks provided.'}
                     </p>
                   </div>
                 </div>
@@ -1091,12 +1094,12 @@ export default function OpportunityView({
               {oppTab === 'activities' && (
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-400 block font-sans">ประวัติกิจกรรมการบันทึกการคุยประสานงาน</span>
+                    <span className="text-xs text-slate-400 block font-sans">Activity log and discussion history</span>
                     <button 
                       onClick={() => setShowActivityForm(!showActivityForm)}
                       className="text-xs text-blue-600 bg-blue-50 px-2.5 py-1 rounded font-bold hover:bg-blue-100 cursor-pointer"
                     >
-                      {showActivityForm ? 'ปิดฟอร์ม' : 'บันทึกใหม่'}
+                      {showActivityForm ? 'Close Form' : 'Add Activity'}
                     </button>
                   </div>
 
@@ -1104,7 +1107,7 @@ export default function OpportunityView({
                      <form onSubmit={async (e) => {
                       e.preventDefault();
                       if (!newActivitySubject.trim() || !newActivityDesc.trim()) {
-                        alert('กรุณากรอกหัวข้อกิจกรรมและรายละเอียดประสานสิทธิ์');
+                        alert('Please fill in the activity subject and details');
                         return;
                       }
                       try {
@@ -1120,7 +1123,7 @@ export default function OpportunityView({
                         setNewActivitySubject('');
                         setNewActivityDesc('');
                         setShowActivityForm(false);
-                        onToast('บันทึกความคืบหน้ากิจกรรมเรียบร้อย', 'success');
+                        onToast('Activity log added successfully', 'success');
                         
                         await CRMService.insertAuditLog({
                           action_by: currentUserId || '00000000-0000-0000-0000-000000000000',
@@ -1131,50 +1134,50 @@ export default function OpportunityView({
                           details: `บันทึกกิจกรรมในดีล ${viewingOpp.opportunity_no}: ${newActivityType} - ${newActivitySubject}`
                         }, currentUserId || '00000000-0000-0000-0000-000000000000');
                       } catch {
-                        onToast('ไม่สามารถบันทึกกิจกรรมได้', 'err');
+                        onToast('Failed to log activity', 'err');
                       }
                     }} className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-2.5">
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-slate-400 block mb-0.5">ประเภทกิจกรรม</label>
+                          <label className="text-slate-400 block mb-0.5">Activity Type</label>
                           <select 
                             value={newActivityType} 
                             onChange={(e: any) => setNewActivityType(e.target.value)}
                             className="w-full bg-white border border-slate-200 p-1.5 rounded focus:outline-none"
                           >
-                            <option value="Phone Call">Phone Call (โทรศัพท์)</option>
-                            <option value="Meeting">Meeting (ประชุม)</option>
-                            <option value="Email">Email (อีเมล)</option>
-                            <option value="Site Visit">Site Visit (เข้าพบ)</option>
-                            <option value="Other">Other (อื่นๆ)</option>
+                            <option value="Phone Call">Phone Call</option>
+                            <option value="Meeting">Meeting</option>
+                            <option value="Email">Email</option>
+                            <option value="Site Visit">Site Visit</option>
+                            <option value="Other">Other</option>
                           </select>
                         </div>
                         <div>
-                          <label className="text-slate-400 block mb-0.5">หัวข้อประสานดีล</label>
+                          <label className="text-slate-400 block mb-0.5">Subject</label>
                           <input 
                             type="text" 
                             required
                             value={newActivitySubject} 
-                            placeholder="ส่งเอกสาร / โทรเสนอโปรเจกต์"
+                            placeholder="e.g. Sent pricing details / Called project lead"
                             onChange={(e) => setNewActivitySubject(e.target.value)}
                             className="w-full bg-white border border-slate-200 p-1.5 rounded focus:outline-none"
                           />
                         </div>
                       </div>
                       <div>
-                        <label className="text-slate-400 block mb-0.5 font-sans">รายละเอียดคุยประสานสิทธิ์</label>
+                        <label className="text-slate-400 block mb-0.5 font-sans">Discussion details</label>
                         <textarea 
                           rows={2} 
                           required
                           value={newActivityDesc} 
-                          placeholder="รายละเอียดข้อความพูดคุย..."
+                          placeholder="Log meeting minutes or details..."
                           onChange={(e) => setNewActivityDesc(e.target.value)}
                           className="w-full bg-white border border-slate-200 p-1.5 rounded focus:outline-none resize-none"
                         />
                       </div>
                       <div className="flex justify-end gap-1.5">
-                        <button type="button" onClick={() => setShowActivityForm(false)} className="px-2 py-1 bg-slate-200 text-slate-700 rounded cursor-pointer">ยกเลิก</button>
-                        <button type="submit" className="px-3 py-1 bg-blue-600 text-white rounded font-bold cursor-pointer">บันทึก</button>
+                        <button type="button" onClick={() => setShowActivityForm(false)} className="px-2 py-1 bg-slate-200 text-slate-700 rounded cursor-pointer">Cancel</button>
+                        <button type="submit" className="px-3 py-1 bg-blue-600 text-white rounded font-bold cursor-pointer">Save</button>
                       </div>
                     </form>
                   )}
@@ -1192,7 +1195,7 @@ export default function OpportunityView({
                     </div>
                   ) : (
                     <div className="text-center py-10 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-xs text-neutral-400">
-                      ยังไม่มีประวัติสัมภันธภาพหรือการพบปะพูดคุยที่อัปเดตลงดีลนี้
+                      No interaction or discussion history recorded for this deal yet.
                     </div>
                   )}
                 </div>
@@ -1202,12 +1205,12 @@ export default function OpportunityView({
               {oppTab === 'tasks' && (
                 <div className="space-y-4 text-xs">
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-450">รายการมอบหมายแทร็คขั้นตอนตรวจพอร์ตงาน</span>
+                    <span className="text-slate-450">Assigned Tasks & Action Items</span>
                     <button 
                       onClick={() => setShowTaskForm(!showTaskForm)}
                       className="text-[11px] text-blue-600 bg-blue-50 px-2.5 py-1 rounded font-bold hover:bg-blue-100 cursor-pointer"
                     >
-                      {showTaskForm ? 'ปิดแบบฟอร์ม' : 'สั่งมอบงานใหม่'}
+                      {showTaskForm ? 'Close Form' : 'Assign New Task'}
                     </button>
                   </div>
 
@@ -1215,7 +1218,7 @@ export default function OpportunityView({
                     <form onSubmit={async (e) => {
                       e.preventDefault();
                       if (!newTaskName.trim() || !newTaskDueDate) {
-                        alert('กรุณากรอกหัวข้องานและวันส่งเป้าหมาย');
+                        alert('Please fill in the task name and target due date');
                         return;
                       }
                       try {
@@ -1232,34 +1235,34 @@ export default function OpportunityView({
                         setNewTaskName('');
                         setNewTaskDueDate('');
                         setShowTaskForm(false);
-                        onToast('สั่งมอบงานเรียบร้อย', 'success');
+                        onToast('Task assigned successfully', 'success');
                         
                         await CRMService.insertAuditLog({
                           action_by: currentUserId || '00000000-0000-0000-0000-000000000000',
                           role: currentRole || 'Sales',
-                          action: 'บันทึกงานมอบหมายดีล',
+                          action: 'Assign task',
                           target_type: 'opportunity',
                           target_id: viewingOpp.id,
-                          details: `มอบงาน: ${newTaskName} ให้แก่พนักงาน ${newTaskAssignedTo}`
+                          details: `Assigned task: ${newTaskName} to employee ${newTaskAssignedTo}`
                         }, currentUserId || '00000000-0000-0000-0000-000000000000');
                       } catch {
-                        onToast('ไม่สามารถระบุการตั้งงานได้', 'err');
+                        onToast('Failed to assign task', 'err');
                       }
                     }} className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-2.5">
                       <div>
-                        <label className="text-slate-400 block mb-0.5">หัวข้อรายละเอียดงวดงาน</label>
+                        <label className="text-slate-400 block mb-0.5">Task Description / Action Item</label>
                         <input 
                           type="text" 
                           required
                           value={newTaskName} 
-                          placeholder="เช่น ตรวจ BoQ / เสนอประธานอนุมัติค่าน้ำมัน"
+                          placeholder="e.g. Check BoQ / Prepare Pricing proposal"
                           onChange={(e) => setNewTaskName(e.target.value)}
                           className="w-full bg-white border border-slate-200 p-1.5 rounded focus:outline-none"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-slate-400 block mb-0.5">วันที่กำหนดส่ง</label>
+                          <label className="text-slate-400 block mb-0.5">Due Date</label>
                           <input 
                             type="date" 
                             required
@@ -1269,35 +1272,35 @@ export default function OpportunityView({
                           />
                         </div>
                         <div>
-                          <label className="text-slate-400 block mb-0.5 font-sans">ผู้ประสานงานหลัก</label>
+                          <label className="text-slate-400 block mb-0.5 font-sans">Assignee Role</label>
                           <select 
                             value={newTaskAssignedTo} 
                             onChange={(e) => setNewTaskAssignedTo(e.target.value)}
                             className="w-full bg-white border border-slate-200 p-1.5 rounded focus:outline-none"
                           >
-                            <option value="Sales Administrator">Sales Administrator (ฝ่ายแอดมิน)</option>
-                            <option value="Lead Engineer">Lead Engineer (วิศวกร)</option>
-                            <option value="Executive Officer">Executive Officer (ฝ่ายบริหาร)</option>
+                            <option value="Sales Administrator">Sales Administrator</option>
+                            <option value="Lead Engineer">Lead Engineer</option>
+                            <option value="Executive Officer">Executive Officer</option>
                           </select>
                         </div>
                       </div>
                       <div className="flex justify-between items-center pt-1.5 border-t">
                         <div>
-                          <span className="text-slate-400 mr-2">ความสำคัญ:</span>
+                          <span className="text-slate-400 mr-2">Priority:</span>
                           <select 
                             value={newTaskPriority} 
                             onChange={(e: any) => setNewTaskPriority(e.target.value)}
                             className="bg-white border text-xs p-1 rounded focus:outline-none"
                           >
-                            <option value="Low">Low (ต่ำ)</option>
-                            <option value="Medium">Medium (ปกติ)</option>
-                            <option value="High">High (สูงเยี่ยม)</option>
-                            <option value="Urgent">Urgent (ด่วนสุด)</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Urgent">Urgent</option>
                           </select>
                         </div>
                         <div className="flex gap-1.5 animate-fade-in">
-                          <button type="button" onClick={() => setShowTaskForm(false)} className="px-2 py-1 bg-slate-200 text-slate-750 rounded cursor-pointer">ยกเลิก</button>
-                          <button type="submit" className="px-3 py-1 bg-blue-600 text-white rounded font-bold cursor-pointer">มอบงาน</button>
+                          <button type="button" onClick={() => setShowTaskForm(false)} className="px-2 py-1 bg-slate-200 text-slate-700 rounded cursor-pointer">Cancel</button>
+                          <button type="submit" className="px-3 py-1 bg-blue-600 text-white rounded font-bold cursor-pointer">Assign</button>
                         </div>
                       </div>
                     </form>
@@ -1317,10 +1320,10 @@ export default function OpportunityView({
                             <span>เป้าสิ้นสุด: {tsk.due_date}</span>
                           </div>
                           <div className="font-bold text-slate-800 text-[13px] mt-0.5">{tsk.task_name}</div>
-                          <div className="text-[10px] text-slate-500 font-sans">พนักงานผู้ดูแลงาน: <span className="text-slate-850 font-bold">{tsk.assigned_to}</span></div>
+                          <div className="text-[10px] text-slate-500 font-sans">Assignee: <span className="text-slate-800 font-bold">{tsk.assigned_to}</span></div>
                           
                           <div className="mt-2 pt-1.5 border-t border-dashed flex justify-between items-center">
-                            <span className="text-[10px] text-neutral-400">อัปเดตสถานะงาน:</span>
+                            <span className="text-[10px] text-neutral-400">Status Update:</span>
                             <select 
                               value={tsk.status} 
                               onChange={async (e) => {
@@ -1328,17 +1331,17 @@ export default function OpportunityView({
                                 try {
                                   const updated = await CRMService.updateTask(tsk.id, { status: newStatus });
                                   setTasks(tasks.map(x => x.id === tsk.id ? updated : x));
-                                  onToast('เปลี่ยนสถานะการบ้านสำเร็จ', 'success');
+                                  onToast('Task status updated successfully', 'success');
                                 } catch {
-                                  onToast('เกิดประเด็นผิดพลาดในการเขียนดาต้าเบส', 'err');
+                                  onToast('Error updating task in database', 'err');
                                 }
                               }}
                               className="p-1 rounded bg-slate-100 text-[10px] font-sans border focus:outline-none cursor-pointer"
                             >
-                              <option value="Open">Open (เปิดค้างไว้)</option>
-                              <option value="In Progress">In Progress (กำลังดำเนินการ)</option>
-                              <option value="Completed">Completed (ปิดสมบูรณ์แล้ว)</option>
-                              <option value="Cancelled">Cancelled (ยกเลิกปฏิบัติ)</option>
+                              <option value="Open">Open</option>
+                              <option value="In Progress">In Progress</option>
+                              <option value="Completed">Completed</option>
+                              <option value="Cancelled">Cancelled</option>
                             </select>
                           </div>
                         </div>
@@ -1356,7 +1359,7 @@ export default function OpportunityView({
               {oppTab === 'attachments' && (
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-400">รายการพนักงานเสนอเอกสารแนบ (Proposal Attachments)</span>
+                    <span className="text-xs text-slate-400">Proposal Attachments</span>
                     <button 
                       onClick={async () => {
                         const mockFiles = [
@@ -1364,7 +1367,7 @@ export default function OpportunityView({
                           'Engineering_BoQ_RoughEstimation.xlsx',
                           'Company_Registration_Paper.zip'
                         ];
-                        const fName = prompt('อัปโหลดไฟล์จำลอง - กรอกชื่อสไลด์เอกสารของคุณ:', mockFiles[Math.floor(Math.random() * mockFiles.length)]);
+                        const fName = prompt('Mock upload - Enter your file name:', mockFiles[Math.floor(Math.random() * mockFiles.length)]);
                         if (fName) {
                           try {
                             const res = await CRMService.insertAttachment({
@@ -1376,16 +1379,16 @@ export default function OpportunityView({
                               file_url: '#'
                             });
                             setAttachments([res, ...attachments]);
-                            onToast('จำลองอัปโหลดเนื้อหาเอกสารสำเร็จ', 'success');
+                            onToast('Mock file uploaded successfully', 'success');
                           } catch {
-                            onToast('ไม่สามารถเพิ่มเอกสารแนบข้อมูลได้', 'err');
+                            onToast('Failed to add attachment', 'err');
                           }
                         }
                       }}
                       className="text-xs text-blue-600 bg-blue-50 px-2.5 py-1 rounded font-bold hover:bg-blue-105 flex items-center gap-1 cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" />
-                      แนบไฟล์เสนอดีล
+                      Attach File
                     </button>
                   </div>
 
@@ -1397,18 +1400,18 @@ export default function OpportunityView({
                             <Paperclip className="w-4 h-4 text-slate-400 shrink-0" />
                             <div className="truncate">
                               <span className="font-bold text-slate-700 block truncate" title={at.file_name}>{at.file_name}</span>
-                              <span className="text-[10px] text-slate-400 font-mono block">ขนาด: {at.file_size} KB | โดย: {at.uploaded_by}</span>
+                              <span className="text-[10px] text-slate-400 font-mono block">Size: {at.file_size} KB | By: {at.uploaded_by}</span>
                             </div>
                           </div>
                           <button 
                             onClick={async () => {
-                              if (confirm('ยืนยันประสงค์นำไฟล์สัญญาออกจากระบบ?')) {
+                              if (confirm('Are you sure you want to remove this file?')) {
                                 try {
                                   await CRMService.deleteAttachment(at.id);
                                   setAttachments(attachments.filter(x => x.id !== at.id));
-                                  onToast('นำไฟล์ข้อความออกสมบูรณ์', 'success');
+                                  onToast('File removed successfully', 'success');
                                 } catch {
-                                  onToast('เกิดประเด็นล้มเหลว', 'err');
+                                  onToast('Failed to remove file', 'err');
                                 }
                               }
                             }}
@@ -1421,7 +1424,7 @@ export default function OpportunityView({
                     </div>
                   ) : (
                     <div className="text-center py-10 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-neutral-400">
-                      ยังไม่มีหนังสือสำคัญ ทะเบียนประกอบวิชาชีพแนบดีล
+                      No attachments uploaded for this opportunity yet.
                     </div>
                   )}
                 </div>
@@ -1441,26 +1444,26 @@ export default function OpportunityView({
                 <FileCheck2 className="w-8 h-8" />
               </div>
               <div className="space-y-1.5">
-                <h4 className="text-lg font-bold text-slate-800">ออกใบเสนอราคาสำเร็จเรียบร้อย!</h4>
+                <h4 className="text-lg font-bold text-slate-800">Quotation Created Successfully!</h4>
                 <p className="text-sm text-slate-500 font-mono">
                   Quotation ID: <span className="font-bold text-slate-700">QT-26{viewingOpp.opportunity_no.slice(-4)}</span>
                 </p>
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-left text-xs space-y-2 text-slate-600 font-sans mt-3">
                   <div className="flex justify-between border-b pb-1">
-                    <span>เรียนลูกค้า:</span>
+                    <span>Attention:</span>
                     <span className="font-bold">{viewingOpp.customer?.customer_name}</span>
                   </div>
                   <div className="flex justify-between border-b pb-1">
-                    <span>โครงการ:</span>
+                    <span>Project:</span>
                     <span className="font-semibold">{viewingOpp.project_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>มูลค่าสัญญาประมาณเสนอ:</span>
+                    <span>Estimated Quotation Value:</span>
                     <span className="font-mono text-emerald-600 font-bold">{formatTHB(viewingOpp.estimated_value)}</span>
                   </div>
                 </div>
                 <p className="text-slate-400 text-xs text-center leading-relaxed mt-2.5">
-                  ระบบได้บันทึกรหัสของ Quotation ตัวนี้เข้าสู่สถาปัตยกรรมข้อมูลหลักเฟสที่ 1 เพื่อเตรียมส่งต่อไปยัง Module 3 (Quotation Management) ของแผนพัฒนาระบบระยะถัดไป (Phase 2) เรียบร้อยแล้ว!
+                  The quotation code has been stored in our central CRM database. It is now queued for Phase 2 (Quotation Management module) integration!
                 </p>
               </div>
               <div className="pt-4 flex gap-2">
@@ -1468,7 +1471,7 @@ export default function OpportunityView({
                   onClick={() => setIsQuotationModalOpen(false)}
                   className="w-full py-2.5 text-sm text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300 font-sans"
                 >
-                  ปิดหน้านี้
+                  Close Window
                 </button>
               </div>
             </div>

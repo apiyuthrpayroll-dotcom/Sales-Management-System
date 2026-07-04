@@ -44,10 +44,10 @@ const DEFAULT_CUSTOMERS = [
   {
     id: "c1ef4942-83b3-4f9e-bbb4-7a0df47a0001",
     customer_code: "CUS-260001",
-    customer_name: "บริษัท ปตท. จำกัด (มหาชน)",
+    customer_name: "PTT Public Company Limited",
     tax_id: "0107544000108",
     industry_type: "Energy & Utilities",
-    address: "555 ถนนวิภาวดีรังสิต แขวงจตุจักร เขตจตุจักร กรุงเทพฯ 10900",
+    address: "555 Vibhavadi Rangsit Rd, Chatuchak, Bangkok 10900",
     phone: "02-537-2000",
     email: "info@pttplc.com",
     payment_term: 30,
@@ -57,10 +57,10 @@ const DEFAULT_CUSTOMERS = [
   {
     id: "c2ef4942-83b3-4f9e-bbb4-7a0df47a0002",
     customer_code: "CUS-260002",
-    customer_name: "บริษัท ปูนซิเมนต์ไทย จำกัด (มหาชน) (SCG)",
+    customer_name: "The Siam Cement Public Company Limited (SCG)",
     tax_id: "0107537000958",
     industry_type: "Manufacturing",
-    address: "1 ถนนปูนซิเมนต์ไทย บางซื่อ กรุงเทพฯ 10800",
+    address: "1 Siam Cement Rd, Bang Sue, Bangkok 10800",
     phone: "02-586-3333",
     email: "contact@scg.com",
     payment_term: 45,
@@ -70,10 +70,10 @@ const DEFAULT_CUSTOMERS = [
   {
     id: "c3ef4942-83b3-4f9e-bbb4-7a0df47a0003",
     customer_code: "CUS-260003",
-    customer_name: "บริษัท ซีพี ออลล์ จำกัด (มหาชน)",
+    customer_name: "CP All Public Company Limited",
     tax_id: "0107542000011",
     industry_type: "Retail",
-    address: "313 อาคาร ซี.พี.ทาวเวอร์ ชั้น 24 ถนนสีลม แขวงสีลม เขตบางรัก กรุงเทพฯ 10500",
+    address: "313 C.P. Tower, 24th Fl, Silom Rd, Bang Rak, Bangkok 10500",
     phone: "02-071-9000",
     email: "hr@cpall.co.th",
     payment_term: 60,
@@ -83,10 +83,10 @@ const DEFAULT_CUSTOMERS = [
   {
     id: "c4ef4942-83b3-4f9e-bbb4-7a0df47a0004",
     customer_code: "CUS-260004",
-    customer_name: "บริษัท แอดวานซ์ อินโฟร์ เซอร์วิส จำกัด (มหาชน) (AIS)",
+    customer_name: "Advanced Info Service Public Company Limited (AIS)",
     tax_id: "0107535000265",
     industry_type: "Telecommunication",
-    address: "414 อาคารชินวัตร 1 ถนนพหลโยธิน แขวงสามเสนใน เขตพญาไท กรุงเทพฯ 10400",
+    address: "414 Shinawatra Tower 1, Phaholyothin Rd, Phaya Thai, Bangkok 10400",
     phone: "02-029-5000",
     email: "contact@ais.co.th",
     payment_term: 30,
@@ -96,10 +96,10 @@ const DEFAULT_CUSTOMERS = [
   {
     id: "c5ef4942-83b3-4f9e-bbb4-7a0df47a0005",
     customer_code: "CUS-260005",
-    customer_name: "บริษัท ไทยเบฟเวอเรจ จำกัด (มหาชน)",
+    customer_name: "Thai Beverage Public Company Limited",
     tax_id: "0107546000342",
     industry_type: "Food & Beverage",
-    address: "14 ถนนวิภาวดีรังสิต แขวงจอมพล เขตจตุจักร กรุงเทพฯ 10900",
+    address: "14 Vibhavadi Rangsit Rd, Chom Phon, Chatuchak, Bangkok 10900",
     phone: "02-785-5555",
     email: "info@thaibev.com",
     payment_term: 30,
@@ -112,7 +112,7 @@ const DEFAULT_CONTACTS = [
   {
     id: "con1ef49-83b3-4f9e-bbb4-7a0df47a0001",
     customer_id: "c1ef4942-83b3-4f9e-bbb4-7a0df47a0001",
-    contact_name: "สมชาย รักดี",
+    contact_name: "Somchai Rakdee",
     position: "Procurement Specialist",
     phone: "081-234-5678",
     email: "somchai.r@pttplc.com"
@@ -120,7 +120,7 @@ const DEFAULT_CONTACTS = [
   {
     id: "con2ef49-83b3-4f9e-bbb4-7a0df47a0002",
     customer_id: "c1ef4942-83b3-4f9e-bbb4-7a0df47a0001",
-    contact_name: "วิภา พรหมศิริ",
+    contact_name: "Wipa Promsiri",
     position: "Maintenance Manager",
     phone: "089-876-5432",
     email: "wipa.p@pttplc.com"
@@ -128,7 +128,7 @@ const DEFAULT_CONTACTS = [
   {
     id: "con3ef49-83b3-4f9e-bbb4-7a0df47a0003",
     customer_id: "c2ef4942-83b3-4f9e-bbb4-7a0df47a0002",
-    contact_name: "อภิชาต วรวิทย์",
+    contact_name: "Apichat Worawit",
     position: "Engineering Team Lead",
     phone: "083-456-7890",
     email: "apichat@scg.com"
@@ -136,7 +136,7 @@ const DEFAULT_CONTACTS = [
   {
     id: "con4ef49-83b3-4f9e-bbb4-7a0df47a0004",
     customer_id: "c3ef4942-83b3-4f9e-bbb4-7a0df47a0003",
-    contact_name: "ดนัย นนทรี",
+    contact_name: "Danai Nontree",
     position: "Facility Manager",
     phone: "086-111-2222",
     email: "danai@cpall.co.th"
@@ -144,7 +144,7 @@ const DEFAULT_CONTACTS = [
   {
     id: "con5ef49-83b3-4f9e-bbb4-7a0df47a0005",
     customer_id: "c5ef4942-83b3-4f9e-bbb4-7a0df47a0005",
-    contact_name: "นเรศ อนันตศิลป์",
+    contact_name: "Nares Anantasing",
     position: "Warehouse Director",
     phone: "084-555-1234",
     email: "nares@thaibev.com"
@@ -162,9 +162,9 @@ const DEFAULT_OPPORTUNITIES = [
     estimated_value: 1250000.00,
     success_probability: 70,
     expected_close_date: "2026-08-30",
-    sales_person_id: "ธนพล คำดี (S03)",
+    sales_person_id: "Thanaphol Khamdee (S03)",
     status: "Lead",
-    remarks: "ขั้นตอนรวบรวมขอบเขตงานและความต้องการเบื้องต้นของ ปตท.",
+    remarks: "Scoping phase and initial requirement gathering for PTT.",
     created_at: "2026-06-16T10:00:00.000Z"
   },
   {
@@ -177,9 +177,9 @@ const DEFAULT_OPPORTUNITIES = [
     estimated_value: 380000.00,
     success_probability: 90,
     expected_close_date: "2026-07-15",
-    sales_person_id: "เอกชัย วงศ์ดี (S01)",
+    sales_person_id: "Ekachai Wongdee (S01)",
     status: "Proposal",
-    remarks: "ยื่นใบเสนอราคาค่าเช่าอุปกรณ์ซ่อมบำรุงเรียบร้อยแล้ว มีปุ่มสร้างใบเสนอราคา",
+    remarks: "Maintenance equipment rental quotation submitted successfully. Create quotation button is enabled.",
     created_at: "2026-06-16T10:15:00.000Z"
   },
   {
@@ -192,9 +192,9 @@ const DEFAULT_OPPORTUNITIES = [
     estimated_value: 850000.00,
     success_probability: 80,
     expected_close_date: "2026-09-10",
-    sales_person_id: "สุชาดา เลิศวิริยะ (S02)",
+    sales_person_id: "Suchada Lertwiriya (S02)",
     status: "Negotiation",
-    remarks: "อยู่ระหว่างเจรจาขอบเขตทักษะช่างเชื่อมและการรับประกันผลงาน",
+    remarks: "Negotiating welder skill scope and job performance warranty.",
     created_at: "2026-06-16T10:30:00.000Z"
   },
   {
@@ -207,9 +207,9 @@ const DEFAULT_OPPORTUNITIES = [
     estimated_value: 1500000.00,
     success_probability: 100,
     expected_close_date: "2026-06-25",
-    sales_person_id: "สุชาดา เลิศวิริยะ (S02)",
+    sales_person_id: "Suchada Lertwiriya (S02)",
     status: "Won",
-    remarks: "ชนะการประมูล ได้รับใบสั่งสั่งซื้อเรียบร้อยแล้ว",
+    remarks: "Won tender bid. Received Purchase Order successfully.",
     created_at: "2026-06-16T10:45:00.000Z"
   },
   {
@@ -222,9 +222,9 @@ const DEFAULT_OPPORTUNITIES = [
     estimated_value: 450000.00,
     success_probability: 50,
     expected_close_date: "2026-10-15",
-    sales_person_id: "ธนพล คำดี (S03)",
+    sales_person_id: "Thanaphol Khamdee (S03)",
     status: "Qualified",
-    remarks: "ยืนยันความพร้อมหน้างานเตรียมยื่นสัญญาทดสอบรอบสุดท้าย",
+    remarks: "Confirmed onsite readiness. Preparing final test contract proposal.",
     created_at: "2026-06-16T11:00:00.000Z"
   },
   {
@@ -237,9 +237,9 @@ const DEFAULT_OPPORTUNITIES = [
     estimated_value: 300000.00,
     success_probability: 0,
     expected_close_date: "2026-06-20",
-    sales_person_id: "เอกชัย วงศ์ดี (S01)",
+    sales_person_id: "Ekachai Wongdee (S01)",
     status: "Lost",
-    remarks: "ยกเลิกเนื่องจากราคากลางสูงเกินกว่างบประมาณไอทีของทางเอไอเอส",
+    remarks: "Cancelled due to quote higher than AIS IT standard budget.",
     created_at: "2026-06-16T11:15:00.000Z"
   },
   {
@@ -252,9 +252,9 @@ const DEFAULT_OPPORTUNITIES = [
     estimated_value: 620000.00,
     success_probability: 0,
     expected_close_date: "2026-07-31",
-    sales_person_id: "ธนพล คำดี (S03)",
+    sales_person_id: "Thanaphol Khamdee (S03)",
     status: "Cancelled",
-    remarks: "ลูกค้าชะลอแผนการปรับปรุงเพื่อจัดกลุ่มโครงงานไปปีงบหน้า",
+    remarks: "Customer postponed modernization project bundle to next fiscal year.",
     created_at: "2026-06-16T11:30:00.000Z"
   },
   {
@@ -267,9 +267,9 @@ const DEFAULT_OPPORTUNITIES = [
     estimated_value: 500000.00,
     success_probability: 40,
     expected_close_date: "2026-11-30",
-    sales_person_id: "สุชาดา เลิศวิริยะ (S02)",
+    sales_person_id: "Suchada Lertwiriya (S02)",
     status: "Lead",
-    remarks: "ส่งร่างโปรไฟล์ช่างเทคนิคเบื้องต้นให้ฝ่ายจัดหาสถานที่พิจารณา",
+    remarks: "Submitted initial technician draft profiles to facilities procurement department.",
     created_at: "2026-06-16T11:45:00.000Z"
   },
   {
@@ -282,9 +282,9 @@ const DEFAULT_OPPORTUNITIES = [
     estimated_value: 2350000.00,
     success_probability: 60,
     expected_close_date: "2026-09-30",
-    sales_person_id: "เอกชัย วงศ์ดี (S01)",
+    sales_person_id: "Ekachai Wongdee (S01)",
     status: "Qualified",
-    remarks: "ผู้ตรวจสอบผ่านคุณสมบัติ คาดเตรียมสรุปราคากองทุนปลายเดือน",
+    remarks: "Inspector credentials qualified. Preparing final pricing summary by end of month.",
     created_at: "2026-06-16T12:00:00.000Z"
   },
   {
@@ -297,9 +297,9 @@ const DEFAULT_OPPORTUNITIES = [
     estimated_value: 190000.00,
     success_probability: 95,
     expected_close_date: "2026-07-10",
-    sales_person_id: "ธนพล คำดี (S03)",
+    sales_person_id: "Thanaphol Khamdee (S03)",
     status: "Negotiation",
-    remarks: "สรุปอัตราค่าซ่อมและการถ่วงเวลาทำงานฉุกเฉินเรียบร้อย รอจดสัญญาสัปดาห์หน้า",
+    remarks: "Completed emergency repair rates and downtime agreement. Awaiting contract signing next week.",
     created_at: "2026-06-16T12:15:00.000Z"
   }
 ];
@@ -315,7 +315,7 @@ const DEFAULT_QUOTATIONS = [
     validity_days: 30,
     payment_term: "30 Days",
     status: "Approved",
-    sales_person: "เอกชัย วงศ์ดี (S01)",
+    sales_person: "Ekachai Wongdee (S01)",
     items: [
       {
         item_no: 1,
@@ -352,7 +352,7 @@ const DEFAULT_QUOTATIONS = [
     validity_days: 30,
     payment_term: "30 Days",
     status: "Sent",
-    sales_person: "ธนพล คำดี (S03)",
+    sales_person: "Thanaphol Khamdee (S03)",
     items: [
       {
         item_no: 1,
@@ -398,7 +398,7 @@ const DEFAULT_QUOTATIONS = [
     validity_days: 30,
     payment_term: "30 Days",
     status: "Sent",
-    sales_person: "สุชาดา เลิศวิริยะ (S02)",
+    sales_person: "Suchada Lertwiriya (S02)",
     items: [
       {
         item_no: 1,
@@ -426,7 +426,7 @@ const DEFAULT_QUOTATIONS = [
     validity_days: 30,
     payment_term: "30 Days",
     status: "Sent",
-    sales_person: "ธนพล คำดี (S03)",
+    sales_person: "Thanaphol Khamdee (S03)",
     items: [
       {
         item_no: 1,
@@ -457,7 +457,7 @@ const DEFAULT_INVOICES = [
     invoice_date: "2026-06-17",
     due_date: "2026-07-17",
     status: "Paid",
-    sales_person: "เอกชัย วงศ์ดี (S01)",
+    sales_person: "Ekachai Wongdee (S01)",
     items: [
       {
         item_no: 1,
@@ -494,7 +494,7 @@ const DEFAULT_INVOICES = [
     invoice_date: "2026-05-10",
     due_date: "2026-06-10",
     status: "Unpaid",
-    sales_person: "สุชาดา เลิศวิริยะ (S02)",
+    sales_person: "Suchada Lertwiriya (S02)",
     items: [
       {
         item_no: 1,
@@ -522,7 +522,7 @@ const DEFAULT_INVOICES = [
     invoice_date: "2026-04-25",
     due_date: "2026-05-25",
     status: "Overdue",
-    sales_person: "ธนพล คำดี (S03)",
+    sales_person: "Thanaphol Khamdee (S03)",
     items: [
       {
         item_no: 1,
@@ -843,7 +843,7 @@ const SupabaseDB = {
   async deleteCustomer(id) {
     clearSupabaseCaches();
     if (!this.isAdmin()) {
-      throw new Error("คุณไม่มีสิทธิ์ลบข้อมูลลูกค้า เฉพาะ Admin เท่านั้น (Admin permission required)");
+      throw new Error("Only Administrators are authorized to delete customer records.");
     }
     // Delete locally
     const customers = JSON.parse(localStorage.getItem('crm_customers')) || [];
@@ -1006,7 +1006,7 @@ const SupabaseDB = {
   async deleteOpportunity(id) {
     clearSupabaseCaches();
     if (!this.isAdmin()) {
-      throw new Error("คุณไม่มีสิทธิ์ลบข้อมูลโอกาสขาย เฉพาะ Admin เท่านั้น (Admin permission required)");
+      throw new Error("Only Administrators are authorized to delete sales opportunities.");
     }
     const opportunities = JSON.parse(localStorage.getItem('crm_opportunities')) || [];
     const filtered = opportunities.filter(o => o.id !== id);
@@ -1177,7 +1177,7 @@ const SupabaseDB = {
   async deleteQuotation(id) {
     clearSupabaseCaches();
     if (!this.isAdmin()) {
-      throw new Error("คุณไม่มีสิทธิ์ลบข้อมูลใบเสนอราคา เฉพาะ Admin เท่านั้น (Admin permission required)");
+      throw new Error("Only Administrators are authorized to delete quotations.");
     }
     const quotes = JSON.parse(localStorage.getItem('crm_quotations')) || [];
     const filtered = quotes.filter(q => q.id !== id);
@@ -1312,7 +1312,7 @@ const SupabaseDB = {
 
   async deleteInvoice(id) {
     if (!this.isAdmin()) {
-      throw new Error("คุณไม่มีสิทธิ์ลบข้อมูลใบแจ้งหนี้ เฉพาะ Admin เท่านั้น (Admin permission required)");
+      throw new Error("Only Administrators are authorized to delete invoices.");
     }
     const invoices = JSON.parse(localStorage.getItem('crm_invoices')) || [];
     const filtered = invoices.filter(inv => inv.id !== id);
@@ -1351,9 +1351,9 @@ const SupabaseDB = {
     }
     const defaultUsersList = [
       { id: "d1ef4942-83b3-4f9e-bbb4-7a0df47ab001", username: "apiyut", fullname: "Apiyut (Admin)", email: "Apiyut.noeikhiaw@th.ikm.com", role: "Admin", status: "Active", password: "crm123456" },
-      { id: "d2ef4942-83b3-4f9e-bbb4-7a0df47ab002", username: "pimjai", fullname: "พิมพ์ใจ กิตติคุณ", email: "pimjai.k@ikm-testing.co.th", role: "Sales Manager", status: "Active", password: "crm123456" },
-      { id: "d3ef4942-83b3-4f9e-bbb4-7a0df47ab003", username: "wiriya", fullname: "วิริยะ สว่างงาม", email: "wiriya.s@ikm-testing.co.th", role: "Sales Rep", status: "Active", password: "crm123456" },
-      { id: "d4ef4942-83b3-4f9e-bbb4-7a0df47ab004", username: "somsri", fullname: "สมศรี จิตรประสงค์", email: "somsri.j@ikm-testing.co.th", role: "Auditor", status: "Active", password: "crm123456" }
+      { id: "d2ef4942-83b3-4f9e-bbb4-7a0df47ab002", username: "pimjai", fullname: "Pimjai Kittikhun", email: "pimjai.k@ikm-testing.co.th", role: "Sales Manager", status: "Active", password: "crm123456" },
+      { id: "d3ef4942-83b3-4f9e-bbb4-7a0df47ab003", username: "wiriya", fullname: "Wiriya Sawangngam", email: "wiriya.s@ikm-testing.co.th", role: "Sales Rep", status: "Active", password: "crm123456" },
+      { id: "d4ef4942-83b3-4f9e-bbb4-7a0df47ab004", username: "somsri", fullname: "Somsri Jitprasong", email: "somsri.j@ikm-testing.co.th", role: "Auditor", status: "Active", password: "crm123456" }
     ];
     localStorage.setItem('crm_users_list', JSON.stringify(defaultUsersList));
     return defaultUsersList;
@@ -1416,7 +1416,7 @@ const SupabaseDB = {
 
   async deleteUser(id) {
     if (!this.isAdmin()) {
-      throw new Error("คุณไม่มีสิทธิ์ลบข้อมูลผู้ใช้งาน เฉพาะ Admin เท่านั้น (Admin permission required)");
+      throw new Error("Only Administrators are authorized to delete users.");
     }
     const users = await this.getUsers();
     const filtered = users.filter(u => u.id !== id);
@@ -1471,9 +1471,9 @@ const SupabaseDB = {
     const storedUsers = localStorage.getItem('crm_users_list');
     const systemUsers = storedUsers ? JSON.parse(storedUsers) : [
       { id: "d1ef4942-83b3-4f9e-bbb4-7a0df47ab001", username: "apiyut", fullname: "Apiyut (Admin)", role: "Admin", email: "Apiyut.noeikhiaw@th.ikm.com" },
-      { id: "d2ef4942-83b3-4f9e-bbb4-7a0df47ab002", username: "pimjai", fullname: "พิมพ์ใจ กิตติคุณ", role: "Sales Manager", email: "pimjai.k@ikm-testing.co.th" },
-      { id: "d3ef4942-83b3-4f9e-bbb4-7a0df47ab003", username: "wiriya", fullname: "วิริยะ สว่างงาม", role: "Sales Rep", email: "wiriya.s@ikm-testing.co.th" },
-      { id: "d4ef4942-83b3-4f9e-bbb4-7a0df47ab004", username: "somsri", fullname: "สมศรี จิตรประสงค์", role: "Auditor", email: "somsri.j@ikm-testing.co.th" },
+      { id: "d2ef4942-83b3-4f9e-bbb4-7a0df47ab002", username: "pimjai", fullname: "Pimjai Kittikhun", role: "Sales Manager", email: "pimjai.k@ikm-testing.co.th" },
+      { id: "d3ef4942-83b3-4f9e-bbb4-7a0df47ab003", username: "wiriya", fullname: "Wiriya Sawangngam", role: "Sales Rep", email: "wiriya.s@ikm-testing.co.th" },
+      { id: "d4ef4942-83b3-4f9e-bbb4-7a0df47ab004", username: "somsri", fullname: "Somsri Jitprasong", role: "Auditor", email: "somsri.j@ikm-testing.co.th" },
       { id: "657229df-fb36-4978-bf94-4a52e04f7ae0", username: "art", fullname: "ART KIT", role: "Admin", email: "artkummool@gmail.com" }
     ];
 
@@ -1534,9 +1534,9 @@ const SupabaseDB = {
     const storedUsers = localStorage.getItem('crm_users_list');
     const systemUsers = storedUsers ? JSON.parse(storedUsers) : [
       { id: "d1ef4942-83b3-4f9e-bbb4-7a0df47ab001", username: "apiyut", fullname: "Apiyut (Admin)", role: "Admin", email: "Apiyut.noeikhiaw@th.ikm.com" },
-      { id: "d2ef4942-83b3-4f9e-bbb4-7a0df47ab002", username: "pimjai", fullname: "พิมพ์ใจ กิตติคุณ", role: "Sales Manager", email: "pimjai.k@ikm-testing.co.th" },
-      { id: "d3ef4942-83b3-4f9e-bbb4-7a0df47ab003", username: "wiriya", fullname: "วิริยะ สว่างงาม", role: "Sales Rep", email: "wiriya.s@ikm-testing.co.th" },
-      { id: "d4ef4942-83b3-4f9e-bbb4-7a0df47ab004", username: "somsri", fullname: "สมศรี จิตรประสงค์", role: "Auditor", email: "somsri.j@ikm-testing.co.th" },
+      { id: "d2ef4942-83b3-4f9e-bbb4-7a0df47ab002", username: "pimjai", fullname: "Pimjai Kittikhun", role: "Sales Manager", email: "pimjai.k@ikm-testing.co.th" },
+      { id: "d3ef4942-83b3-4f9e-bbb4-7a0df47ab003", username: "wiriya", fullname: "Wiriya Sawangngam", role: "Sales Rep", email: "wiriya.s@ikm-testing.co.th" },
+      { id: "d4ef4942-83b3-4f9e-bbb4-7a0df47ab004", username: "somsri", fullname: "Somsri Jitprasong", role: "Auditor", email: "somsri.j@ikm-testing.co.th" },
       { id: "657229df-fb36-4978-bf94-4a52e04f7ae0", username: "art", fullname: "ART KIT", role: "Admin", email: "artkummool@gmail.com" }
     ];
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sales Master CRM - ระบบใบแจ้งหนี้และใบกำกับภาษี (Invoices & Billing)</title>
+  <title>Sales Master CRM - Invoices & Billing</title>
 
   <!-- Google Font: Source Sans Pro & Kanit (Thailand UI support) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -40,7 +40,7 @@
     }
     
     .official-document {
-      font-family: 'Kanit', 'Source Sans 3', sans-serif;
+      font-family: 'Source Sans 3', 'Kanit', sans-serif;
       border: 2px solid #333;
       padding: 30px;
       border-radius: 4px;
@@ -74,20 +74,20 @@
         <div class="row align-items-center">
           <div class="col-sm-6">
             <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase">
-              <i class="fas fa-file-invoice-dollar text-success"></i> ระบบใบแจ้งหนี้ / ใบกำกับภาษี (Invoices)
+              <i class="fas fa-file-invoice-dollar text-success"></i> Invoices & Billing
             </h1>
-            <p class="text-muted small m-0">ออกใบสำคัญรับเงิน ติดตามเครดิตค้างจ่าย บันทึกการรับชำระ และแสดงผลรายงานใบแจ้งหนี้ตามข้อกำหนดทางกฎหมาย</p>
+            <p class="text-muted small m-0">Manage billing records, monitor credit periods, record customer payments, and view official tax invoices.</p>
           </div>
           <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
             <div class="btn-group shadow-sm">
               <button class="btn btn-outline-secondary btn-sm" onclick="exportTableToExcel('invoice-table', 'Invoices_Billing_Report')">
-                <i class="fa fa-file-excel text-success me-1"></i>ส่งออก Excel
+                <i class="fa fa-file-excel text-success me-1"></i>Export to Excel
               </button>
               <button class="btn btn-outline-secondary btn-sm" onclick="exportTableToPDF('invoice-table', 'INVOICES BILLING REPORT')">
-                <i class="fa fa-file-pdf text-danger me-1"></i>ส่งออก PDF
+                <i class="fa fa-file-pdf text-danger me-1"></i>Export to PDF
               </button>
               <button class="btn btn-success btn-sm" onclick="openCreateInvoiceModal()">
-                <i class="fa fa-plus-circle me-1"></i>สร้างใบแจ้งหนี้ตั้งใหม่ด่วน
+                <i class="fa fa-plus-circle me-1"></i>Create New Invoice
               </button>
             </div>
           </div>
@@ -101,12 +101,12 @@
           <div class="col-12">
             <div class="bg-white p-2 rounded shadow-sm border border-light-subtle d-flex flex-wrap gap-1.5 align-items-center justify-content-between">
               <div class="d-flex flex-wrap gap-1 align-items-center" id="invoice-status-filters">
-                <span class="small fw-bold text-muted me-2 ms-1"><i class="fa fa-filter"></i> ตัวกรองประเภทยอดดัก:</span>
-                <button class="btn btn-sm btn-success active i-status-pill px-2.5 py-1" data-status="ALL">ทั้งหมด</button>
-                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Unpaid">Unpaid (ค้างจ่าย)</button>
-                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Paid">Paid (ชำระเสร็จสิ้น)</button>
-                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Overdue">Overdue (เกินกำหนด)</button>
-                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Cancelled">Cancelled (ยกเลิกหนี้)</button>
+                <span class="small fw-bold text-muted me-2 ms-1"><i class="fa fa-filter"></i> Filter Status:</span>
+                <button class="btn btn-sm btn-success active i-status-pill px-2.5 py-1" data-status="ALL">All</button>
+                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Unpaid">Unpaid (Outstanding)</button>
+                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Paid">Paid (Fully Billed)</button>
+                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Overdue">Overdue (Past Credit)</button>
+                <button class="btn btn-sm btn-outline-secondary i-status-pill px-2.5 py-1" data-status="Cancelled">Cancelled (Voided)</button>
               </div>
               <span class="badge bg-success-subtle text-success border font-monospace small px-2 py-1">Rule: YY Suffix Active</span>
             </div>
@@ -120,17 +120,17 @@
               <div class="col-12 col-md-4">
                 <div class="input-group">
                   <span class="input-group-text bg-light text-muted"><i class="fa fa-search"></i></span>
-                  <input type="text" class="form-control" id="inv-search-input" placeholder="ค้นหาประวัติใบกำกับ, เลขใบตั้งหนี้, ลายโปรเจกต์...">
+                  <input type="text" class="form-control" id="inv-search-input" placeholder="Search by Invoice number, project name, customer name...">
                 </div>
               </div>
               <div class="col-12 col-md-3">
                 <select class="form-select" id="inv-filter-customer">
-                  <option value="">-- กรองลูกค้าทั้งหมด / All Customers --</option>
+                  <option value="">-- All Customer Accounts --</option>
                 </select>
               </div>
               <div class="col-12 col-md-5 d-flex align-items-center text-muted small px-3">
                 <i class="fa fa-info-circle text-success me-2"></i> 
-                <span>เลขที่ใบกำกับ/ใบแจ้งหนี้จะออกรหัสเป็น <strong>INV-XXXX-YY</strong> รันเกณฑ์ต่อปี ป้องกันลำดับสับสนทางบัญชีสากล</span>
+                <span>Invoice formats are numbered as <strong>INV-XXXX-YY</strong> to ensure compliant sequence audits.</span>
               </div>
             </div>
           </div>
@@ -139,30 +139,30 @@
         <!-- Invoices List Card -->
         <div class="card shadow-sm border-0">
           <div class="card-header bg-white border-bottom py-3">
-            <h5 class="m-0 fw-bold text-success"><i class="fas fa-receipt"></i> บัญชีคุมยอดเรียกเก็บเงิน (Invoice Master Control)</h5>
+            <h5 class="m-0 fw-bold text-success"><i class="fas fa-receipt"></i> Billing Control Ledger</h5>
           </div>
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="google-sheet-table table-hover align-middle mb-0" id="invoice-table">
                 <thead class="table-light text-uppercase small font-bold">
                   <tr>
-                    <th>เลขที่เอกสาร</th>
-                    <th>ใบเสนอราคาอ้างอิง</th>
-                    <th>โครงการ / โครงสร้างงานเรียกเก็บ</th>
-                    <th>หน่วยงานลูกค้า</th>
-                    <th>วันที่ออก</th>
-                    <th>ครบชำระ</th>
-                    <th class="text-end">ภาษี VAT 7%</th>
-                    <th class="text-end">จำนวนเงินรวม (฿)</th>
-                    <th class="text-center">สถานะ</th>
-                    <th class="text-center" style="width: 250px;">การจัดการงานเงิน</th>
+                    <th>Invoice Number</th>
+                    <th>Ref Quotation</th>
+                    <th>Project / Billing Description</th>
+                    <th>Customer Account</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
+                    <th class="text-end">VAT 7%</th>
+                    <th class="text-end">Total Amount (฿)</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center" style="width: 250px;">Financial Actions</th>
                   </tr>
                 </thead>
                 <tbody id="invoice-table-body">
                   <tr>
                     <td colspan="10" class="text-center py-5">
                       <div class="spinner-border text-success" role="status"></div>
-                      <p class="mt-2 text-muted">กำลังดึงรายการเรียกเก็บเงินประจำงวด...</p>
+                      <p class="mt-2 text-muted">Retrieving billing transactions...</p>
                     </td>
                   </tr>
                 </tbody>
@@ -175,7 +175,7 @@
 
     <!-- FOOTER -->
     <footer class="app-footer text-center bg-white border-top py-3 text-muted small no-print mt-auto" style="margin-left: 250px;">
-      <div class="float-end d-none d-sm-inline ms-3">IKM Testing ERP Module</div>
+      <div class="float-end d-none d-sm-inline ms-3">IKM Testing ERP System</div>
     </footer>
   </div>
 
@@ -185,7 +185,7 @@
       <div class="modal-content">
         <form id="invoiceForm" onsubmit="saveInvoiceManual(event)">
           <div class="modal-header bg-success text-white">
-            <h5 class="modal-title" id="invoiceFormModalLabel"><i class="fa fa-file-invoice"></i> บันทึกใบตั้งเรียกเก็บเงินฉบับด่วน</h5>
+            <h5 class="modal-title" id="invoiceFormModalLabel"><i class="fa fa-file-invoice"></i> Create New Invoice Record</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body p-4">
@@ -193,59 +193,59 @@
             
             <div class="row g-3">
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold">ระดับลูกค้านิติบุคคล (Customer) <span class="text-danger">*</span></label>
+                <label class="form-label small fw-bold">Customer Account (Organization) <span class="text-danger">*</span></label>
                 <select class="form-select" id="form-customer-id" required>
-                  <option value="">-- ดึงรายชื่อนิติบุคคล --</option>
+                  <option value="">-- Select Customer --</option>
                 </select>
               </div>
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold">อ้างอิงใบเสนอราคา (ถ้ามี)</label>
-                <input type="text" class="form-control" id="form-quote-ref" placeholder="เช่น QT-0002-26">
+                <label class="form-label small fw-bold">Quotation Reference (Optional)</label>
+                <input type="text" class="form-control" id="form-quote-ref" placeholder="e.g. QT-0002-26">
               </div>
 
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold">ชื่อโครงการบนใบแจ้งหนี้ / Project Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="form-project-name" placeholder="ระบุงานบริการ เช่น Provision of Rental Tools..." required>
+                <label class="form-label small fw-bold">Project/Campaign Billing Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="form-project-name" placeholder="Specify services, e.g. Provision of Rental Tools..." required>
               </div>
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold">เลขที่ใบสั่งซื้อลูกค้าอ้างรับเงิน / PO Reference</label>
-                <input type="text" class="form-control" id="form-po-reference" placeholder="เช่น PO007441/2026">
+                <label class="form-label small fw-bold">Customer Purchase Order (PO) Reference</label>
+                <input type="text" class="form-control" id="form-po-reference" placeholder="e.g. PO007441/2026">
               </div>
 
               <div class="col-12 col-md-4">
-                <label class="form-label small fw-bold">วันที่ออกเอกสาร (Issue Date) <span class="text-danger">*</span></label>
+                <label class="form-label small fw-bold">Issue Date <span class="text-danger">*</span></label>
                 <input type="date" class="form-control" id="form-date" required>
               </div>
               <div class="col-12 col-md-4">
-                <label class="form-label small fw-bold">วันครบกำหนดจัดจ่าย (Due Date) <span class="text-danger">*</span></label>
+                <label class="form-label small fw-bold">Due Date <span class="text-danger">*</span></label>
                 <input type="date" class="form-control" id="form-due" required>
               </div>
               <div class="col-12 col-md-4">
-                <label class="form-label small fw-bold">พนักงานผู้ออกใบหนี้ (Handler)</label>
-                <input type="text" class="form-control" id="form-handler" value="ดลภัทร (Admin)">
+                <label class="form-label small fw-bold">Billing Representative (Handler)</label>
+                <input type="text" class="form-control" id="form-handler" value="Administrator">
               </div>
 
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold">สถานะตั๋วชำระเงิน</label>
+                <label class="form-label small fw-bold">Payment Status</label>
                 <select class="form-select" id="form-status">
-                  <option value="Unpaid">Unpaid (ค้างรับชำระ)</option>
-                  <option value="Paid">Paid (ชำระสมบูรณ์แล้ว)</option>
-                  <option value="Overdue">Overdue (เกินกำหนดเครดิต)</option>
-                  <option value="Cancelled">Cancelled (โมฆะกรรม/ยกเลิก)</option>
+                  <option value="Unpaid">Unpaid (Outstanding)</option>
+                  <option value="Paid">Paid (Fully paid)</option>
+                  <option value="Overdue">Overdue (Past credit limit)</option>
+                  <option value="Cancelled">Cancelled (Voided)</option>
                 </select>
               </div>
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold">หมายเหตุรับเงินพิเศษ (เช่น เลขรับเช็ค หรือหลักโอน)</label>
-                <input type="text" class="form-control" id="form-remarks" placeholder="พิมพ์ประวัติติดตามทวงเพื่อแสดงที่มุมใบเสร็จ">
+                <label class="form-label small fw-bold">Special Remarks & Payment Notes</label>
+                <input type="text" class="form-control" id="form-remarks" placeholder="Enter tracking notes or check reference">
               </div>
 
               <!-- Lines grid -->
               <div class="col-12 mt-4">
                 <div class="border p-3 rounded bg-white">
                   <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-                    <h6 class="m-0 fw-bold"><i class="fa fa-list"></i> รายละเอียดเพื่อการตั้งหนี้ (Bill Line Items)</h6>
+                    <h6 class="m-0 fw-bold"><i class="fa fa-list"></i> Bill Line Items</h6>
                     <button type="button" class="btn btn-xs btn-outline-success" onclick="addNewItemRow()">
-                      <i class="fa fa-plus-circle me-1"></i>เพิ่มแถวเรียกเก็บบิล
+                      <i class="fa fa-plus-circle me-1"></i>Add Row
                     </button>
                   </div>
                   
@@ -254,7 +254,7 @@
                       <thead class="table-light text-center small fw-bold">
                         <tr>
                           <th style="width: 50px;">ITEM</th>
-                          <th>รายการบริการที่ทวงถามชำระ / DESCRIPTION OF SERVICES</th>
+                          <th>Description of Services / Rental Equipment</th>
                           <th style="width: 100px;">QTY</th>
                           <th style="width: 100px;">UNIT</th>
                           <th style="width: 120px;">DURATION DAYS</th>
@@ -274,15 +274,15 @@
                     <div class="col-12 col-md-5">
                       <table class="table table-sm table-borderless text-end font-monospace">
                         <tr>
-                          <td>มูลค่าบิลเรียกเก็บ (Subtotal):</td>
+                          <td>Subtotal (Before Tax):</td>
                           <td style="width: 150px;"><span id="calc-subtotal">0.00</span> ฿</td>
                         </tr>
                         <tr>
-                          <td>ภาษีมูลค่าเพิ่ม (VAT 7%):</td>
+                          <td>Value Added Tax (VAT 7%):</td>
                           <td><span id="calc-tax">0.00</span> ฿</td>
                         </tr>
                         <tr class="fw-bold border-top" style="font-size: 1.1rem; color: #198754;">
-                          <td>ยอดเรียกสุทธิ (Grand Total):</td>
+                          <td>Grand Total:</td>
                           <td><span id="calc-grandtotal">0.00</span> ฿</td>
                         </tr>
                       </table>
@@ -293,34 +293,33 @@
             </div>
           </div>
           <div class="modal-footer bg-light">
-            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-            <button type="submit" class="btn btn-success"><i class="fa fa-save me-1"></i> ยืนยันบันทึกใบแจ้งหนี้</button>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success"><i class="fa fa-save me-1"></i> Save Invoice Record</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: PRINT OUT / VIEW INVOICE & RECEIPT TEMPLATE (Image 1 Layout) -->
+  <!-- MODAL: PRINT OUT / VIEW INVOICE & RECEIPT TEMPLATE -->
   <div class="modal fade" id="printViewModal" tabindex="-1" aria-labelledby="printViewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header d-print-none">
-          <h5 class="modal-title fw-bold" id="printViewModalLabel"><i class="fa fa-print"></i> พิมพ์เอกสารใบแจ้งหนี้ / ใบกำกับภาษีราชการ (official template)</h5>
+          <h5 class="modal-title fw-bold" id="printViewModalLabel"><i class="fa fa-print"></i> Official Tax Invoice & Receipt Printing</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body bg-light text-center p-4">
           <div class="d-print-none mb-3">
             <button class="btn btn-success px-4 font-bold" onclick="window.print()">
-              <i class="fa fa-print me-1"></i>สั่งพิมพ์ใบแจ้งหนี้ชำระเงินสากล (กระดาษ A4)
+              <i class="fa fa-print me-1"></i>Print Document / Save PDF (A4 Sheet)
             </button>
-            <button class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+            <button class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">Close</button>
           </div>
 
           <!-- Printable standard sheet base -->
           <div class="text-start mx-auto shadow bg-white" id="print-area">
             <style>
-              /* Reset styles specifically within print-area */
               #print-area {
                 font-family: 'Arial', 'Helvetica', sans-serif !important;
                 color: #000000 !important;
@@ -374,7 +373,6 @@
                 letter-spacing: 2px;
                 margin-bottom: 1px;
               }
-              /* Horizontal rule */
               .print-divider-thick {
                 border-top: 1.5px solid #000000;
                 margin-top: 4px;
@@ -423,7 +421,6 @@
               .invoice-meta-value {
                 font-weight: normal;
               }
-              /* Main Table styling */
               .print-main-table {
                 width: 100%;
                 border-collapse: collapse;
@@ -459,7 +456,6 @@
                 justify-content: flex-start;
                 border-bottom: 1px solid #000000;
               }
-              /* Total summary section */
               .summary-container {
                 display: flex;
                 justify-content: space-between;
@@ -500,7 +496,6 @@
                 padding: 3px 0;
                 margin-top: 2px;
               }
-              /* Bottom stamp & bank details section */
               .footer-stamp-bank-section {
                 display: flex;
                 justify-content: space-between;
@@ -520,7 +515,6 @@
                 line-height: 1.35;
                 color: #000000;
               }
-              /* Sign lines */
               .signature-area-row {
                 display: flex;
                 justify-content: space-between;
@@ -536,7 +530,6 @@
                 width: 150px;
                 margin: 15px auto 3px auto;
               }
-              /* Print media styles */
               @media print {
                 body {
                   margin: 0 !important;
@@ -589,11 +582,9 @@
                     <div style="display: inline-block; text-align: right;">
                       <div class="original-red">ORIGINAL</div>
                       <svg width="110" height="38" viewBox="0 0 100 42" style="display: block; margin-left: auto;">
-                        <!-- Waves -->
                         <path d="M5,2 C25,2 25,-1 45,-1 C65,-1 65,2 85,2 L95,2" stroke="#FF3333" stroke-width="4.5" fill="none" />
                         <path d="M5,8 C25,8 25,5 45,5 C65,5 65,8 85,8 L95,8" stroke="#FF3333" stroke-width="4.5" fill="none" />
                         <path d="M5,14 C25,14 25,11 45,11 C65,11 65,14 85,14 L95,14" stroke="#FF3333" stroke-width="4.5" fill="none" />
-                        <!-- Black bar with I.K.M -->
                         <rect x="5" y="21" width="90" height="18" fill="#000" />
                         <text x="50" y="34" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="11" text-anchor="middle" letter-spacing="4.5">I • K • M</text>
                       </svg>
@@ -669,7 +660,7 @@
                   <p style="text-decoration: underline; font-weight: bold;">(Please Deduct Withholding Tax for Service 3% and or Rental 5% )</p>
                   <p style="margin-top: 5px;">General Term & Condition of Sales & Hire apply Note</p>
                   <p><strong>: Late payments, the company charges a penalty of 1.25%</strong></p>
-                  <p><strong>per month</strong> หมายเหตุ : การชำระเงินเกินกำหนด บริษัทฯ คิดเบี้ยปรับ <strong>1.25%</strong> ต่อเดือน</p>
+                  <p><strong>per month</strong> Note: Overdue accounts are subject to interest of <strong>1.25%</strong> per month.</p>
                   <p style="margin-top: 5px;">In the event of discrepancy, Kindly contact</p>
                   <p>our Accounts department within 7 days In writing from the Invoice</p>
                 </div>
@@ -704,10 +695,8 @@
                 <!-- Stamp on Left -->
                 <div class="stamp-container">
                   <svg width="100" height="100" viewBox="0 0 120 120" style="opacity: 0.85; transform: rotate(-4deg); margin-left: 20px;">
-                    <!-- Outer circles wrapper -->
                     <circle cx="60" cy="60" r="48" stroke="#1D4ED8" stroke-width="2.2" fill="none" />
                     <circle cx="60" cy="60" r="41" stroke="#1D4ED8" stroke-width="0.8" stroke-dasharray="2,2" fill="none" />
-                    <!-- Paths for Text curve mapping -->
                     <path id="curve-top-stamp" d="M 21,60 A 39,39 0 0,1 99,60" fill="none" />
                     <path id="curve-bottom-stamp" d="M 99,60 A 39,39 0 0,1 21,60" fill="none" />
                     
@@ -723,7 +712,6 @@
                       </textPath>
                     </text>
                     
-                    <!-- Inner waves -->
                     <path d="M40,53 C48,49 52,57 60,53 C68,49 72,57 80,53" stroke="#1D4ED8" stroke-width="1.2" fill="none" />
                     <path d="M40,59 C48,55 52,63 60,59 C68,55 72,63 80,59" stroke="#1D4ED8" stroke-width="1.2" fill="none" />
                     <path d="M40,65 C48,61 52,69 60,65 C68,61 72,69 80,65" stroke="#1D4ED8" stroke-width="1.2" fill="none" />
@@ -825,8 +813,8 @@
       const filterSelect = document.getElementById('inv-filter-customer');
       const formCustSelect = document.getElementById('form-customer-id');
       
-      filterSelect.innerHTML = '<option value="">-- กรองลูกค้าทั้งหมด / All Customers --</option>';
-      formCustSelect.innerHTML = '<option value="">-- ดึงรายชื่อนิติบุคคล --</option>';
+      filterSelect.innerHTML = '<option value="">-- All Customer Accounts --</option>';
+      formCustSelect.innerHTML = '<option value="">-- Select Customer --</option>';
 
       rawCustomers.forEach(c => {
         const o = `<option value="${c.id}">${c.customer_name} (${c.customer_code})</option>`;
@@ -868,7 +856,7 @@
           <tr>
             <td colspan="10" class="text-center py-4 text-muted">
               <i class="fa fa-folder-open fs-2 d-block mb-2 text-secondary"></i>
-              ไม่พบประวัติใบแจ้งเรียกเก็บเงินตามสิทธิและตัวกรองดังกล่าว
+              No invoice records match the selected filters.
             </td>
           </tr>
         `;
@@ -888,17 +876,17 @@
         const row = `
           <tr>
             <td class="font-bold text-success font-monospace" style="font-size:0.95rem;">${i.invoice_no}</td>
-            <td class="small font-monospace">${i.quotation_no || 'ออกตรง / Direct'}</td>
+            <td class="small font-monospace">${i.quotation_no || 'Direct'}</td>
             <td>
               <div class="fw-bold">${i.project_name}</div>
               <div class="text-xs text-muted font-monospace">PO Ref: ${i.po_reference || '-'}</div>
               <div class="text-muted font-monospace mt-0.5" style="font-size: 10px; line-height: 1.2;">
-                <span class="d-inline-block me-2" title="สร้างโดย"><i class="fa fa-plus-circle text-secondary" style="font-size: 9px;"></i> ${i.created_by ? window.SupabaseDB.getUsernameOrDisplayName(i.created_by) : '@apiyut'}</span>
-                <span class="d-inline-block me-2" title="แก้ไขโดย"><i class="fa fa-pen text-secondary" style="font-size: 9px;"></i> ${i.updated_by ? window.SupabaseDB.getUsernameOrDisplayName(i.updated_by) : '@apiyut'}</span>
+                <span class="d-inline-block me-2" title="Created by"><i class="fa fa-plus-circle text-secondary" style="font-size: 9px;"></i> ${i.created_by ? window.SupabaseDB.getUsernameOrDisplayName(i.created_by) : 'System'}</span>
+                <span class="d-inline-block me-2" title="Updated by"><i class="fa fa-pen text-secondary" style="font-size: 9px;"></i> ${i.updated_by ? window.SupabaseDB.getUsernameOrDisplayName(i.updated_by) : 'System'}</span>
               </div>
             </td>
             <td>
-              <div class="small fw-semibold text-dark">${i.customer ? i.customer.customer_name : 'ไม่พบชื่อนิติบุคคล'}</div>
+              <div class="small fw-semibold text-dark">${i.customer ? i.customer.customer_name : 'Customer Account Not Found'}</div>
               <div class="text-xs text-muted font-monospace">${i.customer ? i.customer.customer_code : '-'}</div>
             </td>
             <td class="small">${i.invoice_date}</td>
@@ -908,21 +896,21 @@
             <td class="text-center">${statusBadge}</td>
             <td class="text-center">
               <div class="btn-group btn-group-sm">
-                <button class="btn btn-outline-info" title="ดูเอกสารใบอินวอยส์ฉบับพิมพ์" onclick="openPrintModal('${i.id}', 'invoice')">
-                  <i class="fa fa-print"></i> บิล
+                <button class="btn btn-outline-info" title="Print Invoice" onclick="openPrintModal('${i.id}', 'invoice')">
+                  <i class="fa fa-print"></i> Invoice
                 </button>
-                <button class="btn btn-outline-success" title="พิมพ์ใบกำกับภาษี/ใบเสร็จรับเงิน (Receipt)" onclick="openPrintModal('${i.id}', 'receipt')">
-                  <i class="fa fa-file-invoice"></i> ใบเสร็จ
+                <button class="btn btn-outline-success" title="Print Official Receipt" onclick="openPrintModal('${i.id}', 'receipt')">
+                  <i class="fa fa-file-invoice"></i> Receipt
                 </button>
-                <button class="btn btn-outline-primary" title="พิจารณาแก้ไขบิล" onclick="openEditInvoiceModal('${i.id}')">
+                <button class="btn btn-outline-primary" title="Edit Invoice" onclick="openEditInvoiceModal('${i.id}')">
                   <i class="fa fa-edit"></i>
                 </button>
                 ${SupabaseDB.isAdmin() ? `
-                  <button class="btn btn-outline-danger" title="ลบบิลเรียกเก็บ" onclick="deleteInvoice('${i.id}')">
+                  <button class="btn btn-outline-danger" title="Delete Invoice" onclick="deleteInvoice('${i.id}')">
                     <i class="fa fa-trash"></i>
                   </button>
                 ` : `
-                  <button class="btn btn-outline-secondary opacity-50" disabled title="จำกัดสิทธิ์เฉพาะ Admin เท่านั้น">
+                  <button class="btn btn-outline-secondary opacity-50" disabled title="Admin Rights Required">
                     <i class="fa fa-lock"></i>
                   </button>
                 `}
@@ -938,7 +926,7 @@
     function openCreateInvoiceModal() {
       document.getElementById('invoiceForm').reset();
       document.getElementById('inv-form-id').value = '';
-      document.getElementById('invoiceFormModalLabel').innerHTML = '<i class="fa fa-plus-circle text-success"></i> ออกใบแจ้งหนี้เพื่อตั้งยอดยามตรง (Manual Create Invoice)';
+      document.getElementById('invoiceFormModalLabel').innerHTML = '<i class="fa fa-plus-circle text-success"></i> Create New Direct Invoice';
       
       document.getElementById('form-date').value = new Date().toISOString().slice(0, 10);
       const due = new Date();
@@ -962,7 +950,7 @@
         if (!i) return;
 
         document.getElementById('inv-form-id').value = i.id;
-        document.getElementById('invoiceFormModalLabel').innerHTML = `<i class="fa fa-edit text-success"></i> ปรับปรุงรายละเอียดบิล & การเงิน <span class="badge bg-dark font-monospace">${i.invoice_no}</span>`;
+        document.getElementById('invoiceFormModalLabel').innerHTML = `<i class="fa fa-edit text-success"></i> Update Invoice & Billing Details <span class="badge bg-dark font-monospace">${i.invoice_no}</span>`;
 
         document.getElementById('form-customer-id').value = i.customer_id;
         document.getElementById('form-quote-ref').value = i.quotation_no || '';
@@ -1013,13 +1001,13 @@
         <tr class="item-calc-row" id="item-calc-tr-${itemIndexCounter}">
           <td class="text-center fw-bold text-muted index-lbl">${itemIndexCounter}</td>
           <td>
-            <input type="text" class="form-control form-control-sm item-desc" value="${desc}" placeholder="พิมพ์คำอธิบายรายละเอียดงานเรียกเก็บค่าใช้จ่าย" required>
+            <input type="text" class="form-control form-control-sm item-desc" value="${desc}" placeholder="Enter billing item description" required>
           </td>
           <td>
             <input type="number" class="form-control form-control-sm text-center item-qty" value="${qty}" oninput="triggerLineCalculation(${itemIndexCounter})" required min="1">
           </td>
           <td>
-            <input type="text" class="form-control form-control-sm text-center item-unit" value="${unit}" placeholder="เช่น Set, Job">
+            <input type="text" class="form-control form-control-sm text-center item-unit" value="${unit}" placeholder="e.g. Set, Job">
           </td>
           <td>
             <input type="number" class="form-control form-control-sm text-center item-dur" value="${dur}" oninput="triggerLineCalculation(${itemIndexCounter})" required min="1">
@@ -1140,11 +1128,11 @@
       try {
         if (id) {
           const res = await SupabaseDB.updateInvoice(id, payload);
-          showToastAlert(`บันทึกปรับปรุงเรียบร้อย ใบแจ้งหนี้: ${res.invoice_no}`, 'success');
+          showToastAlert(`Invoice updated successfully: ${res.invoice_no}`, 'success');
           await SupabaseDB.addActivity('Update', 'Invoice', id, `Updated invoice information of ${res.invoice_no}`);
         } else {
           const res = await SupabaseDB.addInvoice(payload);
-          showToastAlert(`จัดตั้งใบแจ้งหนี้สำเร็จ รหัสเอกสาร: ${res.invoice_no}`, 'success');
+          showToastAlert(`Invoice created successfully: ${res.invoice_no}`, 'success');
           await SupabaseDB.addActivity('Create', 'Invoice', res.id, `Manually created Invoice ${res.invoice_no}`);
         }
 
@@ -1162,27 +1150,27 @@
     // Delete Invoice
     async function deleteInvoice(id) {
       if (!SupabaseDB.isAdmin()) {
-        showToastAlert('เฉพาะผู้ดูแลระบบ (Admin) เท่านั้นที่สามารถลบใบกำกับภาษี/อินวอยส์ได้', 'danger');
+        showToastAlert('Only Administrators are authorized to delete invoices.', 'danger');
         return;
       }
       const i = await SupabaseDB.getInvoiceById(id);
       if (!i) return;
 
       Swal.fire({
-        title: 'ยืนยันลบใบสำคัญเรียกเก็บบิลนี้?',
-        text: `ใบแจ้งหนี้รหัสบัญชี ${i.invoice_no} จะถูกถอดออกจากระบบบัญชีด่วน!`,
+        title: 'Confirm Invoice Deletion?',
+        text: `Invoice ${i.invoice_no} will be permanently removed from the ledger.`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#dc3545',
-        confirmButtonText: 'ลบทันที',
-        cancelButtonText: 'ยกเลิก'
+        confirmButtonText: 'Yes, Delete',
+        cancelButtonText: 'Cancel'
       }).then(async (result) => {
         if (result.isConfirmed) {
           toggleGlobalLoader(true);
           try {
             await SupabaseDB.deleteInvoice(id);
-            showToastAlert('ลบเรียบร้อย', 'success');
+            showToastAlert('Invoice deleted successfully', 'success');
             await SupabaseDB.addActivity('Delete', 'Invoice', id, `Deleted Invoice ${i.invoice_no}`);
             await renderInvoicesList();
           } catch (err) {
@@ -1217,11 +1205,11 @@
           document.getElementById('print-doc-type').innerText = "INVOICE / TAX INVOICE";
           document.getElementById('print-doc-no').innerText = i.invoice_no;
         } else {
-          document.getElementById('print-doc-type').innerText = "TAX RECEIPT / ใบเสร็จรับเงินใบกำกับภาษี";
+          document.getElementById('print-doc-type').innerText = "OFFICIAL RECEIPT / TAX INVOICE";
           document.getElementById('print-doc-no').innerText = i.invoice_no.replace('INV-', 'RE-');
         }
 
-        document.getElementById('print-customer-name').innerText = i.customer ? i.customer.customer_name : 'ไม่ระบุชื่อนิติบุคคล';
+        document.getElementById('print-customer-name').innerText = i.customer ? i.customer.customer_name : 'Customer Not Specified';
         
         let clientDetailsHtml = '';
         if (i.customer) {
@@ -1234,7 +1222,7 @@
 
         document.getElementById('print-date').innerText = formatDateDDMMMYYYY(i.invoice_date);
         document.getElementById('print-due').innerText = formatDateDDMMMYYYY(i.due_date);
-        document.getElementById('print-po-no').innerText = i.po_reference || 'ไม่มี (No PO Link)';
+        document.getElementById('print-po-no').innerText = i.po_reference || 'None';
 
         // Line details
         const tbody = document.getElementById('print-items-body');

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sales Master CRM - ระบบจัดการผู้ใชังานและสิทธิ์ (User & Permission Management)</title>
+  <title>Sales Master CRM - User & Permission Management</title>
 
   <!-- Google Font: Source Sans Pro & Kanit (Thailand UI support) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -29,13 +29,13 @@
         <div class="row align-items-center">
           <div class="col-sm-6 col-12">
             <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase">
-              <i class="fas fa-user-shield text-indigo"></i> จัดการผู้ใช้งานและสิทธิ์ (User & Permissions)
+              <i class="fas fa-user-shield text-indigo"></i> User & Permissions
             </h1>
-            <p class="text-muted small m-0">บริหารบัญชีเจ้าหน้าที่ ประจำการณ์ทีมขาย แบรนด์สัญญากลาง และกำหนดสิทธิ์การเข้าถึงข้อมูลรายนิติกรรม</p>
+            <p class="text-muted small m-0">Manage team member accounts, assign workspace roles, and control access permissions.</p>
           </div>
           <div class="col-sm-6 col-12 text-sm-end mt-2 mt-sm-0">
             <button class="btn btn-indigo text-white fw-semibold" onclick="openAddUserModal()" style="background-color: #6610f2;">
-              <i class="fa fa-user-plus me-1"></i> เพิ่มผู้ใช้งานหน่วยงาน
+              <i class="fa fa-user-plus me-1"></i> Add New User
             </button>
           </div>
         </div>
@@ -49,18 +49,18 @@
           <div class="col-12 col-lg-7">
             <div class="card shadow-sm border-0 h-100">
               <div class="card-header bg-white border-bottom py-3">
-                <h5 class="m-0 fw-bold text-dark"><i class="fa fa-users text-indigo"></i> ทะเบียนบัญชีผู้เข้าใช้งานระบบ (Active System Accounts)</h5>
+                <h5 class="m-0 fw-bold text-dark"><i class="fa fa-users text-indigo"></i> Active System Accounts</h5>
               </div>
               <div class="card-body p-0">
                 <div class="table-responsive">
                   <table class="google-sheet-table table-hover align-middle mb-0" id="users-table">
                     <thead class="table-light">
                       <tr class="small text-uppercase">
-                        <th>ผู้ใช้งาน</th>
-                        <th>ตำแหน่ง / สังกัดกลุ่ม</th>
-                        <th>อีเมลงานหลัก</th>
-                        <th class="text-center">สถานะใช้งาน</th>
-                        <th class="text-center" style="width: 150px;">การบริหารจัดการ</th>
+                        <th>User</th>
+                        <th>Role / Department</th>
+                        <th>Primary Email</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center" style="width: 150px;">Actions</th>
                       </tr>
                     </thead>
                     <tbody id="users-tbody">
@@ -76,50 +76,50 @@
           <div class="col-12 col-lg-5">
             <div class="card shadow-sm border-0">
               <div class="card-header border-bottom py-3" style="background-color: #6610f2; color: #fff;">
-                <h5 class="m-0 fw-bold"><i class="fa fa-key"></i> ตัวจัดการสิทธิ์เข้าถึง (Permission Matrix Roles)</h5>
+                <h5 class="m-0 fw-bold"><i class="fa fa-key"></i> Permission Matrix Roles</h5>
               </div>
               <div class="card-body p-3">
                 <div class="mb-4">
-                  <label class="form-label fw-bold text-dark">เลือกประเภทตำแหน่งเพื่อจำลอง/แก้ไขสิทธิ์เสมือน:</label>
+                  <label class="form-label fw-bold text-dark">Select a role to preview or edit system access level:</label>
                   <select class="form-select" id="matrix-role-select" onchange="onMatrixRoleSelectChange()">
-                    <option value="Admin">Administrator (สิทธิ์เต็ม - เข้าทุกชุดเมนูได้)</option>
-                    <option value="Sales Manager">Sales Manager (หัวหน้าเขตทีมงานขาย - มอนิเตอร์รายงานและจัดสลิป)</option>
-                    <option value="Sales Rep">Sales Representative (ผู้แทนจำหน่ายหลัก - ดูลูกค้าและคีย์ใบเสนอ)</option>
-                    <option value="Auditor">Auditor / Accountant (เจ้าหน้าที่การเงิน - คีย์ใบเสร็จและบิล)</option>
+                    <option value="Admin">Administrator (Full Access - All Modules & Settings)</option>
+                    <option value="Sales Manager">Sales Manager (Supervises sales pipeline and reviews reports)</option>
+                    <option value="Sales Rep">Sales Representative (Manage opportunities and draft quotes)</option>
+                    <option value="Auditor">Auditor / Accountant (Manage invoicing, billing and receipts)</option>
                   </select>
                 </div>
 
                 <div class="border rounded p-3 bg-light">
-                  <h6 class="fw-bold mb-3 text-dark"><i class="fa fa-shield-alt text-indigo"></i> สิทธิ์เข้าถึงแบบระเอียดเฉพาะกลุ่ม (Accessible Module Matrix)</h6>
+                  <h6 class="fw-bold mb-3 text-dark"><i class="fa fa-shield-alt text-indigo"></i> Detailed Access Rights (Module Permission Matrix)</h6>
                   <div class="d-flex flex-column gap-2" id="permission-checkboxes-container">
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="perm-dash" checked disabled>
-                      <label class="form-check-label fw-semibold text-dark" for="perm-dash">ดูหน้าจอหลักแดชบอร์ดสรุป (Dashboard Viewer)</label>
+                      <label class="form-check-label fw-semibold text-dark" for="perm-dash">Dashboard Summary Viewer</label>
                     </div>
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="perm-cust" checked>
-                      <label class="form-check-label fw-semibold text-dark" for="perm-cust">ทะเบียนลูกค้า Master (Customer Edit/Delete)</label>
+                      <label class="form-check-label fw-semibold text-dark" for="perm-cust">Customer Master Registry (View & Manage)</label>
                     </div>
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="perm-opp" checked>
-                      <label class="form-check-label fw-semibold text-dark" for="perm-opp">โอกาสประมูลขาย (Opportunity Board Management)</label>
+                      <label class="form-check-label fw-semibold text-dark" for="perm-opp">Sales Opportunities (Create & Progress)</label>
                     </div>
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="perm-quota" checked>
-                      <label class="form-check-label fw-semibold text-dark" for="perm-quota">ยื่นจัดทำใบเสนอราคา (Quotations Configurator)</label>
+                      <label class="form-check-label fw-semibold text-dark" for="perm-quota">Quotations & Proposals (Configure & Export)</label>
                     </div>
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="perm-billing" checked>
-                      <label class="form-check-label fw-semibold text-dark" for="perm-billing">ออกใบแจ้งหนี้ & คุมยอดเก็บตังค์ (Billings/Invoicing)</label>
+                      <label class="form-check-label fw-semibold text-dark" for="perm-billing">Invoices & Billings (Issue & Track Payments)</label>
                     </div>
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="perm-reports" checked>
-                      <label class="form-check-label fw-semibold text-dark" for="perm-reports">สืบค้นรายงานวิเคราะห์ BI หุ้นส่วน (BI Analytics Report)</label>
+                      <label class="form-check-label fw-semibold text-dark" for="perm-reports">BI Reports & Analytical Dashboard</label>
                     </div>
                   </div>
                   <hr class="my-3">
                   <button class="btn btn-indigo btn-sm w-100 fw-bold py-2 text-white" onclick="savePermissionMatrixRole()" style="background-color: #6610f2;">
-                    <i class="fa fa-save"></i> อัปเดตสิทธิ์กลุ่มตำแหน่งนี้
+                    <i class="fa fa-save"></i> Update Role Access Rights
                   </button>
                 </div>
               </div>
@@ -135,22 +135,22 @@
     <div class="modal-dialog">
       <div class="modal-content border-0 shadow">
         <div class="modal-header bg-indigo text-white p-3" style="background-color: #6610f2;">
-          <h5 class="modal-title fw-bold" id="userModalTitle"><i class="fa fa-user-plus text-warning me-2"></i> บันทึกข้อมูลพนักงานใหม่</h5>
+          <h5 class="modal-title fw-bold" id="userModalTitle"><i class="fa fa-user-plus text-warning me-2"></i> Register New User</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form id="user-form" onsubmit="onUserFormSubmit(event)">
           <div class="modal-body">
             <input type="hidden" id="user-id">
             <div class="mb-3">
-              <label class="form-label text-dark fw-bold">ชื่อผู้ใช้งาน (Username):</label>
-              <input type="text" class="form-control font-monospace text-indigo" id="user-username" required placeholder="เช่น apiyut, pimjai" style="font-weight: 600;">
+              <label class="form-label text-dark fw-bold">Username:</label>
+              <input type="text" class="form-control font-monospace text-indigo" id="user-username" required placeholder="e.g. apiyut, pimjai" style="font-weight: 600;">
             </div>
             <div class="mb-3">
-              <label class="form-label text-dark fw-bold">ชื่อ-นามสกุล:</label>
-              <input type="text" class="form-control" id="user-fullname" required placeholder="เช่น ดลภัทร รักษ์สุข">
+              <label class="form-label text-dark fw-bold">Full Name:</label>
+              <input type="text" class="form-control" id="user-fullname" required placeholder="e.g. John Doe">
             </div>
             <div class="mb-3">
-              <label class="form-label text-dark fw-bold">ตำแหน่งหลัก:</label>
+              <label class="form-label text-dark fw-bold">Primary Role:</label>
               <select class="form-select" id="user-role" required>
                 <option value="Admin">Administrator</option>
                 <option value="Sales Manager">Sales Manager</option>
@@ -159,30 +159,30 @@
               </select>
             </div>
             <div class="mb-3">
-              <label class="form-label text-dark fw-bold">อีเมลองค์กร:</label>
+              <label class="form-label text-dark fw-bold">Corporate Email:</label>
               <input type="email" class="form-control" id="user-email" required placeholder="name@ikm-testing.co.th">
             </div>
             <div class="mb-3">
-              <label class="form-label text-dark fw-bold">สถานะสิทธิ์งาน (Status):</label>
+              <label class="form-label text-dark fw-bold">Account Status:</label>
               <select class="form-select" id="user-status">
-                <option value="Active">เปิดระบบปกติ (Active)</option>
-                <option value="Suspended">พักสัญญาใช้งาน (Suspended / Locked)</option>
+                <option value="Active">Active (Normal)</option>
+                <option value="Suspended">Suspended (Locked)</option>
               </select>
             </div>
             <div class="mb-3">
-              <label class="form-label text-dark fw-bold">รหัสผ่านสำหรับเข้าสู่ระบบ (Password):</label>
+              <label class="form-label text-dark fw-bold">Password:</label>
               <div class="input-group">
-                <input type="password" class="form-control font-monospace" id="user-password" required placeholder="กำหนดรหัสผ่านโดย Admin" minlength="6">
+                <input type="password" class="form-control font-monospace" id="user-password" required placeholder="Set password" minlength="6">
                 <button class="btn btn-outline-secondary" type="button" id="btn-toggle-password" onclick="togglePasswordVisibility()">
                   <i class="fa fa-eye" id="eye-icon"></i>
                 </button>
               </div>
-              <small class="text-danger" style="font-size: 11px; font-weight: 500;">* กำหนดและแก้ไขโดยผู้ดูแลระบบ (Admin) เท่านั้น</small>
+              <small class="text-danger" style="font-size: 11px; font-weight: 500;">* Managed by Administrators only</small>
             </div>
           </div>
           <div class="modal-footer bg-light py-2">
-            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">ยกเลิก</button>
-            <button type="submit" class="btn btn-indigo text-white btn-sm" style="background-color: #6610f2;">บันทึกข้อมูล</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-indigo text-white btn-sm" style="background-color: #6610f2;">Save Details</button>
           </div>
         </form>
       </div>
@@ -200,15 +200,14 @@
   <script>
     let defaultUsers = [
       { id: "u1", username: "apiyut", fullname: "Apiyut (Admin)", role: "Admin", email: "Apiyut.noeikhiaw@th.ikm.com", status: "Active" },
-      { id: "u2", username: "pimjai", fullname: "พิมพ์ใจ กิตติคุณ", role: "Sales Manager", email: "pimjai.k@ikm-testing.co.th", status: "Active" },
-      { id: "u3", username: "wiriya", fullname: "วิริยะ สว่างงาม", role: "Sales Rep", email: "wiriya.s@ikm-testing.co.th", status: "Active" },
-      { id: "u4", username: "somsri", fullname: "สมศรี จิตรประสงค์", role: "Auditor", email: "somsri.j@ikm-testing.co.th", status: "Active" }
+      { id: "u2", username: "pimjai", fullname: "Pimjai Kittikhun", role: "Sales Manager", email: "pimjai.k@ikm-testing.co.th", status: "Active" },
+      { id: "u3", username: "wiriya", fullname: "Wiriya Sawangngam", role: "Sales Rep", email: "wiriya.s@ikm-testing.co.th", status: "Active" },
+      { id: "u4", username: "somsri", fullname: "Somsri Jitrprasong", role: "Auditor", email: "somsri.j@ikm-testing.co.th", status: "Active" }
     ];
 
     let usersCached = [];
 
     document.addEventListener('DOMContentLoaded', async () => {
-      // Load users from Supabase or localStorage fallback
       usersCached = await SupabaseDB.getUsers();
       renderUsers();
       onMatrixRoleSelectChange();
@@ -243,11 +242,11 @@
             <td class="text-center"><span class="badge ${badgeClass}">${usr.status}</span></td>
             <td class="text-center">
               <div class="d-flex gap-1 justify-content-center">
-                <button class="btn btn-sm btn-outline-primary py-0.5 px-2" onclick="editUser('${usr.id}')">แก้ไข</button>
+                <button class="btn btn-sm btn-outline-primary py-0.5 px-2" onclick="editUser('${usr.id}')">Edit</button>
                 ${SupabaseDB.isAdmin() ? `
-                  <button class="btn btn-sm btn-outline-danger py-0.5 px-2" onclick="deleteUser('${usr.id}')">ลบ</button>
+                  <button class="btn btn-sm btn-outline-danger py-0.5 px-2" onclick="deleteUser('${usr.id}')">Delete</button>
                 ` : `
-                  <button class="btn btn-sm btn-outline-secondary py-0.5 px-2 opacity-50" disabled title="จำกัดสิทธิ์เฉพาะ Admin เท่านั้น"><i class="fa fa-lock"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary py-0.5 px-2 opacity-50" disabled title="Requires Administrator Role"><i class="fa fa-lock"></i></button>
                 `}
               </div>
             </td>
@@ -256,7 +255,6 @@
       });
     }
 
-    // Modal triggers
     function openAddUserModal() {
       document.getElementById('user-id').value = '';
       document.getElementById('user-username').value = '';
@@ -265,7 +263,7 @@
       document.getElementById('user-email').value = '';
       document.getElementById('user-status').value = 'Active';
       document.getElementById('user-password').value = 'crm123456';
-      document.getElementById('userModalTitle').innerHTML = '<i class="fa fa-user-plus text-warning me-2"></i> บันทึกข้อมูลพนักงานใหม่';
+      document.getElementById('userModalTitle').innerHTML = '<i class="fa fa-user-plus text-warning me-2"></i> Register New User';
       
       const modal = new bootstrap.Modal(document.getElementById('userModal'));
       modal.show();
@@ -282,7 +280,7 @@
       document.getElementById('user-email').value = usr.email;
       document.getElementById('user-status').value = usr.status;
       document.getElementById('user-password').value = usr.password || 'crm123456';
-      document.getElementById('userModalTitle').innerHTML = '<i class="fa fa-user-edit text-warning me-2"></i> แก้ไขข้อมูลพนักงาน';
+      document.getElementById('userModalTitle').innerHTML = '<i class="fa fa-user-edit text-warning me-2"></i> Edit User Account';
 
       const modal = new bootstrap.Modal(document.getElementById('userModal'));
       modal.show();
@@ -304,27 +302,27 @@
 
     function deleteUser(id) {
       if (!SupabaseDB.isAdmin()) {
-        showToastAlert('เฉพาะผู้ดูแลระบบ (Admin) เท่านั้นที่สามารถลบผู้ใช้งานได้', 'danger');
+        showToastAlert('Only system Administrators are authorized to delete user accounts.', 'danger');
         return;
       }
       Swal.fire({
-        title: 'ยืนยันเพื่อลบผู้ใช้งาน?',
-        text: 'ประวัติพนักงานและสิทธิ์ของพนักงานรายนี้จะถูกนำออกจากระบบถาวร!',
+        title: 'Confirm User Deletion?',
+        text: 'This user account and all assigned permissions will be permanently removed!',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
-        confirmButtonText: 'ลบข้อมูล',
-        cancelButtonText: 'ยกเลิก'
+        confirmButtonText: 'Yes, Delete User',
+        cancelButtonText: 'Cancel'
       }).then(async (res) => {
         if (res.isConfirmed) {
           try {
             await SupabaseDB.deleteUser(id);
             usersCached = await SupabaseDB.getUsers();
-            showToastAlert('นำข้อมูลผู้ใช้งานออกจากระบบเรียบร้อย', 'success');
+            showToastAlert('User account has been removed successfully', 'success');
             renderUsers();
           } catch (err) {
             console.error(err);
-            showToastAlert('เกิดข้อผิดพลาดในการลบผู้ใช้งาน', 'danger');
+            showToastAlert('Failed to delete user account', 'danger');
           }
         }
       });
@@ -342,10 +340,8 @@
 
       try {
         if (id) {
-          // Edit
           await SupabaseDB.updateUser(id, { username, fullname, role, email, status, password });
         } else {
-          // Add
           const newId = crypto.randomUUID();
           await SupabaseDB.addUser({ id: newId, username, fullname, role, email, status, password });
         }
@@ -356,15 +352,14 @@
         const modal = bootstrap.Modal.getInstance(mElement);
         modal.hide();
 
-        showToastAlert('บันทึกข้อมูลพนักงานสำเร็จแล้ว', 'success');
+        showToastAlert('User account details saved successfully', 'success');
         renderUsers();
       } catch (err) {
         console.error(err);
-        showToastAlert('ไม่สามารถบันทึกข้อมูลพนักงานได้', 'danger');
+        showToastAlert('Failed to save user account details', 'danger');
       }
     }
 
-    // Permission Matrix actions
     function onMatrixRoleSelectChange() {
       const role = document.getElementById('matrix-role-select').value;
       
@@ -387,7 +382,7 @@
 
     function savePermissionMatrixRole() {
       const role = document.getElementById('matrix-role-select').value;
-      showToastAlert(`บันทึกการแก้ไขสิทธิ์ตำแหน่ง [${role}] สำเร็จเรียบร้อย (Matrix Saved)`, 'success');
+      showToastAlert(`Access matrix for role [${role}] updated successfully`, 'success');
     }
   </script>
 </body>

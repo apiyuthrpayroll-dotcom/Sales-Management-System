@@ -251,7 +251,7 @@ export default function App() {
   const [selectedViewQuotation, setSelectedViewQuotation] = useState<QuotationSim | null>(null);
 
   // --- 1. Customer Creation Handler ---
-  const [custForm, setCustForm] = useState({ name: '', taxId: '', industry: 'Energy & Utilities', term: 30, phone: '', email: '', address: '', contactName: '', contactPosition: '', contactPhone: '', contactEmail: '' });
+  const [custForm, setCustForm] = useState({ name: '', taxId: '', industry: 'Oil & Gas', term: 30, phone: '', email: '', address: '', contactName: '', contactPosition: '', contactPhone: '', contactEmail: '' });
   const handleCreateCustomerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!custForm.name) return;
@@ -289,7 +289,7 @@ export default function App() {
     setShowCustomerModal(false);
     showSimToast(`ลงทะเบียนลูกค้าองค์กร "${custForm.name}" สำเร็จเรียบร้อยแล้ว!`, 'success');
     // Reset form
-    setCustForm({ name: '', taxId: '', industry: 'Energy & Utilities', term: 30, phone: '', email: '', address: '', contactName: '', contactPosition: '', contactPhone: '', contactEmail: '' });
+    setCustForm({ name: '', taxId: '', industry: 'Oil & Gas', term: 30, phone: '', email: '', address: '', contactName: '', contactPosition: '', contactPhone: '', contactEmail: '' });
   };
 
   // --- 2. Opportunity Creation Handler ---
@@ -901,9 +901,9 @@ export default function App() {
                       <div>
                         <h2 className="text-xl font-black text-white flex items-center gap-2">
                           <Building2 className="w-5.5 h-5.5 text-indigo-400" />
-                          จัดการทะเบียนลูกค้าองค์กร (Customer Master)
+                          Customer Master Database (Customer Master)
                         </h2>
-                        <p className="text-xs text-slate-400 mt-1">บันทึกข้อมูลลูกค้านิติบุคคล วงเงินสินเชื่อการค้า และประวัติผู้ประสานงานหลักทั้งหมดในระบบ</p>
+                        <p className="text-xs text-slate-400 mt-1">Register external corporate clients, primary contact persons, credit limits, and billing locations synchronized with sales pipelines.</p>
                       </div>
 
                       <div className="flex gap-2">
@@ -911,7 +911,7 @@ export default function App() {
                           onClick={() => setShowCustomerModal(true)}
                           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
                         >
-                          <Plus className="w-4 h-4" /> ลงทะเบียนลูกค้าใหม่
+                          <Plus className="w-4 h-4" /> Add New Customer
                         </button>
                       </div>
                     </div>
@@ -919,7 +919,7 @@ export default function App() {
                     <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow">
                       <div className="p-4 bg-slate-850/40 border-b border-slate-800 flex items-center justify-between">
                         <span className="text-xs font-black text-white flex items-center gap-1.5">
-                          <Database className="w-4 h-4 text-indigo-400" /> รายชื่อบริษัทและภาคธุรกิจที่ลงทะเบียนแล้ว
+                          <Database className="w-4 h-4 text-indigo-400" /> Registered Corporation & Industry Directory (Customer DB)
                         </span>
                       </div>
 
@@ -927,13 +927,13 @@ export default function App() {
                         <table className="w-full text-left border-collapse text-xs">
                           <thead>
                             <tr className="border-b border-slate-800 text-slate-400 uppercase font-bold text-[10px] tracking-wider">
-                              <th className="py-3 px-3">รหัสลูกค้า</th>
-                              <th>ชื่อลูกค้าองค์กร (Corporation Company)</th>
-                              <th>ประเภทธุรกิจ</th>
-                              <th>โทรศัพท์ / อีเมล</th>
-                              <th>ผู้ติดต่อหลัก (Contact Person)</th>
-                              <th>เครดิตเทอม</th>
-                              <th className="text-center">สถานะ</th>
+                              <th className="py-3 px-3">Customer Code</th>
+                              <th>Corporation Company</th>
+                              <th>Industry Type</th>
+                              <th>Contact Channels</th>
+                              <th>Contacts List</th>
+                              <th>Payment Term</th>
+                              <th className="text-center">Status</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -955,10 +955,10 @@ export default function App() {
                                 </td>
                                 <td>
                                   <span className="text-[11px] font-semibold text-slate-400">
-                                    {cust.contacts_list || 'ไม่มีผู้ติดต่อหลัก'}
+                                    {cust.contacts_list || 'No Primary Contact'}
                                   </span>
                                 </td>
-                                <td className="font-mono text-slate-300 font-bold text-center">{cust.payment_term} วัน</td>
+                                <td className="font-mono text-slate-300 font-bold text-center">{cust.payment_term} Days</td>
                                 <td className="text-center">
                                   <span className="inline-block py-1 px-2.5 rounded-full text-[9px] font-bold bg-emerald-950/50 text-emerald-400 border border-emerald-900">
                                     {cust.status}
@@ -1756,64 +1756,73 @@ export default function App() {
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-scale-up">
             <div className="bg-indigo-600 text-white p-4 flex items-center justify-between">
-              <h3 className="font-extrabold text-sm flex items-center gap-1.5"><Plus className="w-4 h-4" /> ลงทะเบียนลูกค้าองค์กรใหม่ (Customer Register)</h3>
+              <h3 className="font-extrabold text-sm flex items-center gap-1.5"><Plus className="w-4 h-4" /> Register New Customer Account</h3>
               <button onClick={() => setShowCustomerModal(false)} className="text-white hover:opacity-75 focus:outline-none cursor-pointer">✕</button>
             </div>
             
             <form onSubmit={handleCreateCustomerSubmit} className="p-5 text-xs text-slate-300 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="col-span-1 sm:col-span-2">
-                  <label className="block mb-1 font-bold text-slate-400">ชื่อบริษัทลูกค้าองค์กร *</label>
-                  <input type="text" required placeholder="เช่น บริษัท ปตท. จำกัด (มหาชน)" value={custForm.name} onChange={e => setCustForm({ ...custForm, name: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500" />
+                  <label className="block mb-1 font-bold text-slate-400">Company / Corporate Name *</label>
+                  <input type="text" required placeholder="e.g., PTT Public Company Limited" value={custForm.name} onChange={e => setCustForm({ ...custForm, name: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500" />
                 </div>
                 <div>
-                  <label className="block mb-1 font-bold text-slate-400">เลขประจำตัวผู้เสียภาษี</label>
-                  <input type="text" placeholder="เลขประจำตัว 13 หลัก" value={custForm.taxId} onChange={e => setCustForm({ ...custForm, taxId: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500" />
+                  <label className="block mb-1 font-bold text-slate-400">Tax Identification Number (Tax ID)</label>
+                  <input type="text" placeholder="13-digit identification number" value={custForm.taxId} onChange={e => setCustForm({ ...custForm, taxId: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500" />
                 </div>
                 <div>
-                  <label className="block mb-1 font-bold text-slate-400">ประเภทอุตสาหกรรม</label>
+                  <label className="block mb-1 font-bold text-slate-400">Business Industry Segment</label>
                   <select value={custForm.industry} onChange={e => setCustForm({ ...custForm, industry: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500">
-                    <option value="Energy & Utilities">Energy & Utilities (พลังงาน)</option>
-                    <option value="Manufacturing">Manufacturing (ภาคผลิต)</option>
-                    <option value="Retail">Retail (ภาคค้าปลีก)</option>
-                    <option value="Construction">Construction (ก่อสร้าง)</option>
+                    <option value="Oil & Gas">Oil & Gas</option>
+                    <option value="Petrochemical">Petrochemical</option>
+                    <option value="Refinery & Chemical">Refinery & Chemical</option>
+                    <option value="Power Generation">Power Generation</option>
+                    <option value="Renewable Energy">Renewable Energy</option>
+                    <option value="Offshore & Marine">Offshore & Marine</option>
+                    <option value="EPC Contractor">EPC Contractor</option>
+                    <option value="Fabrication Yard">Fabrication Yard</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Food & Beverage">Food & Beverage</option>
+                    <option value="Mining, Cement & Utilities">Mining, Cement & Utilities</option>
+                    <option value="Government / State Enterprise">Government / State Enterprise</option>
+                    <option value="Others">Others</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block mb-1 font-bold text-slate-400">เบอร์โทรศัพท์ติดต่อองค์กร</label>
-                  <input type="text" placeholder="เช่น 02-537-XXXX" value={custForm.phone} onChange={e => setCustForm({ ...custForm, phone: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500" />
+                  <label className="block mb-1 font-bold text-slate-400">Office Phone Number</label>
+                  <input type="text" placeholder="e.g., +66 2 537 XXXX" value={custForm.phone} onChange={e => setCustForm({ ...custForm, phone: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500" />
                 </div>
                 <div>
-                  <label className="block mb-1 font-bold text-slate-400">เครดิตเทอมการชำระเงิน</label>
+                  <label className="block mb-1 font-bold text-slate-400">Credit Payment Terms</label>
                   <select value={custForm.term} onChange={e => setCustForm({ ...custForm, term: Number(e.target.value) })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500">
-                    <option value="30">30 วัน (Net 30)</option>
-                    <option value="45">45 วัน (Net 45)</option>
-                    <option value="60">60 วัน (Net 60)</option>
+                    <option value="30">30 Days (Net 30)</option>
+                    <option value="45">45 Days (Net 45)</option>
+                    <option value="60">60 Days (Net 60)</option>
                   </select>
                 </div>
                 <div className="col-span-1 sm:col-span-2">
-                  <label className="block mb-1 font-bold text-slate-400">ที่อยู่สำนักงานและที่ตั้งส่งบิล</label>
-                  <textarea rows={2} placeholder="เลขที่ ถนน เขต แขวง..." value={custForm.address} onChange={e => setCustForm({ ...custForm, address: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500" />
+                  <label className="block mb-1 font-bold text-slate-400">Office Address & Billing Location</label>
+                  <textarea rows={2} placeholder="Building, Street, District, Province..." value={custForm.address} onChange={e => setCustForm({ ...custForm, address: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500" />
                 </div>
 
                 <div className="col-span-1 sm:col-span-2 border-t border-slate-800 pt-3 mt-1">
-                  <h4 className="font-extrabold text-white mb-2"><i className="fa fa-user-circle"></i> รายละเอียดผู้ประสานงานหลัก (Primary Contact)</h4>
+                  <h4 className="font-extrabold text-white mb-2"><i className="fa fa-user-circle"></i> Primary Contact Person Details</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block mb-1 font-bold text-slate-500">ชื่อ-นามสกุล ผู้ประสานงาน</label>
-                      <input type="text" placeholder="เช่น คุณ สมศักดิ์ มั่นคง" value={custForm.contactName} onChange={e => setCustForm({ ...custForm, contactName: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none" />
+                      <label className="block mb-1 font-bold text-slate-500">Contact Person Full Name</label>
+                      <input type="text" placeholder="e.g., Somsak Mankong" value={custForm.contactName} onChange={e => setCustForm({ ...custForm, contactName: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none" />
                     </div>
                     <div>
-                      <label className="block mb-1 font-bold text-slate-500">ตำแหน่งงาน</label>
-                      <input type="text" placeholder="Procurement Staff" value={custForm.contactPosition} onChange={e => setCustForm({ ...custForm, contactPosition: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none" />
+                      <label className="block mb-1 font-bold text-slate-500">Job Title / Position</label>
+                      <input type="text" placeholder="Procurement Specialist" value={custForm.contactPosition} onChange={e => setCustForm({ ...custForm, contactPosition: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none" />
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end gap-2 pt-4 border-t border-slate-800">
-                <button type="button" onClick={() => setShowCustomerModal(false)} className="px-4 py-2 bg-slate-850 hover:bg-slate-800 text-slate-400 rounded-xl font-bold cursor-pointer">ยกเลิก</button>
-                <button type="submit" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold cursor-pointer">บันทึกข้อมูลลูกค้า</button>
+                <button type="button" onClick={() => setShowCustomerModal(false)} className="px-4 py-2 bg-slate-850 hover:bg-slate-800 text-slate-400 rounded-xl font-bold cursor-pointer">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold cursor-pointer">Save Customer Account</button>
               </div>
             </form>
           </div>

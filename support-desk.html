@@ -29,13 +29,13 @@
         <div class="row align-items-center">
           <div class="col-sm-6">
             <h1 class="m-0 fw-bold tracking-tight text-dark fs-2 text-uppercase">
-              <i class="fas fa-headset text-danger"></i> ระบบแจ้งเครือข่าย & บริการ (Support Desk)
+              <i class="fas fa-headset text-danger"></i> Support Desk
             </h1>
-            <p class="text-muted small m-0">บันทึกสถิติงานซ่อมบำรุงวิศวกรรม อุปกรณ์เช่าขัดข้อง และบริหารความพึงพอใจหลังส่งมอบงานเชิงบริการโรงแยกก๊าซ</p>
+            <p class="text-muted small m-0">Log engineering maintenance, report rental tool issues, and manage post-delivery service satisfaction.</p>
           </div>
           <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
             <button class="btn btn-danger btn-sm" onclick="openCreateTicketModal()">
-              <i class="fa fa-ticket-alt me-1"></i>ลงตั๋วเปิดรับงานแจ้งซ่อมบำรุง
+              <i class="fa fa-ticket-alt me-1"></i>Log Support Ticket
             </button>
           </div>
         </div>
@@ -49,8 +49,8 @@
             <div class="card p-3 border-0 bg-white shadow-sm d-flex flex-row align-items-center">
               <div class="text-danger bg-danger-subtle p-2.5 rounded me-3"><i class="fa fa-plus-circle fs-4"></i></div>
               <div>
-                <div class="text-xs text-muted">ตั๋วรับเรื่องใหม่ / New Tickets</div>
-                <h4 class="fw-bold m-0" id="stat-new-tick">0 ใบ</h4>
+                <div class="text-xs text-muted">New Tickets</div>
+                <h4 class="fw-bold m-0" id="stat-new-tick">0 Tickets</h4>
               </div>
             </div>
           </div>
@@ -58,8 +58,8 @@
             <div class="card p-3 border-0 bg-white shadow-sm d-flex flex-row align-items-center">
               <div class="text-warning bg-warning-subtle p-2.5 rounded me-3"><i class="fa fa-spinner fs-4"></i></div>
               <div>
-                <div class="text-xs text-muted">กำลังดำเนินการซ่อม / Progress</div>
-                <h4 class="fw-bold m-0" id="stat-progress-tick">0 ใบ</h4>
+                <div class="text-xs text-muted">In-Progress</div>
+                <h4 class="fw-bold m-0" id="stat-progress-tick">0 Tickets</h4>
               </div>
             </div>
           </div>
@@ -67,8 +67,8 @@
             <div class="card p-3 border-0 bg-white shadow-sm d-flex flex-row align-items-center">
               <div class="text-success bg-success-subtle p-2.5 rounded me-3"><i class="fa fa-check-circle fs-4"></i></div>
               <div>
-                <div class="text-xs text-muted">ปิดงานเรียบร้อย / Resolved</div>
-                <h4 class="fw-bold m-0 text-success" id="stat-resolved-tick">0 ใบ</h4>
+                <div class="text-xs text-muted">Resolved</div>
+                <h4 class="fw-bold m-0 text-success" id="stat-resolved-tick">0 Tickets</h4>
               </div>
             </div>
           </div>
@@ -76,7 +76,7 @@
             <div class="card p-3 border-0 bg-white shadow-sm d-flex flex-row align-items-center">
               <div class="text-indigo bg-indigo-subtle p-2.5 rounded me-3"><i class="fa fa-smile fs-4"></i></div>
               <div>
-                <div class="text-xs text-muted">ความพึงพอใจบริการสิบเฉลี่ย</div>
+                <div class="text-xs text-muted">Average Satisfaction Score</div>
                 <h4 class="fw-bold m-0 text-indigo">9.8 / 10</h4>
               </div>
             </div>
@@ -88,21 +88,21 @@
           <div class="col-12">
             <div class="card shadow-sm border-0 bg-white h-100">
               <div class="card-header bg-white border-bottom py-3">
-                <h5 class="m-0 fw-bold"><i class="fa fa-list"></i> ใบติดตามตั๋วคุมฝ่ายบริการ (Support Tickets Dashboard)</h5>
+                <h5 class="m-0 fw-bold"><i class="fa fa-list"></i> Support Tickets Dashboard</h5>
               </div>
               <div class="card-body p-0">
                 <div class="table-responsive">
                   <table class="google-sheet-table table-hover align-middle mb-0 small" id="tickets-table">
                     <thead class="table-light">
                       <tr>
-                        <th>ตั๋ว</th>
-                        <th>นิติบุคคลแจ้งงาน</th>
-                        <th>หัวข้อแจ้งปัญหา / หัวข้อบริการ</th>
-                        <th>ประเภทตั๋ว</th>
-                        <th>ระดับเร่งด่วน</th>
-                        <th>ช่างผู้รับมอบงาน</th>
-                        <th class="text-center">ตรวจสอบสถานะ</th>
-                        <th class="text-center" style="width: 150px;">เร่งแซง</th>
+                        <th>Ticket ID</th>
+                        <th>Customer Account</th>
+                        <th>Service Issue / Subject</th>
+                        <th>Ticket Category</th>
+                        <th>Priority</th>
+                        <th>Assigned Technician</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center" style="width: 150px;">Actions</th>
                       </tr>
                     </thead>
                     <tbody id="tickets-tbody">
@@ -119,7 +119,7 @@
 
     <!-- FOOTER -->
     <footer class="app-footer text-center bg-white border-top py-3 text-muted small mt-auto" style="margin-left: 250px;">
-      <strong>Copyright &copy; 2026.</strong> ศูนย์รับเรื่องแจ้งปัญหาสนับสนุนส่วนกลาง IKM Testing
+      <strong>Copyright &copy; 2026.</strong> Central IKM Testing Support Service Center
     </footer>
   </div>
 
@@ -129,51 +129,51 @@
       <div class="modal-content">
         <form id="ticketForm" onsubmit="saveSupportTicket(event)">
           <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title" id="ticketModalLabel"><i class="fa fa-ticket-alt"></i> ลงประวัติตั๋วรับบริการหน้างาน</h5>
+            <h5 class="modal-title" id="ticketModalLabel"><i class="fa fa-ticket-alt"></i> Log Support Ticket Record</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body p-4">
             <div class="mb-3">
-              <label class="form-label small fw-bold">ระบุลูกค้านิติบุคคล (Customer Account) <span class="text-danger">*</span></label>
+              <label class="form-label small fw-bold">Customer Account (Organization) <span class="text-danger">*</span></label>
               <select class="form-select" id="form-tick-customer" required>
                 <!-- Loaded via master -->
               </select>
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold">หัวข้อสั้นแจ้งเตือนความผิดแผก / SLA Service Issue <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="form-tick-subject" placeholder="เช่น Emergency repair high pressure pump leak" required>
+              <label class="form-label small fw-bold">Service Issue Description / Subject <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="form-tick-subject" placeholder="e.g. Emergency repair high pressure pump leak" required>
             </div>
             <div class="row g-2 mb-3">
               <div class="col-6">
-                <label class="form-label small fw-bold">ประเภทงานบริการ</label>
+                <label class="form-label small fw-bold">Service Category</label>
                 <select class="form-select" id="form-tick-category">
-                  <option value="Mechanical Repair">Mechanical Repair (ชำรุดเครื่องกล)</option>
-                  <option value="Instrument Calibration">Instrument Calibration (สอบเทียบค่า)</option>
-                  <option value="Rental Replacement">Rental Replacement (เปลี่ยนอุปกรณ์ยืมพก)</option>
-                  <option value="SLA Inquiry">SLA Inquiry (ทวงประสานงานสัญญา)</option>
+                  <option value="Mechanical Repair">Mechanical Repair</option>
+                  <option value="Instrument Calibration">Instrument Calibration</option>
+                  <option value="Rental Replacement">Rental Equipment Replacement</option>
+                  <option value="SLA Inquiry">SLA Inquiry</option>
                 </select>
               </div>
               <div class="col-6">
-                <label class="form-label small fw-bold">ระดับสิทธิ์เร่งด่วน</label>
+                <label class="form-label small fw-bold">Urgency Level</label>
                 <select class="form-select" id="form-tick-priority">
-                  <option value="Urgent 1 Hour">ด่วนเร่งไฟลุก (Urgent 1 Hour)</option>
-                  <option value="High (24 Hours)">สูงสุด (High 24h)</option>
-                  <option value="Normal">สภาพทั่วไป (Normal)</option>
+                  <option value="Urgent 1 Hour">Urgent (1 Hour)</option>
+                  <option value="High (24 Hours)">High (24 Hours)</option>
+                  <option value="Normal">Normal</option>
                 </select>
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold">วิศวกรผู้ได้รับตรวจมอบหมาย (Assigned Tech)</label>
-              <input type="text" class="form-control" id="form-tick-assignee" value="ช่างยศ (Bovin Facility)">
+              <label class="form-label small fw-bold">Assigned Technician</label>
+              <input type="text" class="form-control" id="form-tick-assignee" value="Technician Yos (Bovin Facility)">
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold">คำบันทึกปัญหาและการเข้าวิชาการสังเคราะห์ (Description)</label>
-              <textarea class="form-control" id="form-tick-desc" rows="3" placeholder="ระบุสัญญาณเตือน หรือรหัสชิ้นส่วนที่แจ้งเพื่อนำประกอบแบบแผน"></textarea>
+              <label class="form-label small fw-bold">Symptom Details & Technician Log (Description)</label>
+              <textarea class="form-control" id="form-tick-desc" rows="3" placeholder="Enter details of symptoms or affected rental tool serial numbers..."></textarea>
             </div>
           </div>
           <div class="modal-footer bg-light">
-            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-            <button type="submit" class="btn btn-danger"><i class="fa fa-ticket-alt"></i> ยื่นใบตั๋วเข้าระบบ</button>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-danger"><i class="fa fa-ticket-alt"></i> Submit Support Ticket</button>
           </div>
         </form>
       </div>
@@ -196,9 +196,9 @@
     const LOCAL_TICKETS_KEY = 'crm_support_tickets';
 
     const INITIAL_TICKETS = [
-      { id: 't-01', customer_name: 'บริษัท ปตท. จำกัด (มหาชน)', subject: 'Nitrogen Compressor overheating error code E4', category: 'Mechanical Repair', priority: 'Urgent 1 Hour', assignee: 'วิศวกรวิทยา (Head Tech)', status: 'New', desc: 'เครื่องคอมเพรสเชอร์อุณหภูมิตั้งบานรบกวน 85c' },
-      { id: 't-02', customer_name: 'SCG Chemical Division', subject: 'Calibration certificate requirement for HP manifold #19', category: 'Instrument Calibration', priority: 'High (24 Hours)', assignee: 'ช่างเอก (Bovin Lab)', status: 'In-Progress', desc: 'ต้องการใบรับรองกระบอกก่อนนำรถเข้าลานโครงการ' },
-      { id: 't-03', customer_name: 'Thai Oil Refiner Group', subject: 'Leaking flange exchange on rental Hydrotest pump #04', category: 'Rental Replacement', priority: 'Normal', assignee: 'ช่างยศ (Bovin Facility)', status: 'Solved', desc: 'เปลี่ยนปะเก็นหนาเสร็จเรียบร้อยและทดสอบกำลังผ่าน' }
+      { id: 'T-8412', customer_name: 'PTT Public Company Limited', subject: 'Nitrogen Compressor overheating error code E4', category: 'Mechanical Repair', priority: 'Urgent 1 Hour', assignee: 'Engineer Witthaya (Lead Tech)', status: 'New', desc: 'Compressor temperature registered at 85C.' },
+      { id: 'T-3211', customer_name: 'SCG Chemical Division', subject: 'Calibration certificate requirement for HP manifold #19', category: 'Instrument Calibration', priority: 'High (24 Hours)', assignee: 'Technician Ek (Bovin Lab)', status: 'In-Progress', desc: 'Client requested manifold calibration certificate prior to mobilization.' },
+      { id: 'T-7042', customer_name: 'Thai Oil Refiner Group', subject: 'Leaking flange exchange on rental Hydrotest pump #04', category: 'Rental Replacement', priority: 'Normal', assignee: 'Technician Yos (Bovin Facility)', status: 'Solved', desc: 'Replaced high pressure seal gasket; pressure test completed successfully.' }
     ];
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -246,9 +246,9 @@
       const progress = supportTickets.filter(t => t.status === 'In-Progress').length;
       const solved = supportTickets.filter(t => t.status === 'Solved').length;
 
-      document.getElementById('stat-new-tick').innerText = `${news} ใบ`;
-      document.getElementById('stat-progress-tick').innerText = `${progress} ใบ`;
-      document.getElementById('stat-resolved-tick').innerText = `${solved} ใบ`;
+      document.getElementById('stat-new-tick').innerText = `${news} Tickets`;
+      document.getElementById('stat-progress-tick').innerText = `${progress} Tickets`;
+      document.getElementById('stat-resolved-tick').innerText = `${solved} Tickets`;
     }
 
     function renderTicketsTable() {
@@ -256,11 +256,10 @@
       tbody.innerHTML = '';
 
       if (supportTickets.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">ไม่พบคิวตั๋วใบซ่อมบำรุงหน้าโรงแยก</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No active support tickets found.</td></tr>';
         return;
       }
 
-      // Check current user role to determine if they can delete tickets
       const currentUserRole = localStorage.getItem('crm_user_role') || localStorage.getItem('crm_active_role') || 'Sales';
       const canDelete = currentUserRole === 'Admin' || currentUserRole === 'System Administrator';
 
@@ -280,7 +279,6 @@
           statusBadge = `<span class="badge-status badge-status-draft">${t.status}</span>`;
         }
 
-        // Red label for Urgency
         const urgencyLabel = t.priority === 'Urgent 1 Hour' ? `<strong class="text-danger"><i class="fa fa-exclamation-triangle"></i> ${t.priority}</strong>` : t.priority;
 
         const row = `
@@ -299,15 +297,15 @@
               <div class="btn-group btn-group-sm">
                 ${t.status !== 'Solved' ? `
                   <button class="btn btn-outline-success btn-xs" onclick="markSolved('${t.id}')">
-                    <i class="fa fa-check"></i> เสร็จสิ้น
+                    <i class="fa fa-check"></i> Resolve
                   </button>
                   <button class="btn btn-outline-warning btn-xs" onclick="markProgress('${t.id}')">
-                    <i class="fa fa-sync"></i> บรรลุต่อ
+                    <i class="fa fa-sync"></i> In-Progress
                   </button>
                 ` : '<span class="text-success small fw-bold me-2">Job Resolved</span>'}
                 ${canDelete ? `
-                  <button class="btn btn-outline-danger btn-xs" onclick="deleteSupportTicket('${t.id}')" title="ลบตั๋วบริการ (Admin Only)">
-                    <i class="fa fa-trash"></i> ลบ
+                  <button class="btn btn-outline-danger btn-xs" onclick="deleteSupportTicket('${t.id}')" title="Delete Ticket (Admin Only)">
+                    <i class="fa fa-trash"></i> Delete
                   </button>
                 ` : ''}
               </div>
@@ -344,7 +342,7 @@
 
       const modal = bootstrap.Modal.getInstance(document.getElementById('ticketModal'));
       modal.hide();
-      showToastAlert('เปิดรับตั๋วงานแจ้งซ่อมบำรุงเข้าระบบเรียบร้อย ช่างพร้อมดูแล', 'success');
+      showToastAlert('Support ticket registered successfully. Tech dispatch underway.', 'success');
     }
 
     function markSolved(id) {
@@ -353,7 +351,7 @@
         t.status = 'Solved';
         saveTicketsToStore();
         renderTicketsTable();
-        showToastAlert('ตั๋วปิดงานทางความพึงพอใจสำเร็จ', 'success');
+        showToastAlert('Support ticket resolved successfully.', 'success');
       }
     }
 
@@ -363,7 +361,7 @@
         t.status = 'In-Progress';
         saveTicketsToStore();
         renderTicketsTable();
-        showToastAlert('ปรับสถานะตั๋วช่างกำลังวิ่งเข้าปะการโรงแล้ว', 'warning');
+        showToastAlert('Ticket updated to In-Progress.', 'warning');
       }
     }
 
@@ -373,8 +371,8 @@
 
       if (!canDelete) {
         Swal.fire({
-          title: 'จำกัดสิทธิ์การเข้าถึง',
-          text: 'เฉพาะ Admin หรือ ผู้ดูแลระบบเท่านั้นที่สามารถลบตั๋วบริการนี้ได้',
+          title: 'Access Restricted',
+          text: 'Only Administrators are authorized to delete support tickets.',
           icon: 'error',
           confirmButtonColor: '#3085d6'
         });
@@ -382,20 +380,20 @@
       }
 
       Swal.fire({
-        title: 'ยืนยันการลบตั๋วบริการ?',
-        text: `คุณต้องการลบตั๋วบริการเลขที่ ${id} นี้ออกจากระบบอย่างถาวรหรือไม่?`,
+        title: 'Confirm Ticket Deletion?',
+        text: `Do you want to permanently delete support ticket ${id}?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'ใช่, ต้องการลบ!',
-        cancelButtonText: 'ยกเลิก'
+        confirmButtonText: 'Yes, Delete',
+        cancelButtonText: 'Cancel'
       }).then((result) => {
         if (result.isConfirmed) {
           supportTickets = supportTickets.filter(item => item.id !== id);
           saveTicketsToStore();
           renderTicketsTable();
-          showToastAlert('ลบตั๋วบริการออกจากระบบเรียบร้อยแล้ว', 'success');
+          showToastAlert('Support ticket deleted successfully.', 'success');
         }
       });
     }

@@ -15,7 +15,7 @@ async function loadOpportunitiesTable() {
     renderOpportunityRows(allOpportunitiesCached);
   } catch (err) {
     console.error("Fetch opportunities table failed", err);
-    showToastAlert('โหลดข้อมูลโอกาสงานขายล้มเหลว', 'danger');
+    showToastAlert('Failed to load sales opportunities data', 'danger');
   } finally {
     toggleGlobalLoader(false);
   }
@@ -30,7 +30,7 @@ function renderOpportunityRows(opportunities) {
       <tr>
         <td colspan="9" class="text-center text-muted p-4">
           <i class="fas fa-handshake d-block fs-2 mb-2 opacity-50"></i>
-          ไม่พบรายการโอกาสทางการขายในระบบหลัก
+          No sales opportunities found in the database.
         </td>
       </tr>
     `;
@@ -41,7 +41,7 @@ function renderOpportunityRows(opportunities) {
   const numFormatter = new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' });
 
   tbody.innerHTML = opportunities.map(opp => {
-    const custName = opp.customer ? opp.customer.customer_name : 'ไม่พบข้อมูลลูกค้า';
+    const custName = opp.customer ? opp.customer.customer_name : 'No customer record';
     const weightedVal = parseFloat(opp.estimated_value) * (parseInt(opp.success_probability) / 100);
 
     // Dynamic stats badges
@@ -67,11 +67,11 @@ function renderOpportunityRows(opportunities) {
     // Won/Lost Quick Actions list
     const quickActionsDisabled = (opp.status === 'Won' || opp.status === 'Lost' || opp.status === 'Cancelled');
     const quickActionsHtml = quickActionsDisabled ? 
-      `<span class="text-muted small">ปิดดีลแล้ว</span>` : 
+      `<span class="text-muted small">Deal Closed</span>` : 
       `
       <div class="d-flex gap-1 justify-content-center">
-        <button class="btn btn-xs btn-success" p-1 onclick="quickChangeOpportunityStatus('${opp.id}', 'Won')" title="ทำเครื่องหมายชนะการขาย (Won)"><i class="fa fa-check"></i> ชนะ</button>
-        <button class="btn btn-xs btn-danger" p-1 onclick="quickChangeOpportunityStatus('${opp.id}', 'Lost')" title="ทำเครื่องหมายแพ้ (Lost)"><i class="fa fa-times"></i> แพ้</button>
+        <button class="btn btn-xs btn-success" p-1 onclick="quickChangeOpportunityStatus('${opp.id}', 'Won')" title="Mark as Closed Won (Won)"><i class="fa fa-check"></i> Won</button>
+        <button class="btn btn-xs btn-danger" p-1 onclick="quickChangeOpportunityStatus('${opp.id}', 'Lost')" title="Mark as Closed Lost (Lost)"><i class="fa fa-times"></i> Lost</button>
       </div>
       `;
 
@@ -85,7 +85,7 @@ function renderOpportunityRows(opportunities) {
         <td><span class="badge bg-light text-dark border">${opp.service_type}</span></td>
         <td>
           <div class="fw-bold text-dark">${numFormatter.format(opp.estimated_value)}</div>
-          <div class="text-xs text-muted">โอกาสสำเร็จ: ${opp.success_probability}%</div>
+          <div class="text-xs text-muted">Success Probability: ${opp.success_probability}%</div>
         </td>
         <td>
           <div class="fw-semibold text-color-indigo font-monospace" style="font-size:0.82rem;">${numFormatter.format(weightedVal)}</div>
@@ -94,8 +94,8 @@ function renderOpportunityRows(opportunities) {
         <td>
           <div class="small fw-semibold text-dark" style="font-size: 0.8rem;">${(window.SupabaseDB && window.SupabaseDB.getUsernameOrDisplayName) ? window.SupabaseDB.getUsernameOrDisplayName(opp.sales_person_id) : (opp.sales_person_id || '-')}</div>
           <div class="text-muted font-monospace mt-0.5" style="font-size: 10px; line-height: 1.2;">
-            <span class="d-block" title="สร้างโดย"><i class="fa fa-plus-circle text-secondary" style="font-size: 9px;"></i> ${opp.created_by ? window.SupabaseDB.getUsernameOrDisplayName(opp.created_by) : '@apiyut'}</span>
-            <span class="d-block" title="แก้ไขโดย"><i class="fa fa-pen text-secondary" style="font-size: 9px;"></i> ${opp.updated_by ? window.SupabaseDB.getUsernameOrDisplayName(opp.updated_by) : '@apiyut'}</span>
+            <span class="d-block" title="Created by"><i class="fa fa-plus-circle text-secondary" style="font-size: 9px;"></i> ${opp.created_by ? window.SupabaseDB.getUsernameOrDisplayName(opp.created_by) : '@apiyut'}</span>
+            <span class="d-block" title="Edited by"><i class="fa fa-pen text-secondary" style="font-size: 9px;"></i> ${opp.updated_by ? window.SupabaseDB.getUsernameOrDisplayName(opp.updated_by) : '@apiyut'}</span>
           </div>
         </td>
         <td>
@@ -105,11 +105,11 @@ function renderOpportunityRows(opportunities) {
           <div class="d-flex flex-column gap-1.5 align-items-center">
             ${quickActionsHtml}
             <div class="d-flex gap-1 justify-content-center mt-1">
-              <button onclick="openOpportunityModal('${opp.id}')" class="btn btn-outline-primary btn-xs" title="แก้ไขเอกสารรายละเอียด"><i class="fa fa-edit"></i></button>
+              <button onclick="openOpportunityModal('${opp.id}')" class="btn btn-outline-primary btn-xs" title="Edit details"><i class="fa fa-edit"></i></button>
               ${SupabaseDB.isAdmin() ? `
-                <button class="btn btn-outline-danger btn-xs" onclick="deleteOpportunityConfirm('${opp.id}', '${opp.project_name.replace(/'/g, "\\'")}', '${opp.opportunity_no}')" title="ลบเป้าหมายการขาย"><i class="fa fa-trash"></i></button>
+                <button class="btn btn-outline-danger btn-xs" onclick="deleteOpportunityConfirm('${opp.id}', '${opp.project_name.replace(/'/g, "\\'")}', '${opp.opportunity_no}')" title="Delete opportunity"><i class="fa fa-trash"></i></button>
               ` : `
-                <button class="btn btn-outline-secondary btn-xs opacity-50" disabled title="จำกัดสิทธิ์เฉพาะ Admin เท่านั้น"><i class="fa fa-lock"></i></button>
+                <button class="btn btn-outline-secondary btn-xs opacity-50" disabled title="Admin rights required"><i class="fa fa-lock"></i></button>
               `}
             </div>
           </div>
@@ -171,19 +171,19 @@ async function quickChangeOpportunityStatus(id, nextStatus) {
   const opp = allOpportunitiesCached.find(o => o.id === id);
   if (!opp) return;
 
-  const phrase = nextStatus === 'Won' ? 'ชนะปิดดีลงานได้เรียบร้อย (Won)' : 'ปิดแพ้โครงการ (Lost)';
+  const phrase = nextStatus === 'Won' ? 'Closed Won (Won)' : 'Closed Lost (Lost)';
   const icon = nextStatus === 'Won' ? 'success' : 'error';
   const color = nextStatus === 'Won' ? '#198754' : '#dc3545';
 
   Swal.fire({
-    title: `คุณต้องการระบุสถานะเป็น "${nextStatus}"?`,
-    text: `โปรแกรมจะอัปเดตสถานะโครงการ ${opp.project_name} ไปยังสถานะที่สรุปทันที!`,
+    title: `Do you want to change status to "${nextStatus}"?`,
+    text: `This will update the project pipeline stage of ${opp.project_name} to completed status immediately!`,
     icon: 'question',
     showCancelButton: true,
     confirmButtonColor: color,
     cancelButtonColor: '#6c757d',
-    confirmButtonText: `ปรับเป็น ${nextStatus}`,
-    cancelButtonText: 'ยกเลิก'
+    confirmButtonText: `Change to ${nextStatus}`,
+    cancelButtonText: 'Cancel'
   }).then(async (result) => {
     if (result.isConfirmed) {
       toggleGlobalLoader(true);
@@ -195,13 +195,13 @@ async function quickChangeOpportunityStatus(id, nextStatus) {
         };
 
         await SupabaseDB.updateOpportunity(id, updates);
-        await SupabaseDB.addActivity('อัปเดตสถานะดีลงาน', 'Opportunity', id, `เปลี่ยนสถานะดีลของโครงการ "${opp.project_name}" ไปยังสถานะ ${nextStatus}!`);
+        await SupabaseDB.addActivity('Update Opportunity Status', 'Opportunity', id, `Changed opportunity status of "${opp.project_name}" to ${nextStatus}!`);
         
-        showToastAlert(`ปรับสถานะเป้าหมายเป็น ${nextStatus} เรียบร้อยแล้ว`, 'success');
+        showToastAlert(`Opportunity status updated to ${nextStatus} successfully`, 'success');
         loadOpportunitiesTable(); // Reload to refresh tables and stats
       } catch (err) {
         console.error("Quick status mutation error", err);
-        showToastAlert('อัปเดตล้มเหลว', 'danger');
+        showToastAlert('Update failed', 'danger');
       } finally {
         toggleGlobalLoader(false);
       }
@@ -212,29 +212,29 @@ async function quickChangeOpportunityStatus(id, nextStatus) {
 // Delete confirm dialog
 function deleteOpportunityConfirm(id, name, refNo) {
   if (!SupabaseDB.isAdmin()) {
-    showToastAlert('เฉพาะผู้ดูแลระบบ (Admin) เท่านั้นที่สามารถลบโอกาสขายได้', 'danger');
+    showToastAlert('Only Administrators are authorized to delete sales opportunities', 'danger');
     return;
   }
   Swal.fire({
-    title: 'ต้องการลบเป้าหมายงานขายนี้?',
-    text: `หมายเลขโอกาส ${refNo} (โครงการ: ${name}) จะถูกเพิกถอนข้อมูล และการคาดการณ์ยอดเงินจะหายรายจ่ายวิเคราะห์ออกไป ถาวร!`,
+    title: 'Are you sure you want to delete this sales opportunity?',
+    text: `Opportunity No. ${refNo} (Project: ${name}) will be permanently deleted and forecasting figures will be removed from analysis.`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#dc3545',
     cancelButtonColor: '#6c757d',
-    confirmButtonText: 'ใช่, ฉันมั่นใจที่จะลบ!',
-    cancelButtonText: 'ยกเลิก'
+    confirmButtonText: 'Yes, delete permanently!',
+    cancelButtonText: 'Cancel'
   }).then(async (result) => {
     if (result.isConfirmed) {
       toggleGlobalLoader(true);
       try {
         await SupabaseDB.deleteOpportunity(id);
-        await SupabaseDB.addActivity('ลบข้อมูลโอกาสขาย', 'Opportunity', id, `ทำลายดีลงานที่เกี่ยวกับโครงการ "${name}" (เลขที่ที่ลบ: ${refNo})`);
-        showToastAlert('ลบเอกสารโอกาสขายสำเร็จแล้ว', 'success');
+        await SupabaseDB.addActivity('Delete Sales Opportunity', 'Opportunity', id, `Permanently deleted sales opportunity for project "${name}" (Ref: ${refNo})`);
+        showToastAlert('Opportunity deleted successfully', 'success');
         loadOpportunitiesTable();
       } catch (err) {
         console.error("Delete opportunity error", err);
-        showToastAlert('ไม่สามารถลบดีลงานได้', 'danger');
+        showToastAlert('Unable to delete opportunity', 'danger');
       } finally {
         toggleGlobalLoader(false);
       }
@@ -255,7 +255,7 @@ async function loadCustomersToDropdown() {
     const select = document.getElementById('opp-customer');
     if (!select) return;
 
-    select.innerHTML = '<option value="" disabled selected>-- กรุณาเลือกบัญชีลูกค้าผู้รับผิดชอบ --</option>';
+    select.innerHTML = '<option value="" disabled selected>-- Please select customer account --</option>';
     customers.forEach(cust => {
       if (cust.status === 'Active') {
         const opt = document.createElement('option');
@@ -319,7 +319,7 @@ async function openOpportunityModal(id = "") {
   const probabilityBubble = document.getElementById('opp-prob-bubble');
 
   if (id) {
-    if (titleEl) titleEl.innerHTML = '<i class="fa fa-edit me-2"></i> แก้ไขข้อมูลโอกาสขาย';
+    if (titleEl) titleEl.innerHTML = '<i class="fa fa-edit me-2"></i> Edit Opportunity Details';
     if (idInput) idInput.value = id;
 
     // Fetch opportunity details
@@ -332,7 +332,7 @@ async function openOpportunityModal(id = "") {
       document.getElementById('opp-location').value = target.project_location || "Other";
       document.getElementById('opp-estimated-value').value = target.estimated_value || 0;
       document.getElementById('opp-expected-date').value = target.expected_close_date || "";
-      document.getElementById('opp-salesperson').value = target.sales_person_id || "เอกชัย วงศ์ดี (S01)";
+      document.getElementById('opp-salesperson').value = target.sales_person_id || "Ekachai Wongdee (S01)";
       document.getElementById('opp-status').value = target.status || "Lead";
       
       if (probabilitySlider && probabilityBubble) {
@@ -342,7 +342,7 @@ async function openOpportunityModal(id = "") {
       document.getElementById('opp-remarks').value = target.remarks || "";
     }
   } else {
-    if (titleEl) titleEl.innerHTML = '<i class="fa fa-plus me-2"></i> ระบุข้อมูลโอกาสขายใหม่';
+    if (titleEl) titleEl.innerHTML = '<i class="fa fa-plus me-2"></i> Add New Sales Opportunity';
     if (idInput) idInput.value = "";
     if (probabilitySlider && probabilityBubble) {
       probabilitySlider.value = 50;
@@ -376,12 +376,12 @@ async function saveOpportunityAction() {
   try {
     if (idInput) {
       await SupabaseDB.updateOpportunity(idInput, payload);
-      await SupabaseDB.addActivity('แก้ไขโครงการขาย', 'Opportunity', idInput, `แก้ไขรายละเอียดดีล "${payload.project_name}" (มูลค่า ฿${payload.estimated_value.toLocaleString()})`);
-      showToastAlert('ปรับปรุงเรียบร้อยุกตัว', 'success');
+      await SupabaseDB.addActivity('Edit Sales Opportunity', 'Opportunity', idInput, `Edited opportunity details for "${payload.project_name}" (Value: ฿${payload.estimated_value.toLocaleString()})`);
+      showToastAlert('Opportunity updated successfully', 'success');
     } else {
       const res = await SupabaseDB.addOpportunity(payload);
-      await SupabaseDB.addActivity('จดทะเบียนโอกาสขายใหม่', 'Opportunity', res.id || 'new', `ระบุเป้าหมายดีลงานใหม่สำหรับ "${payload.project_name}"`);
-      showToastAlert('สร้างเสร็จสิ้น', 'success');
+      await SupabaseDB.addActivity('Create Sales Opportunity', 'Opportunity', res.id || 'new', `Created a new sales opportunity for "${payload.project_name}"`);
+      showToastAlert('Opportunity created successfully', 'success');
     }
 
     if (opportunityModalInstance) {
@@ -392,7 +392,7 @@ async function saveOpportunityAction() {
     await loadOpportunitiesTable();
   } catch (err) {
     console.error("Save opportunity failed", err);
-    showToastAlert('บันทึกข้อมูลล้มเหลว', 'danger');
+    showToastAlert('An error occurred while saving the opportunity', 'danger');
   } finally {
     toggleGlobalLoader(false);
   }
